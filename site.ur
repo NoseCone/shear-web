@@ -2,6 +2,11 @@ style quote
 
 fun add x y : float = x + y
 
+val compsUrl = "http://2020-meduno.flaretiming.com/json/comp-input/comps.json"
+
+fun fetchCompsJson () : transaction string =
+  CompsFetch.fetch compsUrl
+
 fun main () =
   let
     val x : float = add 3. 4.
