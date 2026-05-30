@@ -1,2 +1,2 @@
-val fetchCompsJson : string -> transaction string
+val fetchCompJson : string -> transaction string
 val main : unit -> transaction page

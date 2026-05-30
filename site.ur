@@ -1,28 +1,28 @@
 style quote
 
-fun fetchCompsJson (compName : string) : transaction string =
+fun fetchCompJson (compName : string) : transaction string =
   let
-    CompsFetch.fetch (mkCompUrl compName)
+    CompFetch.fetch (mkCompUrl compName)
   where
     fun mkCompUrl (compName : string) =
       "http://" ^ compName ^ ".flaretiming.com/json/comp-input/comps.json"
   end
 
-fun compsWidget () : transaction xbody =
+fun compWidget () : transaction xbody =
     output <- source <xml><p>Not fetched yet.</p></xml>;
 
     return <xml>
       <button value="Fetch comps JSON"
               onclick={fn _ =>
                           set output <xml><p>Fetching...</p></xml>;
-                          json <- rpc (fetchCompsJson "2020-meduno");
+                          json <- rpc (fetchCompJson "2020-meduno");
                           set output <xml><h3>Fetched raw JSON</h3><pre>{[json]}</pre></xml>}/>
 
       <dyn signal={signal output}/>
     </xml>
 
 fun main () =
-  c <- compsWidget ();
+  c <- compWidget ();
   return <xml>
     <head>
       <link rel="stylesheet" type="text/css" href="http://adam.chlipala.net/style.css"/>

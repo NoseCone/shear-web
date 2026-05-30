@@ -59,17 +59,17 @@ static size_t write_callback(void *ptr, size_t size, size_t nmemb, void *userdat
   return chunk;
 }
 
-uw_Basis_string uw_CompsFetch_fetch(uw_context ctx, uw_Basis_string url) {
+uw_Basis_string uw_CompFetch_fetch(uw_context ctx, uw_Basis_string url) {
   CURL *curl = curl_easy_init();
   if (!curl) {
-    uw_error(ctx, FATAL, "CompsFetch: failed to initialize libcurl");
+    uw_error(ctx, FATAL, "CompFetch: failed to initialize libcurl");
   }
 
   struct response_buffer rb;
   rb_init(&rb);
   if (!rb.data) {
     curl_easy_cleanup(curl);
-    uw_error(ctx, FATAL, "CompsFetch: out of memory");
+    uw_error(ctx, FATAL, "CompFetch: out of memory");
   }
 
   curl_easy_setopt(curl, CURLOPT_URL, url);
@@ -85,7 +85,7 @@ uw_Basis_string uw_CompsFetch_fetch(uw_context ctx, uw_Basis_string url) {
     const char *err = curl_easy_strerror(code);
     free(rb.data);
     curl_easy_cleanup(curl);
-    uw_error(ctx, FATAL, "CompsFetch: request failed: %s", err);
+    uw_error(ctx, FATAL, "CompFetch: request failed: %s", err);
   }
 
   long http_code = 0;
@@ -94,7 +94,7 @@ uw_Basis_string uw_CompsFetch_fetch(uw_context ctx, uw_Basis_string url) {
 
   if (http_code < 200 || http_code >= 300) {
     free(rb.data);
-    uw_error(ctx, FATAL, "CompsFetch: upstream returned HTTP %ld", http_code);
+    uw_error(ctx, FATAL, "CompFetch: upstream returned HTTP %ld", http_code);
   }
 
   char *out = uw_malloc(ctx, rb.len + 1);
