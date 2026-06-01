@@ -2,10 +2,16 @@ allow url http://adam.chlipala.net/style.css
 rewrite style Css/quote quote
 rewrite url Site/*
 link compFetch.o
+link compParse.o
+link parson.o
 link -lcurl
 include compFetch.h
+include compParse.h
 ffi compFetch
+ffi compParse
 effectful CompFetch.fetch
+effectful CompParse.parse
+effectful CompParse.free
 
 comp
 site
