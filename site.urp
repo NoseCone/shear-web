@@ -1,5 +1,6 @@
 allow url http://adam.chlipala.net/style.css
 rewrite style Css/quote quote
+rewrite url Site/*
 link compFetch.o
 link -lcurl
 include compFetch.h
