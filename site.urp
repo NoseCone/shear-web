@@ -12,6 +12,18 @@ ffi compParse
 effectful CompFetch.fetch
 effectful CompParse.parse
 effectful CompParse.free
+benignEffectful CompParse.civilId
+benignEffectful CompParse.earthMath
+benignEffectful CompParse.discipline
+benignEffectful CompParse.location
+benignEffectful CompParse.fromDate
+benignEffectful CompParse.toDate
+benignEffectful CompParse.compName
+benignEffectful CompParse.utcOffsetMinutes
+benignEffectful CompParse.earthRadius
+benignEffectful CompParse.giveDistance
+benignEffectful CompParse.giveFraction
+benignEffectful CompParse.scoreBack
 
 comp
 site

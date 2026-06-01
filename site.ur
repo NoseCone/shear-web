@@ -11,27 +11,37 @@ fun fetchCompJson (compName : string) : transaction string =
 fun parseCompInputJson (json : string) : transaction Comp.compInput =
   parsed <- CompParse.parse json;
 
-  let
-    val comp = Comp.CompInput
-      { CivilId = CompParse.civilId parsed
-      , EarthMath = CompParse.earthMath parsed
-      , Discipline = CompParse.discipline parsed
-      , Location = CompParse.location parsed
-      , From = CompParse.fromDate parsed
-      , To = CompParse.toDate parsed
-      , CompName = CompParse.compName parsed
-      , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = CompParse.utcOffsetMinutes parsed}
-      , EarthModel = Comp.EarthAsSphere {Radius = CompParse.earthRadius parsed}
-      , GiveConfig = Comp.GiveConfig
-          { GiveDistance = CompParse.giveDistance parsed
-          , GiveFraction = CompParse.giveFraction parsed
-          }
-      , ScoreBack = CompParse.scoreBack parsed
-      }
-  in
-    CompParse.free parsed;
-    return comp
-  end
+  civilId <- CompParse.civilId parsed;
+  earthMath <- CompParse.earthMath parsed;
+  discipline <- CompParse.discipline parsed;
+  location <- CompParse.location parsed;
+  fromDate <- CompParse.fromDate parsed;
+  toDate <- CompParse.toDate parsed;
+  compName <- CompParse.compName parsed;
+  utcOffsetMinutes <- CompParse.utcOffsetMinutes parsed;
+  earthRadius <- CompParse.earthRadius parsed;
+  giveDistance <- CompParse.giveDistance parsed;
+  giveFraction <- CompParse.giveFraction parsed;
+  scoreBack <- CompParse.scoreBack parsed;
+
+  CompParse.free parsed;
+
+  return (Comp.CompInput
+    { CivilId = civilId
+    , EarthMath = earthMath
+    , Discipline = discipline
+    , Location = location
+    , From = fromDate
+    , To = toDate
+    , CompName = compName
+    , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
+    , EarthModel = Comp.EarthAsSphere {Radius = earthRadius}
+    , GiveConfig = Comp.GiveConfig
+        { GiveDistance = giveDistance
+        , GiveFraction = giveFraction
+        }
+    , ScoreBack = scoreBack
+    })
 
 fun renderComp (comp : Comp.compInput) : string =
   case comp of

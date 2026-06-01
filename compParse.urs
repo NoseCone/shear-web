@@ -3,15 +3,15 @@ type parsedComp
 val parse : string -> transaction parsedComp
 val free : parsedComp -> transaction unit
 
-val civilId : parsedComp -> string
-val earthMath : parsedComp -> string
-val discipline : parsedComp -> string
-val location : parsedComp -> string
-val fromDate : parsedComp -> string
-val toDate : parsedComp -> string
-val compName : parsedComp -> string
-val utcOffsetMinutes : parsedComp -> int
-val earthRadius : parsedComp -> string
-val giveDistance : parsedComp -> string
-val giveFraction : parsedComp -> float
-val scoreBack : parsedComp -> string
+val civilId : parsedComp -> transaction string
+val earthMath : parsedComp -> transaction string
+val discipline : parsedComp -> transaction string
+val location : parsedComp -> transaction string
+val fromDate : parsedComp -> transaction string
+val toDate : parsedComp -> transaction string
+val compName : parsedComp -> transaction string
+val utcOffsetMinutes : parsedComp -> transaction int
+val earthRadius : parsedComp -> transaction string
+val giveDistance : parsedComp -> transaction string
+val giveFraction : parsedComp -> transaction float
+val scoreBack : parsedComp -> transaction string
