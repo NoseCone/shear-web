@@ -67,6 +67,10 @@ fun renderComp (comp : Comp.compInput) : string =
         ^ "ScoreBack: " ^ c.ScoreBack
       end
 
+fun fetchAndParseCompInput (compName : string) : transaction Comp.compInput =
+  json <- fetchCompJson compName;
+  parseCompInputJson json
+
 fun compWidget () : transaction xbody =
     output <- source <xml><p>Not fetched yet.</p></xml>;
 
@@ -74,8 +78,7 @@ fun compWidget () : transaction xbody =
       <button value="Fetch comps JSON"
               onclick={fn _ =>
                           set output <xml><p>Fetching and parsing...</p></xml>;
-                          json <- rpc (fetchCompJson "2020-meduno");
-                          comp <- rpc (parseCompInputJson json);
+                          comp <- rpc (fetchAndParseCompInput "2020-meduno");
                           set output <xml><h3>Parsed compInput</h3><pre>{[renderComp comp]}</pre></xml>}/>
 
       <dyn signal={signal output}/>
