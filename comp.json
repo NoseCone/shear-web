@@ -1,0 +1,22 @@
+{
+  "civilId": "0",
+  "earthMath": "Haversines",
+  "discipline": "hg",
+  "location": "Meduno, Italy",
+  "to": "2020-09-13",
+  "compName": "Spring Meeting 2020 (Class 1)",
+  "from": "2020-09-10",
+  "utcOffset": {
+    "timeZoneMinutes": 120
+  },
+  "earth": {
+    "sphere": {
+      "radius": "6371000.0 m"
+    }
+  },
+  "give": {
+    "giveDistance": "5.0 m",
+    "giveFraction": 0.001
+  },
+  "scoreBack": "900.000 s"
+}

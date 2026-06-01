@@ -7,4 +7,5 @@ include compFetch.h
 ffi compFetch
 effectful CompFetch.fetch
 
+comp
 site

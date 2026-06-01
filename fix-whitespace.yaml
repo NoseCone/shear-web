@@ -6,8 +6,10 @@ excluded-files:
   - "*.exe"
 
 included-files:
+  - "*.js"
+  - "*.json"
+  - "*.md"
   - "*.ur"
   - "*.urp"
   - "*.urs"
-  - "*.js"
-  - "*.md"
+  - "*.yaml"
