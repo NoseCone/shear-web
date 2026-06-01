@@ -1,6 +1,10 @@
 datatype utcOffset =
   UtcOffset of {TimeZoneMinutes : int}
 
+datatype discipline =
+  HangGliding
+| Paragliding
+
 datatype earthSphere =
   EarthSphere of string
 
@@ -14,7 +18,7 @@ datatype compInput =
   CompInput of
     { CivilId : string
     , EarthMath : string
-    , Discipline : string
+    , Discipline : discipline
     , Location : string
     , From : string
     , To : string

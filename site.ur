@@ -13,7 +13,7 @@ fun parseCompInputJson (json : string) : transaction Comp.compInput =
 
   civilId <- CompParse.civilId parsed;
   earthMath <- CompParse.earthMath parsed;
-  discipline <- CompParse.discipline parsed;
+  disciplineCode <- CompParse.discipline parsed;
   location <- CompParse.location parsed;
   fromDate <- CompParse.fromDate parsed;
   toDate <- CompParse.toDate parsed;
@@ -26,7 +26,11 @@ fun parseCompInputJson (json : string) : transaction Comp.compInput =
 
   CompParse.free parsed;
 
-  return (Comp.CompInput
+  let
+    val discipline =
+      if disciplineCode = "hg" then Comp.HangGliding else Comp.Paragliding
+  in
+    return (Comp.CompInput
     { CivilId = civilId
     , EarthMath = earthMath
     , Discipline = discipline
@@ -42,6 +46,7 @@ fun parseCompInputJson (json : string) : transaction Comp.compInput =
         }
     , ScoreBack = scoreBack
     })
+  end
 
 fun renderComp (comp : Comp.compInput) : string =
   case comp of
@@ -65,7 +70,11 @@ fun renderComp (comp : Comp.compInput) : string =
       in
         "CivilId: " ^ c.CivilId ^ "\n"
         ^ "EarthMath: " ^ c.EarthMath ^ "\n"
-        ^ "Discipline: " ^ c.Discipline ^ "\n"
+        ^ "Discipline: "
+        ^ (case c.Discipline of
+             Comp.HangGliding => "hg"
+           | Comp.Paragliding => "pg")
+        ^ "\n"
         ^ "Location: " ^ c.Location ^ "\n"
         ^ "From: " ^ c.From ^ "\n"
         ^ "To: " ^ c.To ^ "\n"
