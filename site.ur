@@ -8,7 +8,7 @@ fun fetchCompJson (compName : string) : transaction string =
       "http://" ^ compName ^ ".flaretiming.com/json/comp-input/comps.json"
   end
 
-fun parseCompInputJson (json : string) : transaction Comp.compInput =
+fun parseCompInputJson (json : string) : transaction (option Comp.compInput) =
   parsed <- CompParse.parse json;
 
   civilId <- CompParse.civilId parsed;
@@ -27,25 +27,30 @@ fun parseCompInputJson (json : string) : transaction Comp.compInput =
   CompParse.free parsed;
 
   let
-    val discipline =
-      if disciplineCode = "hg" then Comp.HangGliding else Comp.Paragliding
+    val disciplineOpt =
+      if disciplineCode = "hg" then Some Comp.HangGliding
+      else if disciplineCode = "pg" then Some Comp.Paragliding
+      else None
   in
-    return (Comp.CompInput
-    { CivilId = civilId
-    , EarthMath = earthMath
-    , Discipline = discipline
-    , Location = location
-    , From = fromDate
-    , To = toDate
-    , CompName = compName
-    , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
-    , EarthModel = Comp.EarthAsSphere {Radius = earthRadius}
-    , GiveConfig = Comp.GiveConfig
-        { GiveDistance = giveDistance
-        , GiveFraction = giveFraction
-        }
-    , ScoreBack = scoreBack
-    })
+    case disciplineOpt of
+      None => return None
+    | Some discipline =>
+        return (Some (Comp.CompInput
+          { CivilId = civilId
+          , EarthMath = earthMath
+          , Discipline = discipline
+          , Location = location
+          , From = fromDate
+          , To = toDate
+          , CompName = compName
+          , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
+          , EarthModel = Comp.EarthAsSphere {Radius = earthRadius}
+          , GiveConfig = Comp.GiveConfig
+              { GiveDistance = giveDistance
+              , GiveFraction = giveFraction
+              }
+          , ScoreBack = scoreBack
+          }))
   end
 
 fun renderComp (comp : Comp.compInput) : string =
@@ -86,7 +91,7 @@ fun renderComp (comp : Comp.compInput) : string =
         ^ "ScoreBack: " ^ c.ScoreBack
       end
 
-fun fetchAndParseCompInput (compName : string) : transaction Comp.compInput =
+fun fetchAndParseCompInput (compName : string) : transaction (option Comp.compInput) =
   json <- fetchCompJson compName;
   parseCompInputJson json
 
@@ -97,8 +102,10 @@ fun compWidget () : transaction xbody =
       <button value="Fetch comps JSON"
               onclick={fn _ =>
                           set output <xml><p>Fetching and parsing...</p></xml>;
-                          comp <- rpc (fetchAndParseCompInput "2020-meduno");
-                          set output <xml><h3>Parsed compInput</h3><pre>{[renderComp comp]}</pre></xml>}/>
+                          compOpt <- rpc (fetchAndParseCompInput "2020-meduno");
+                          set output (case compOpt of
+                                        None => <xml><h3>Parse failed</h3><p>Unsupported discipline value in JSON.</p></xml>
+                                      | Some comp => <xml><h3>Parsed compInput</h3><pre>{[renderComp comp]}</pre></xml>)}/>
 
       <dyn signal={signal output}/>
     </xml>
