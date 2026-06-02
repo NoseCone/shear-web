@@ -7,7 +7,7 @@ fun parseScoreBackTime (raw : string) : parseResult Comp.scoreBackTime =
     if n < 3 then
       ParseError "Invalid scoreBack; expected '<number> s'"
     else if strsub raw (n - 2) <> #" " || strsub raw (n - 1) <> #"s" then
-      ParseError ("Invalid scoreBack suffix: " ^ raw)
+      ParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
     else
       case (read (substring raw 0 (n - 2)) : option float) of
         None => ParseError ("Invalid scoreBack number: " ^ raw)
