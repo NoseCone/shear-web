@@ -28,4 +28,5 @@ benignEffectful CompParse.scoreBack
 comp
 compJson
 fetch
+compView
 site
