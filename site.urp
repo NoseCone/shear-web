@@ -26,4 +26,5 @@ benignEffectful CompParse.giveFraction
 benignEffectful CompParse.scoreBack
 
 comp
+compJson
 site
