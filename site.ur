@@ -1,13 +1,5 @@
 style quote
 
-fun fetchCompJson (compName : string) : transaction string =
-  let
-    CompFetch.fetch (mkCompUrl compName)
-  where
-    fun mkCompUrl (compName : string) =
-      "http://" ^ compName ^ ".flaretiming.com/json/comp-input/comps.json"
-  end
-
 
 
 fun renderComp (comp : Comp.compInput) : string =
@@ -52,9 +44,7 @@ fun renderComp (comp : Comp.compInput) : string =
         ^ "ScoreBack: " ^ scoreBack
       end
 
-fun fetchAndParseCompInput (compName : string) : transaction (CompJson.parseResult Comp.compInput) =
-  json <- fetchCompJson compName;
-  CompJson.parseCompInputJson json
+
 
 fun compWidget () : transaction xbody =
     output <- source <xml><p>Not fetched yet.</p></xml>;
@@ -63,7 +53,7 @@ fun compWidget () : transaction xbody =
       <button value="Fetch comps JSON"
               onclick={fn _ =>
                           set output <xml><p>Fetching and parsing...</p></xml>;
-                          result <- rpc (fetchAndParseCompInput "2020-meduno");
+                          result <- rpc (Fetch.fetchAndParseCompInput "2020-meduno");
                           set output (case result of
                                         CompJson.ParseError err =>
                                           <xml><h3>Parse failed</h3><p>{[err]}</p></xml>
