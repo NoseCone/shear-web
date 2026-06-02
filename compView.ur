@@ -1,4 +1,21 @@
-fun renderComp (comp : Comp.compInput) : string =
+fun compWidget () : transaction xbody =
+    output <- source <xml><p>Not fetched yet.</p></xml>;
+
+    return <xml>
+      <button value="Fetch comps JSON"
+              onclick={fn _ =>
+                          set output <xml><p>Fetching and parsing...</p></xml>;
+                          result <- rpc (Fetch.fetchAndParseCompInput "2020-meduno");
+                          set output (case result of
+                                        CompJson.ParseError err =>
+                                          <xml><h3>Parse failed</h3><p>{[err]}</p></xml>
+                                      | CompJson.ParseOk comp =>
+                                          <xml><h3>Parsed compInput</h3><pre>{[renderComp comp]}</pre></xml>)}/>
+
+      <dyn signal={signal output}/>
+    </xml>
+
+and renderComp (comp : Comp.compInput) : string =
   case comp of
     Comp.CompInput c =>
       let
