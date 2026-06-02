@@ -52,7 +52,7 @@ fun renderComp (comp : Comp.compInput) : string =
         ^ "ScoreBack: " ^ scoreBack
       end
 
-fun fetchAndParseCompInput (compName : string) : transaction (CompJson.parseResult (option Comp.compInput)) =
+fun fetchAndParseCompInput (compName : string) : transaction (CompJson.parseResult Comp.compInput) =
   json <- fetchCompJson compName;
   CompJson.parseCompInputJson json
 
@@ -67,9 +67,7 @@ fun compWidget () : transaction xbody =
                           set output (case result of
                                         CompJson.ParseError err =>
                                           <xml><h3>Parse failed</h3><p>{[err]}</p></xml>
-                                      | CompJson.ParseOk None =>
-                                          <xml><h3>Parse failed</h3></xml>
-                                      | CompJson.ParseOk (Some comp) =>
+                                      | CompJson.ParseOk comp =>
                                           <xml><h3>Parsed compInput</h3><pre>{[renderComp comp]}</pre></xml>)}/>
 
       <dyn signal={signal output}/>

@@ -14,7 +14,7 @@ fun parseScoreBackTime (raw : string) : parseResult Comp.scoreBackTime =
       | Some seconds => ParseOk (Comp.ScoreBackTime seconds)
   end
 
-fun parseCompInputJson (json : string) : transaction (parseResult (option Comp.compInput)) =
+fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput) =
   parsed <- CompParse.parse json;
 
   civilId <- CompParse.civilId parsed;
@@ -46,10 +46,10 @@ fun parseCompInputJson (json : string) : transaction (parseResult (option Comp.c
         case disciplineOpt of
           None =>
             CompParse.free parsed;
-            return (ParseOk None)
+            return (ParseError ("Unsupported discipline value in JSON: " ^ disciplineCode))
         | Some discipline =>
             CompParse.free parsed;
-            return (ParseOk (Some (Comp.CompInput
+            return (ParseOk (Comp.CompInput
               { CivilId = civilId
               , EarthMath = earthMath
               , Discipline = discipline
@@ -64,5 +64,5 @@ fun parseCompInputJson (json : string) : transaction (parseResult (option Comp.c
                   , GiveFraction = giveFraction
                   }
               , ScoreBack = scoreBack
-              })))
+              }))
   end
