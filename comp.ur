@@ -14,6 +14,9 @@ datatype earthModel =
 datatype giveConfig =
   GiveConfig of {GiveDistance : string, GiveFraction: float}
 
+datatype scoreBackTime =
+  ScoreBackTime of float
+
 datatype compInput =
   CompInput of
     { CivilId : string
@@ -26,5 +29,5 @@ datatype compInput =
     , UtcOffset : utcOffset
     , EarthModel : earthModel
     , GiveConfig : giveConfig
-    , ScoreBack : string
+    , ScoreBack : scoreBackTime
     }

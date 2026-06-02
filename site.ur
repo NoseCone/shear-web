@@ -29,6 +29,10 @@ fun renderComp (comp : Comp.compInput) : string =
         val giveFraction =
           case c.GiveConfig of
             Comp.GiveConfig g => show g.GiveFraction
+
+        val scoreBack =
+          case c.ScoreBack of
+            Comp.ScoreBackTime s => show s ^ " s"
       in
         "CivilId: " ^ c.CivilId ^ "\n"
         ^ "EarthMath: " ^ c.EarthMath ^ "\n"
@@ -45,7 +49,7 @@ fun renderComp (comp : Comp.compInput) : string =
         ^ "Earth.sphere.radius: " ^ radius ^ "\n"
         ^ "Give.giveDistance: " ^ giveDistance ^ "\n"
         ^ "Give.giveFraction: " ^ giveFraction ^ "\n"
-        ^ "ScoreBack: " ^ c.ScoreBack
+        ^ "ScoreBack: " ^ scoreBack
       end
 
 fun fetchAndParseCompInput (compName : string) : transaction (option Comp.compInput) =

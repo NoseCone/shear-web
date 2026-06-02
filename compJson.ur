@@ -12,7 +12,7 @@ fun parseCompInputJson (json : string) : transaction (option Comp.compInput) =
   earthRadius <- CompParse.earthRadius parsed;
   giveDistance <- CompParse.giveDistance parsed;
   giveFraction <- CompParse.giveFraction parsed;
-  scoreBack <- CompParse.scoreBack parsed;
+  scoreBackSeconds <- CompParse.scoreBack parsed;
 
   CompParse.free parsed;
 
@@ -39,6 +39,6 @@ fun parseCompInputJson (json : string) : transaction (option Comp.compInput) =
               { GiveDistance = giveDistance
               , GiveFraction = giveFraction
               }
-          , ScoreBack = scoreBack
+          , ScoreBack = Comp.ScoreBackTime scoreBackSeconds
           }))
   end
