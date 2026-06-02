@@ -1,1 +1,3 @@
-val parseCompInputJson : string -> transaction (option Comp.compInput)
+datatype parseResult t = ParseError of string | ParseOk of t
+
+val parseCompInputJson : string -> transaction (parseResult (option Comp.compInput))

@@ -1,4 +1,20 @@
-fun parseCompInputJson (json : string) : transaction (option Comp.compInput) =
+datatype parseResult t = ParseError of string | ParseOk of t
+
+fun parseScoreBackTime (raw : string) : parseResult Comp.scoreBackTime =
+  let
+    val n = strlen raw
+  in
+    if n < 3 then
+      ParseError "Invalid scoreBack; expected '<number> s'"
+    else if strsub raw (n - 2) <> #" " || strsub raw (n - 1) <> #"s" then
+      ParseError ("Invalid scoreBack suffix: " ^ raw)
+    else
+      case (read (substring raw 0 (n - 2)) : option float) of
+        None => ParseError ("Invalid scoreBack number: " ^ raw)
+      | Some seconds => ParseOk (Comp.ScoreBackTime seconds)
+  end
+
+fun parseCompInputJson (json : string) : transaction (parseResult (option Comp.compInput)) =
   parsed <- CompParse.parse json;
 
   civilId <- CompParse.civilId parsed;
@@ -12,33 +28,41 @@ fun parseCompInputJson (json : string) : transaction (option Comp.compInput) =
   earthRadius <- CompParse.earthRadius parsed;
   giveDistance <- CompParse.giveDistance parsed;
   giveFraction <- CompParse.giveFraction parsed;
-  scoreBackSeconds <- CompParse.scoreBack parsed;
-
-  CompParse.free parsed;
+  scoreBackRaw <- CompParse.scoreBack parsed;
 
   let
+    val scoreBackResult = parseScoreBackTime scoreBackRaw
+
     val disciplineOpt =
       if disciplineCode = "hg" then Some Comp.HangGliding
       else if disciplineCode = "pg" then Some Comp.Paragliding
       else None
   in
-    case disciplineOpt of
-      None => return None
-    | Some discipline =>
-        return (Some (Comp.CompInput
-          { CivilId = civilId
-          , EarthMath = earthMath
-          , Discipline = discipline
-          , Location = location
-          , From = fromDate
-          , To = toDate
-          , CompName = compName
-          , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
-          , EarthModel = Comp.EarthAsSphere {Radius = earthRadius}
-          , GiveConfig = Comp.GiveConfig
-              { GiveDistance = giveDistance
-              , GiveFraction = giveFraction
-              }
-          , ScoreBack = Comp.ScoreBackTime scoreBackSeconds
-          }))
+    case scoreBackResult of
+      ParseError err =>
+        CompParse.free parsed;
+        return (ParseError err)
+    | ParseOk scoreBack =>
+        case disciplineOpt of
+          None =>
+            CompParse.free parsed;
+            return (ParseOk None)
+        | Some discipline =>
+            CompParse.free parsed;
+            return (ParseOk (Some (Comp.CompInput
+              { CivilId = civilId
+              , EarthMath = earthMath
+              , Discipline = discipline
+              , Location = location
+              , From = fromDate
+              , To = toDate
+              , CompName = compName
+              , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
+              , EarthModel = Comp.EarthAsSphere {Radius = earthRadius}
+              , GiveConfig = Comp.GiveConfig
+                  { GiveDistance = giveDistance
+                  , GiveFraction = giveFraction
+                  }
+              , ScoreBack = scoreBack
+              })))
   end

@@ -52,7 +52,7 @@ fun renderComp (comp : Comp.compInput) : string =
         ^ "ScoreBack: " ^ scoreBack
       end
 
-fun fetchAndParseCompInput (compName : string) : transaction (option Comp.compInput) =
+fun fetchAndParseCompInput (compName : string) : transaction (CompJson.parseResult (option Comp.compInput)) =
   json <- fetchCompJson compName;
   CompJson.parseCompInputJson json
 
@@ -63,10 +63,14 @@ fun compWidget () : transaction xbody =
       <button value="Fetch comps JSON"
               onclick={fn _ =>
                           set output <xml><p>Fetching and parsing...</p></xml>;
-                          compOpt <- rpc (fetchAndParseCompInput "2020-meduno");
-                          set output (case compOpt of
-                                        None => <xml><h3>Parse failed</h3><p>Unsupported discipline value in JSON.</p></xml>
-                                      | Some comp => <xml><h3>Parsed compInput</h3><pre>{[renderComp comp]}</pre></xml>)}/>
+                          result <- rpc (fetchAndParseCompInput "2020-meduno");
+                          set output (case result of
+                                        CompJson.ParseError err =>
+                                          <xml><h3>Parse failed</h3><p>{[err]}</p></xml>
+                                      | CompJson.ParseOk None =>
+                                          <xml><h3>Parse failed</h3></xml>
+                                      | CompJson.ParseOk (Some comp) =>
+                                          <xml><h3>Parsed compInput</h3><pre>{[renderComp comp]}</pre></xml>)}/>
 
       <dyn signal={signal output}/>
     </xml>

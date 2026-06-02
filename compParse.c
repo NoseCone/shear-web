@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
 
 #include <urweb.h>
 #include "parson.h"
@@ -18,7 +17,7 @@ typedef struct uw_CompParse_parsedComp_struct {
   char *earthRadius;
   char *giveDistance;
   double giveFraction;
-  double scoreBack;
+  char *scoreBack;
 } uw_CompParse_parsedComp_struct;
 
 static char *copy_required_string(uw_context ctx, JSON_Object *obj, const char *field) {
@@ -50,26 +49,7 @@ static double required_number(uw_context ctx, JSON_Object *obj, const char *fiel
   return json_object_get_number(obj, field);
 }
 
-static double parse_required_seconds(uw_context ctx, JSON_Object *obj, const char *field) {
-  const char *s = json_object_get_string(obj, field);
-  if (!s) {
-    uw_error(ctx, FATAL, "CompParse: missing or non-string field '%s'", field);
-  }
 
-  errno = 0;
-  char *end = NULL;
-  double value = strtod(s, &end);
-
-  if (errno != 0 || end == s) {
-    uw_error(ctx, FATAL, "CompParse: invalid seconds value in field '%s': %s", field, s);
-  }
-
-  if (end[0] != ' ' || end[1] != 's' || end[2] != '\0') {
-    uw_error(ctx, FATAL, "CompParse: expected '<number> s' in field '%s': %s", field, s);
-  }
-
-  return value;
-}
 
 uw_CompParse_parsedComp uw_CompParse_parse(uw_context ctx, uw_Basis_string json) {
   JSON_Value *root = json_parse_string(json);
@@ -108,7 +88,7 @@ uw_CompParse_parsedComp uw_CompParse_parse(uw_context ctx, uw_Basis_string json)
   parsed->giveDistance = copy_required_string(ctx, give, "giveDistance");
   parsed->giveFraction = required_number(ctx, give, "giveFraction");
 
-  parsed->scoreBack = parse_required_seconds(ctx, obj, "scoreBack");
+  parsed->scoreBack = copy_required_string(ctx, obj, "scoreBack");
 
   json_value_free(root);
   return parsed;
@@ -127,6 +107,7 @@ uw_Basis_unit uw_CompParse_free(uw_context ctx, uw_CompParse_parsedComp parsed) 
   free(parsed->compName);
   free(parsed->earthRadius);
   free(parsed->giveDistance);
+  free(parsed->scoreBack);
 
   free(parsed);
   return 0;
@@ -143,4 +124,4 @@ uw_Basis_int uw_CompParse_utcOffsetMinutes(uw_context ctx, uw_CompParse_parsedCo
 uw_Basis_string uw_CompParse_earthRadius(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->earthRadius); }
 uw_Basis_string uw_CompParse_giveDistance(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->giveDistance); }
 uw_Basis_float uw_CompParse_giveFraction(uw_context ctx, uw_CompParse_parsedComp parsed) { (void)ctx; return parsed->giveFraction; }
-uw_Basis_float uw_CompParse_scoreBack(uw_context ctx, uw_CompParse_parsedComp parsed) { (void)ctx; return parsed->scoreBack; }
+uw_Basis_string uw_CompParse_scoreBack(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->scoreBack); }
