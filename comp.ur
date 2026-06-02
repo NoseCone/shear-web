@@ -17,6 +17,9 @@ datatype giveConfig =
 datatype scoreBackTime =
   ScoreBackTime of float
 
+(* For now, we don't care too much for types other than strings, since we're
+just displaying the comp input. As as example of parsing with failure, look at
+ScoreBack. *)
 datatype compInput =
   CompInput of
     { CivilId : string
