@@ -1,2 +1,2 @@
-val compWidget : string -> transaction xbody
-val renderComp : Comp.compInput -> string
+val widget : string -> transaction xbody
+val render : Comp.compInput -> string
