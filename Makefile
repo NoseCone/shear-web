@@ -1,4 +1,4 @@
-all: shear-web
+all: shearWeb
 
 URWEB_CINCLUDE := $(shell urweb -print-cinclude)
 
@@ -12,14 +12,14 @@ compFetch.o: compFetch.c compFetch.h
 compParse.o: compParse.c compParse.h parson.h
 	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c compParse.c -o compParse.o
 
-shear-web: parson.o compFetch.o compParse.o
-	urweb shear-web -protocol http
+shearWeb: parson.o compFetch.o compParse.o
+	urweb shearWeb -protocol http
 
-run: shear-web
-	./shear-web.exe
+run: shearWeb
+	./shearWeb.exe
 
 clean:
-	rm -f shear-web.exe
+	rm -f shearWeb.exe
 	rm -f parson.o
 	rm -f compFetch.o
 	rm -f compParse.o
