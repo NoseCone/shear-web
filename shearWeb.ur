@@ -15,12 +15,15 @@ style is_7
 style footer_cls
 style is_size_7
 
+fun siteCss () : transaction page =
+    returnBlob (textBlob SiteCssAsset.content) (blessMime "text/css")
+
 fun main () =
     return <xml>
         <head>
             <title>Ur/Web Shear Web</title>
-            <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css" />
-            <link rel="stylesheet" type="text/css" href="http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b13.css" />
+            <link rel="stylesheet" type="text/css" href="http://localhost:8080/siteCss" />
+
 
             <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>

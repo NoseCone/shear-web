@@ -1,0 +1,110 @@
+/*
+  Bridge stylesheet for Ur/Web class mangling.
+  Maps ShearWeb_* class names to Bulma-like behavior for the classes currently in use.
+*/
+
+.ShearWeb_container {
+  margin: 0 auto;
+  position: relative;
+  max-width: 1344px;
+  padding: 0 0.75rem;
+}
+
+@media screen and (min-width: 769px) {
+  .ShearWeb_container {
+    max-width: 960px;
+    width: 960px;
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .ShearWeb_container {
+    max-width: 1152px;
+    width: 1152px;
+  }
+}
+
+@media screen and (min-width: 1216px) {
+  .ShearWeb_container {
+    max-width: 1344px;
+    width: 1344px;
+  }
+}
+
+.ShearWeb_spacer {
+  height: 1.5rem;
+}
+
+.ShearWeb_content {
+  display: block;
+}
+
+.ShearWeb_tile {
+  display: flex;
+  align-items: stretch;
+}
+
+.ShearWeb_is_ancestor {
+  margin-left: -0.75rem;
+  margin-right: -0.75rem;
+  margin-top: -0.75rem;
+}
+
+.ShearWeb_is_parent {
+  padding: 0.75rem;
+  flex: 1 1 0;
+}
+
+.ShearWeb_is_vertical {
+  flex-direction: column;
+}
+
+.ShearWeb_is_5 {
+  flex: none;
+  width: 41.66667%;
+}
+
+.ShearWeb_is_7 {
+  flex: none;
+  width: 58.33333%;
+}
+
+.ShearWeb_is_child {
+  margin: 0 !important;
+}
+
+.ShearWeb_notification {
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 1.25rem 1.5rem;
+}
+
+.ShearWeb_is_light {
+  background: #fafafa;
+  color: #363636;
+}
+
+.ShearWeb_box {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow:
+    0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
+    0 0 0 1px rgba(10, 10, 10, 0.02);
+  padding: 1.25rem;
+}
+
+.ShearWeb_subtitle {
+  color: #4a4a4a;
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1.25;
+}
+
+.ShearWeb_footer_cls {
+  background: #fafafa;
+  padding: 3rem 1.5rem 6rem;
+}
+
+.ShearWeb_is_size_7 {
+  font-size: 0.75rem !important;
+}
