@@ -3,7 +3,7 @@ fun main () =
     <head>
       <title>Ur/Web Shear Web</title>
       <link rel="stylesheet" type="text/css" href="http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b13.css" />
-      (* 
+      (*
       TODO: Find out why I can't use meta tags with a charset attribute:
         Error in final record unification
         Can't unify record constructors
@@ -17,5 +17,15 @@ fun main () =
       *)
       <meta name="viewport" content="width=device-width, initial-scale=1" />
     </head>
-    <body>Hello</body>
+    <body>
+        <div>
+            (*
+            WARNING: Can't declare a main tag using val em : bodyTag boxAttrs,
+            if I do, I get an error: "syntax error: inserting EQ".
+            *)
+            <div>
+                Hello
+            </div>
+        </div>
+    </body>
   </xml>
