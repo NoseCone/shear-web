@@ -1,3 +1,5 @@
+style container
+
 fun main () =
   return <xml>
     <head>
@@ -24,6 +26,7 @@ fun main () =
             if I do, I get an error: "syntax error: inserting EQ".
             *)
             <div>
+                <div class={container}></div>
                 Hello
             </div>
         </div>

@@ -4,6 +4,7 @@ allow url http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b
 allow meta charset
 allow meta viewport
 rewrite style Css/quote quote
+rewrite style Css/container container
 rewrite url ShearWeb/*
 link compFetch.o
 link compParse.o
