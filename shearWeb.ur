@@ -1,3 +1,20 @@
+style container
+style spacer
+style content
+style tile
+style is_ancestor
+style is_parent
+style notification
+style is_light
+style subtitle
+style is_vertical
+style is_5
+style is_child
+style box
+style is_7
+style footer_cls
+style is_size_7
+
 fun main () =
     return <xml>
         <head>
@@ -10,14 +27,14 @@ fun main () =
         <body>
             <div>
                 <div>
-                    <div>
-                        <div></div>
-                        <div>
-                            <div>
-                                <div>
-                                    <article>
+                    <div class={container}>
+                        <div class={spacer}></div>
+                        <div class={content}>
+                            <div class={classes tile is_ancestor}>
+                                <div class={classes tile is_parent}>
+                                    <article class={classes tile (classes is_child (classes notification is_light))}>
                                         <p>Variable Geometry</p>
-                                        <p>Comps scored with <a href="https://flaretiming.com">Flare Timing</a> and
+                                        <p class={subtitle}>Comps scored with <a href="https://flaretiming.com">Flare Timing</a> and
                                             presented with
                                             <a href="https://svelte.dev/">Svelte</a>
                                         </p>
@@ -25,11 +42,11 @@ fun main () =
                                 </div>
                             </div>
                             <p>Want <a href="https://flaretiming.com/posts/2018-12-19-add-a-comp.html">your comp here</a>?</p>
-                            <div>
-                                <div>
-                                    <div>
-                                        <div>
-                                            <div>
+                            <div class={classes tile is_ancestor}>
+                                <div class={classes is_vertical is_5}>
+                                    <div class={tile}>
+                                        <div class={classes tile is_vertical}>
+                                            <div class={classes is_child box}>
                                                 <h3>Paragliding</h3>
                                                 <p></p>
                                                 <ul>
@@ -44,7 +61,7 @@ fun main () =
                                                     </ul>
                                                 </ul>
                                             </div>
-                                            <div>
+                                            <div class={classes is_child box}>
                                                 <h3>Comp Archetypes</h3>
                                                 <p></p>
                                                 <ul>
@@ -58,10 +75,10 @@ fun main () =
                                         </div>
                                     </div>
                                 </div>
-                                <div>
-                                    <div>
-                                        <div>
-                                            <div>
+                                <div class={classes is_vertical is_7}>
+                                    <div class={tile}>
+                                        <div class={classes tile is_vertical}>
+                                            <div class={classes is_child box}>
                                                 <h3>Hang Gliding</h3>
                                                 <h5>Oceania</h5>
                                                 <ul>
@@ -100,10 +117,10 @@ fun main () =
                         </div>
                     </div>
                 </div>
-                <footer>
-                    <div>
-                        <div>
-                            <div><strong title="app-view-0.29 2020-12-19T14:27">Flare Timing</strong> by
+                <footer class={footer_cls}>
+                    <div class={container}>
+                        <div class={content}>
+                            <div class={is_size_7}><strong title="app-view-0.29 2020-12-19T14:27">Flare Timing</strong> by
                                 <a href="http://www.blockscope.com" target="_blank">Block Scope</a><br/>(<a
                                     href="http://www.flaretiming.com/about.html" target="_blank">About</a>, <a
                                     href="http://www.flaretiming.com/disclaim.html" target="_blank">Disclaimer</a>,

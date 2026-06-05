@@ -13,6 +13,21 @@ allow meta charset
 allow meta viewport
 rewrite style Css/quote quote
 rewrite style Css/container container
+rewrite style Css/spacer spacer
+rewrite style Css/content content
+rewrite style Css/tile tile
+rewrite style Css/is-ancestor is_ancestor
+rewrite style Css/is-parent is_parent
+rewrite style Css/notification notification
+rewrite style Css/is-light is_light
+rewrite style Css/subtitle subtitle
+rewrite style Css/is-vertical is_vertical
+rewrite style Css/is-5 is_5
+rewrite style Css/is-child is_child
+rewrite style Css/box box
+rewrite style Css/is-7 is_7
+rewrite style Css/footer footer_cls
+rewrite style Css/is-size-7 is_size_7
 rewrite url ShearWeb/*
 link compFetch.o
 link compParse.o
