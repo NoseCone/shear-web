@@ -1,22 +1,39 @@
 all: shearWeb
 
 VENDOR_CSS_DIR := vendor/css
-VENDORED_CSS := $(VENDOR_CSS_DIR)/bulma-1.0.4.min.css $(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css
+VENDORED_CSS := $(VENDOR_CSS_DIR)/bulma-0.9.3.min.css $(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css
 
 vendor-css: $(VENDORED_CSS)
 
 $(VENDOR_CSS_DIR):
 	mkdir -p $(VENDOR_CSS_DIR)
 
-$(VENDOR_CSS_DIR)/bulma-1.0.4.min.css: | $(VENDOR_CSS_DIR)
-	curl -fsSL https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css -o $@
+$(VENDOR_CSS_DIR)/bulma-0.9.3.min.css: | $(VENDOR_CSS_DIR)
+	curl -fsSL https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css -o $@
 
 $(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css: | $(VENDOR_CSS_DIR)
 	curl -fsSL http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b13.css -o $@
 
 site.css: vendor-css
 	cat $(VENDORED_CSS) > $@.tmp
-	perl -0pi -e 's/\.container\b/.ShearWeb_container/g; s/\.spacer\b/.ShearWeb_spacer/g; s/\.content\b/.ShearWeb_content/g; s/\.tile\b/.ShearWeb_tile/g; s/\.is-ancestor\b/.ShearWeb_is_ancestor/g; s/\.is-parent\b/.ShearWeb_is_parent/g; s/\.notification\b/.ShearWeb_notification/g; s/\.is-light\b/.ShearWeb_is_light/g; s/\.subtitle\b/.ShearWeb_subtitle/g; s/\.is-vertical\b/.ShearWeb_is_vertical/g; s/\.is-5\b/.ShearWeb_is_5/g; s/\.is-child\b/.ShearWeb_is_child/g; s/\.box\b/.ShearWeb_box/g; s/\.is-7\b/.ShearWeb_is_7/g; s/\.footer\b/.ShearWeb_footer_cls/g; s/\.is-size-7\b/.ShearWeb_is_size_7/g' $@.tmp
+	perl -0pi \
+	  -e 's/\.container\b/.ShearWeb_container/g' \
+	  -e 's/\.spacer\b/.ShearWeb_spacer/g' \
+	  -e 's/\.content\b/.ShearWeb_content/g' \
+	  -e 's/\.tile\b/.ShearWeb_tile/g' \
+	  -e 's/\.is-ancestor\b/.ShearWeb_is_ancestor/g' \
+	  -e 's/\.is-parent\b/.ShearWeb_is_parent/g' \
+	  -e 's/\.notification\b/.ShearWeb_notification/g' \
+	  -e 's/\.is-light\b/.ShearWeb_is_light/g' \
+	  -e 's/\.subtitle\b/.ShearWeb_subtitle/g' \
+	  -e 's/\.is-vertical\b/.ShearWeb_is_vertical/g' \
+	  -e 's/\.is-5\b/.ShearWeb_is_5/g' \
+	  -e 's/\.is-child\b/.ShearWeb_is_child/g' \
+	  -e 's/\.box\b/.ShearWeb_box/g' \
+	  -e 's/\.is-7\b/.ShearWeb_is_7/g' \
+	  -e 's/\.footer\b/.ShearWeb_footer_cls/g' \
+	  -e 's/\.is-size-7\b/.ShearWeb_is_size_7/g' \
+	  $@.tmp
 	mv $@.tmp $@
 
 siteCssAsset.ur: site.css
