@@ -36,10 +36,10 @@ fun main () =
                             <div class={classes tile is_ancestor}>
                                 <div class={classes tile is_parent}>
                                     <article class={classes tile (classes is_child (classes notification is_light))}>
-                                        <p>Variable Geometry</p>
+                                        <p>Shear Web</p>
                                         <p class={subtitle}>Comps scored with <a href="https://flaretiming.com">Flare Timing</a> and
                                             presented with
-                                            <a href="https://svelte.dev/">Svelte</a>
+                                            <a href="http://www.impredicative.com/ur/">Ur/Web</a>
                                         </p>
                                     </article>
                                 </div>

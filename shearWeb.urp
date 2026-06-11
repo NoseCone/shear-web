@@ -4,7 +4,7 @@ allow url http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b
 allow url http://localhost:8080/siteCss
 allow url https://flaretiming.com
 allow url https://flaretiming.com/posts/2018-12-19-add-a-comp.html
-allow url https://svelte.dev/
+allow url http://www.impredicative.com/ur/
 allow url http://www.blockscope.com
 allow url http://www.flaretiming.com/about.html
 allow url http://www.flaretiming.com/disclaim.html
