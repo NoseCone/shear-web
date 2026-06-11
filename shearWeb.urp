@@ -13,6 +13,7 @@ allow url http://www.openstreetmap.org/copyright
 allow meta charset
 allow meta viewport
 allow mime text/css
+safeGet comp
 rewrite style Css/quote quote
 rewrite style Css/container container
 rewrite style Css/spacer spacer
