@@ -1,11 +1,10 @@
-fun siteCss () : transaction page =
-    returnBlob (textBlob SiteCssAsset.content) (blessMime "text/css")
+val css = Css.siteCss
 
 fun main () =
     return <xml>
         <head>
             <title>Ur/Web Shear Web</title>
-            <link rel="stylesheet" type="text/css" href="http://localhost:8080/siteCss" />
+            <link rel="stylesheet" type="text/css" href="http://localhost:8080/css" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>
         <body>

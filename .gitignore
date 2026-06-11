@@ -3,5 +3,5 @@
 build
 *.o
 vendor/css/
-siteCssAsset.ur
+cssAsset.ur
 site.css

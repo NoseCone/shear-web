@@ -1,7 +1,7 @@
 allow url http://adam.chlipala.net/style.css
 allow url https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css
 allow url http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b13.css
-allow url http://localhost:8080/siteCss
+allow url http://localhost:8080/css
 allow url https://flaretiming.com
 allow url https://flaretiming.com/posts/2018-12-19-add-a-comp.html
 allow url http://www.impredicative.com/ur/
@@ -61,12 +61,13 @@ benignEffectful CompParse.giveDistance
 benignEffectful CompParse.giveFraction
 benignEffectful CompParse.scoreBack
 
+cssAsset
+css
 comp
 compJson
 fetch
 bulma
 compView
 footer
-siteCssAsset
 # site
 shearWeb

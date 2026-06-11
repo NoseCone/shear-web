@@ -1,2 +1,2 @@
-val siteCss : unit -> transaction page
+val css : unit -> transaction page
 val main : unit -> transaction page

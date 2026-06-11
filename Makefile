@@ -19,8 +19,8 @@ site.css: vendor-css
 	python3 scripts/transform_css.py $@.tmp $@.tmp
 	mv $@.tmp $@
 
-siteCssAsset.ur: site.css
-	python3 -c "import json,pathlib; css=pathlib.Path('site.css').read_text(); pathlib.Path('siteCssAsset.ur').write_text('val content = ' + json.dumps(css) + '\\n')"
+cssAsset.ur: site.css
+	python3 -c "import json,pathlib; css=pathlib.Path('site.css').read_text(); pathlib.Path('cssAsset.ur').write_text('val content = ' + json.dumps(css) + '\\n')"
 
 URWEB_CINCLUDE := $(shell urweb -print-cinclude)
 
@@ -34,7 +34,7 @@ compFetch.o: compFetch.c compFetch.h
 compParse.o: compParse.c compParse.h parson.h
 	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c compParse.c -o compParse.o
 
-shearWeb: parson.o compFetch.o compParse.o siteCssAsset.ur site.css
+shearWeb: parson.o compFetch.o compParse.o cssAsset.ur site.css
 	urweb shearWeb -protocol http
 
 run: shearWeb
@@ -46,4 +46,4 @@ clean:
 	rm -f compFetch.o
 	rm -f compParse.o
 	rm -f site.css
-	rm -f siteCssAsset.ur
+	rm -f cssAsset.ur

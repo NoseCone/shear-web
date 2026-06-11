@@ -56,7 +56,7 @@ fun widget (compName : string) : transaction page =
     return <xml>
       <head>
         <title>{[compName]}</title>
-        <link rel="stylesheet" type="text/css" href="http://localhost:8080/siteCss" />
+        <link rel="stylesheet" type="text/css" href="http://localhost:8080/css" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
