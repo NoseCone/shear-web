@@ -57,7 +57,8 @@ fun main () =
                                                         <a link={CompView.widget("2020-italy-open")}>2020</a>
                                                     </li>
                                                     <li>Dalmatian
-                                                        <a link={CompView.widget("2019-dalmatian")}>2019</a> <a link={CompView.widget("2018-dalmatian")}>2018</a>
+                                                        <a link={CompView.widget("2019-dalmatian")}>2019</a>
+                                                        <a link={CompView.widget("2018-dalmatian")}>2018</a>
                                                     </li>
                                                     <ul>
                                                         <p></p>
@@ -86,8 +87,12 @@ fun main () =
                                                 <h5>Oceania</h5>
                                                 <ul>
                                                     <li>Forbes Flatlands
-                                                        <a link={CompView.widget("2018-forbes")}>2018</a> <a link={CompView.widget("2017-forbes")}>2017</a> <a link={CompView.widget("2016-forbes")}>2016</a>
-                                                        <a link={CompView.widget("2015-forbes")}>2015</a> <a link={CompView.widget("2014-forbes")}>2014</a> <a link={CompView.widget("2012-forbes")}>2012</a>
+                                                        <a link={CompView.widget("2018-forbes")}>2018</a>
+                                                        <a link={CompView.widget("2017-forbes")}>2017</a>
+                                                        <a link={CompView.widget("2016-forbes")}>2016</a>
+                                                        <a link={CompView.widget("2015-forbes")}>2015</a>
+                                                        <a link={CompView.widget("2014-forbes")}>2014</a>
+                                                        <a link={CompView.widget("2012-forbes")}>2012</a>
                                                     </li>
                                                     <li>Dalby Big Air <a link={CompView.widget("2017-dalby")}>2017</a></li>
                                                 </ul>
@@ -103,7 +108,8 @@ fun main () =
                                                 <h5>Americas</h5>
                                                 <ul>
                                                     <li>Green Swamp Klassic 2016
-                                                        <a link={CompView.widget("2016-greenswamp")}>Topless</a> <a link={CompView.widget("2016-greenswamp-sport")}>Kingposted</a>
+                                                        <a link={CompView.widget("2016-greenswamp")}>Topless</a>
+                                                        <a link={CompView.widget("2016-greenswamp-sport")}>Kingposted</a>
                                                     </li>
                                                     <li>Big Spring
                                                         <a link={CompView.widget("2016-big-spring")}>2016</a>
