@@ -45,7 +45,7 @@ fun widget (compName : string) : transaction page =
 
     return <xml>
       <head>
-        <title>Comp View</title>
+        <title>{[compName]}</title>
       </head>
       <body>
         <button value="Fetch comps JSON"
