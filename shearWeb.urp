@@ -30,6 +30,7 @@ rewrite style Css/box box
 rewrite style Css/is-7 is_7
 rewrite style Css/footer footer_cls
 rewrite style Css/is-size-7 is_size_7
+rewrite url CompView/widget comp
 rewrite url ShearWeb/*
 link compFetch.o
 link compParse.o

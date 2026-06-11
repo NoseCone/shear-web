@@ -40,19 +40,24 @@ fun render (comp : Comp.compInput) : string =
         ^ "ScoreBack: " ^ scoreBack
       end
 
-fun widget (compName : string) : transaction xbody =
+fun widget (compName : string) : transaction page =
     output <- source <xml><p>Not fetched yet.</p></xml>;
 
     return <xml>
-      <button value="Fetch comps JSON"
-              onclick={fn _ =>
-                          set output <xml><p>Fetching and parsing...</p></xml>;
-                          result <- rpc (Fetch.fetchAndParseCompInput compName);
-                          set output (case result of
-                                        CompJson.ParseError err =>
-                                          <xml><h3>Parse failed</h3><p>{[err]}</p></xml>
-                                      | CompJson.ParseOk comp =>
-                                          <xml><h3>Parsed compInput</h3><pre>{[render comp]}</pre></xml>)}/>
+      <head>
+        <title>Comp View</title>
+      </head>
+      <body>
+        <button value="Fetch comps JSON"
+                onclick={fn _ =>
+                            set output <xml><p>Fetching and parsing...</p></xml>;
+                            result <- rpc (Fetch.fetchAndParseCompInput compName);
+                            set output (case result of
+                                          CompJson.ParseError err =>
+                                            <xml><h3>Parse failed</h3><p>{[err]}</p></xml>
+                                        | CompJson.ParseOk comp =>
+                                            <xml><h3>Parsed compInput</h3><pre>{[render comp]}</pre></xml>)}/>
 
-      <dyn signal={signal output}/>
+        <dyn signal={signal output}/>
+      </body>
     </xml>

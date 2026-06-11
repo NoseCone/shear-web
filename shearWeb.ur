@@ -94,7 +94,7 @@ fun main () =
                                                 <h5>Europe</h5>
                                                 <ul>
                                                     <li>Meduno
-                                                        <a href="https://flaretiming.com">2020</a>
+                                                        <a link={CompView.widget("2020-meduno")}>2020</a>
                                                     </li>
                                                     <li>Tolmezzo
                                                         <a href="https://flaretiming.com">2019</a>
