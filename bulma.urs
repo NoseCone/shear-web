@@ -24,3 +24,16 @@ style is_primary
 
 style is_size_7
 style spacer
+
+style field
+style is_grouped
+style is_grouped_multiline
+style control
+style tags
+style has_addons
+style tag
+style is_warning
+style is_black
+style is_info
+style is_success
+style is_danger

@@ -35,6 +35,18 @@ rewrite style Css/columns Bulma/columns
 rewrite style Css/column Bulma/column
 rewrite style Css/is-primary Bulma/is_primary
 rewrite style Css/is-size-7 Bulma/is_size_7
+rewrite style Css/field Bulma/field
+rewrite style Css/is-grouped Bulma/is_grouped
+rewrite style Css/is-grouped-multiline Bulma/is_grouped_multiline
+rewrite style Css/control Bulma/control
+rewrite style Css/tags Bulma/tags
+rewrite style Css/has-addons Bulma/has_addons
+rewrite style Css/tag Bulma/tag
+rewrite style Css/is-warning Bulma/is_warning
+rewrite style Css/is-black Bulma/is_black
+rewrite style Css/is-info Bulma/is_info
+rewrite style Css/is-success Bulma/is_success
+rewrite style Css/is-danger Bulma/is_danger
 rewrite url CompView/widget comp
 rewrite url ShearWeb/*
 link compFetch.o
