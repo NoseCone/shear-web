@@ -1,0 +1,22 @@
+{
+  "civilId": "1",
+  "earthMath": "Haversines",
+  "discipline": "hg",
+  "location": "Dalby Australia",
+  "to": "2017-04-15",
+  "compName": "Dalby Big Air HG 2017 open class",
+  "from": "2017-04-09",
+  "utcOffset": {
+    "timeZoneMinutes": 600
+  },
+  "earth": {
+    "sphere": {
+      "radius": "6371000.0 m"
+    }
+  },
+  "give": {
+    "giveDistance": null,
+    "giveFraction": 0.005
+  },
+  "scoreBack": "900.000 s"
+}
