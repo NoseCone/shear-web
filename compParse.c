@@ -34,6 +34,24 @@ static char *copy_required_string(uw_context ctx, JSON_Object *obj, const char *
   return out;
 }
 
+static char *copy_optional_string(uw_context ctx, JSON_Object *obj, const char *field) {
+  if (!json_object_has_value(obj, field) || json_object_has_value_of_type(obj, field, JSONNull)) {
+    return NULL;
+  }
+
+  const char *s = json_object_get_string(obj, field);
+  if (!s) {
+    uw_error(ctx, FATAL, "CompParse: expected optional string field '%s' to be string or null", field);
+  }
+
+  char *out = strdup(s);
+  if (!out) {
+    uw_error(ctx, FATAL, "CompParse: out of memory while copying '%s'", field);
+  }
+
+  return out;
+}
+
 static JSON_Object *required_object(uw_context ctx, JSON_Object *obj, const char *field) {
   JSON_Object *child = json_object_get_object(obj, field);
   if (!child) {
@@ -85,7 +103,7 @@ uw_CompParse_parsedComp uw_CompParse_parse(uw_context ctx, uw_Basis_string json)
   parsed->earthRadius = copy_required_string(ctx, sphere, "radius");
 
   JSON_Object *give = required_object(ctx, obj, "give");
-  parsed->giveDistance = copy_required_string(ctx, give, "giveDistance");
+  parsed->giveDistance = copy_optional_string(ctx, give, "giveDistance");
   parsed->giveFraction = required_number(ctx, give, "giveFraction");
 
   parsed->scoreBack = copy_required_string(ctx, obj, "scoreBack");
@@ -122,6 +140,9 @@ uw_Basis_string uw_CompParse_toDate(uw_context ctx, uw_CompParse_parsedComp pars
 uw_Basis_string uw_CompParse_compName(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->compName); }
 uw_Basis_int uw_CompParse_utcOffsetMinutes(uw_context ctx, uw_CompParse_parsedComp parsed) { (void)ctx; return parsed->utcOffsetMinutes; }
 uw_Basis_string uw_CompParse_earthRadius(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->earthRadius); }
-uw_Basis_string uw_CompParse_giveDistance(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->giveDistance); }
+uw_Basis_string uw_CompParse_giveDistance(uw_context ctx, uw_CompParse_parsedComp parsed) {
+  if (!parsed->giveDistance) return NULL;
+  return uw_strdup(ctx, parsed->giveDistance);
+}
 uw_Basis_float uw_CompParse_giveFraction(uw_context ctx, uw_CompParse_parsedComp parsed) { (void)ctx; return parsed->giveFraction; }
 uw_Basis_string uw_CompParse_scoreBack(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->scoreBack); }

@@ -12,7 +12,10 @@ fun render (comp : Comp.compInput) : string =
 
         val giveDistance =
           case c.GiveConfig of
-            Comp.GiveConfig g => g.GiveDistance
+            Comp.GiveConfig g =>
+              case g.GiveDistance of
+                None => "None"
+              | Some d => d
 
         val giveFraction =
           case c.GiveConfig of

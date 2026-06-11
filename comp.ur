@@ -12,7 +12,7 @@ datatype earthModel =
   EarthAsSphere of {Radius : string}
 
 datatype giveConfig =
-  GiveConfig of {GiveDistance : string, GiveFraction: float}
+  GiveConfig of {GiveDistance : option string, GiveFraction: float}
 
 datatype scoreBackTime =
   ScoreBackTime of float

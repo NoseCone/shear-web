@@ -12,6 +12,6 @@ val toDate : parsedComp -> transaction string
 val compName : parsedComp -> transaction string
 val utcOffsetMinutes : parsedComp -> transaction int
 val earthRadius : parsedComp -> transaction string
-val giveDistance : parsedComp -> transaction string
+val giveDistance : parsedComp -> transaction (option string)
 val giveFraction : parsedComp -> transaction float
 val scoreBack : parsedComp -> transaction string
