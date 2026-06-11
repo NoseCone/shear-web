@@ -56,12 +56,21 @@ fun widget (compName : string) : transaction page =
     return <xml>
       <head>
         <title>{[compName]}</title>
+        <link rel="stylesheet" type="text/css" href="http://localhost:8080/siteCss" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
       </head>
       <body>
-        {case result of
-           CompJson.ParseError err =>
-             <xml><h3>Parse failed</h3><p>{[err]}</p></xml>
-         | CompJson.ParseOk comp =>
-             <xml><h3>Parsed compInput</h3><pre>{[render comp]}</pre></xml>}
+        <div class={Bulma.container}>
+          <div class={Bulma.content}>
+            <h3 class={Bulma.title}>{[compName]}</h3>
+            <div class={Bulma.box}>
+              {case result of
+                 CompJson.ParseError err =>
+                   <xml><h4>Parse failed</h4><p>{[err]}</p></xml>
+               | CompJson.ParseOk comp =>
+                   <xml><h4>Parsed compInput</h4><pre>{[render comp]}</pre></xml>}
+            </div>
+          </div>
+        </div>
       </body>
     </xml>

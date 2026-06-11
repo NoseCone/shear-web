@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 CLASS_SELECTOR = re.compile(r"(?<![A-Za-z0-9_-])\.([A-Za-z_][A-Za-z0-9_-]*)")
-PREFIXED_CLASS = re.compile(r"\.ShearWeb_([A-Za-z0-9_-]+)")
+PREFIXED_CLASS = re.compile(r"\.Bulma_([A-Za-z0-9_-]+)")
 
 def main() -> int:
     if len(sys.argv) != 3:
@@ -16,11 +16,11 @@ def main() -> int:
 
     text = src.read_text(encoding="utf-8")
 
-    # 1) Add ShearWeb_ prefix to CSS class selectors.
-    text = CLASS_SELECTOR.sub(r".ShearWeb_\1", text)
+    # 1) Add Bulma_ prefix to CSS class selectors.
+    text = CLASS_SELECTOR.sub(r".Bulma_\1", text)
 
     # 2) Replace '-' with '_' within prefixed class names.
-    text = PREFIXED_CLASS.sub(lambda m: ".ShearWeb_" + m.group(1).replace("-", "_"), text)
+    text = PREFIXED_CLASS.sub(lambda m: ".Bulma_" + m.group(1).replace("-", "_"), text)
 
     dst.write_text(text, encoding="utf-8")
     return 0

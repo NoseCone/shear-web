@@ -1,19 +1,3 @@
-style container
-style spacer
-style content
-style tile
-style is_ancestor
-style is_parent
-style notification
-style is_light
-style subtitle
-style is_vertical
-style is_5
-style is_child
-style box
-style is_7
-
-
 fun siteCss () : transaction page =
     returnBlob (textBlob SiteCssAsset.content) (blessMime "text/css")
 
@@ -22,21 +6,19 @@ fun main () =
         <head>
             <title>Ur/Web Shear Web</title>
             <link rel="stylesheet" type="text/css" href="http://localhost:8080/siteCss" />
-
-
             <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>
         <body>
             <div>
                 <div>
-                    <div class={container}>
-                        <div class={spacer}></div>
-                        <div class={content}>
-                            <div class={classes tile is_ancestor}>
-                                <div class={classes tile is_parent}>
-                                    <article class={classes tile (classes is_child (classes notification is_light))}>
+                    <div class={Bulma.container}>
+                        <div class={Bulma.spacer}></div>
+                        <div class={Bulma.content}>
+                            <div class={classes Bulma.tile Bulma.is_ancestor}>
+                                <div class={classes Bulma.tile Bulma.is_parent}>
+                                    <article class={classes Bulma.tile (classes Bulma.is_child (classes Bulma.notification Bulma.is_light))}>
                                         <p>Shear Web</p>
-                                        <p class={subtitle}>Comps scored with <a href="https://flaretiming.com">Flare Timing</a> and
+                                        <p class={Bulma.subtitle}>Comps scored with <a href="https://flaretiming.com">Flare Timing</a> and
                                             presented with
                                             <a href="http://www.impredicative.com/ur/">Ur/Web</a>
                                         </p>
@@ -44,11 +26,11 @@ fun main () =
                                 </div>
                             </div>
                             <p>Want <a href="https://flaretiming.com/posts/2018-12-19-add-a-comp.html">your comp here</a>?</p>
-                            <div class={classes tile is_ancestor}>
-                                <div class={classes is_vertical is_5}>
-                                    <div class={tile}>
-                                        <div class={classes tile is_vertical}>
-                                            <div class={classes is_child box}>
+                            <div class={classes Bulma.tile Bulma.is_ancestor}>
+                                <div class={classes Bulma.is_vertical Bulma.is_5}>
+                                    <div class={Bulma.tile}>
+                                        <div class={classes Bulma.tile Bulma.is_vertical}>
+                                            <div class={classes Bulma.is_child Bulma.box}>
                                                 <h3>Paragliding</h3>
                                                 <p></p>
                                                 <ul>
@@ -64,7 +46,7 @@ fun main () =
                                                     </ul>
                                                 </ul>
                                             </div>
-                                            <div class={classes is_child box}>
+                                            <div class={classes Bulma.is_child Bulma.box}>
                                                 <h3>Comp Archetypes</h3>
                                                 <p></p>
                                                 <ul>
@@ -78,10 +60,10 @@ fun main () =
                                         </div>
                                     </div>
                                 </div>
-                                <div class={classes is_vertical is_7}>
-                                    <div class={tile}>
-                                        <div class={classes tile is_vertical}>
-                                            <div class={classes is_child box}>
+                                <div class={classes Bulma.is_vertical Bulma.is_7}>
+                                    <div class={Bulma.tile}>
+                                        <div class={classes Bulma.tile Bulma.is_vertical}>
+                                            <div class={classes Bulma.is_child Bulma.box}>
                                                 <h3>Hang Gliding</h3>
                                                 <h5>Oceania</h5>
                                                 <ul>

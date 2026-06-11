@@ -1,9 +1,9 @@
 /*
   Bridge stylesheet for Ur/Web class mangling.
-  Maps ShearWeb_* class names to Bulma-like behavior for the classes currently in use.
+  Maps Bulma_* class names to Bulma-like behavior for the classes currently in use.
 */
 
-.ShearWeb_container {
+.Bulma_container {
   margin: 0 auto;
   position: relative;
   max-width: 1344px;
@@ -11,80 +11,80 @@
 }
 
 @media screen and (min-width: 769px) {
-  .ShearWeb_container {
+  .Bulma_container {
     max-width: 960px;
     width: 960px;
   }
 }
 
 @media screen and (min-width: 1024px) {
-  .ShearWeb_container {
+  .Bulma_container {
     max-width: 1152px;
     width: 1152px;
   }
 }
 
 @media screen and (min-width: 1216px) {
-  .ShearWeb_container {
+  .Bulma_container {
     max-width: 1344px;
     width: 1344px;
   }
 }
 
-.ShearWeb_spacer {
+.Bulma_spacer {
   height: 1.5rem;
 }
 
-.ShearWeb_content {
+.Bulma_content {
   display: block;
 }
 
-.ShearWeb_tile {
+.Bulma_tile {
   display: flex;
   align-items: stretch;
 }
 
-.ShearWeb_is_ancestor {
+.Bulma_is_ancestor {
   margin-left: -0.75rem;
   margin-right: -0.75rem;
   margin-top: -0.75rem;
 }
 
-.ShearWeb_is_parent {
+.Bulma_is_parent {
   padding: 0.75rem;
   flex: 1 1 0;
 }
 
-.ShearWeb_is_vertical {
+.Bulma_is_vertical {
   flex-direction: column;
 }
 
-.ShearWeb_is_5 {
+.Bulma_is_5 {
   flex: none;
   width: 41.66667%;
 }
 
-.ShearWeb_is_7 {
+.Bulma_is_7 {
   flex: none;
   width: 58.33333%;
 }
 
-.ShearWeb_is_child {
+.Bulma_is_child {
   margin: 0 !important;
 }
 
-.ShearWeb_notification {
+.Bulma_notification {
   background: #f5f5f5;
   border-radius: 6px;
   padding: 1.25rem 1.5rem;
 }
 
-.ShearWeb_is_light {
+.Bulma_is_light {
   background: #fafafa;
   color: #363636;
 }
 
-.ShearWeb_box {
+.Bulma_box {
   background: #fff;
   border-radius: 6px;
   box-shadow:
@@ -93,18 +93,18 @@
   padding: 1.25rem;
 }
 
-.ShearWeb_subtitle {
+.Bulma_subtitle {
   color: #4a4a4a;
   font-size: 1.25rem;
   font-weight: 400;
   line-height: 1.25;
 }
 
-.ShearWeb_footer_cls {
+.Bulma_footer_cls {
   background: #fafafa;
   padding: 3rem 1.5rem 6rem;
 }
 
-.ShearWeb_is_size_7 {
+.Bulma_is_size_7 {
   font-size: 0.75rem !important;
 }

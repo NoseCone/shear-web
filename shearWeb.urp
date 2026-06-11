@@ -15,22 +15,26 @@ allow meta viewport
 allow mime text/css
 safeGet comp
 rewrite style Css/quote quote
-rewrite style Css/container container
-rewrite style Css/spacer spacer
-rewrite style Css/content content
-rewrite style Css/tile tile
-rewrite style Css/is-ancestor is_ancestor
-rewrite style Css/is-parent is_parent
-rewrite style Css/notification notification
-rewrite style Css/is-light is_light
-rewrite style Css/subtitle subtitle
-rewrite style Css/is-vertical is_vertical
-rewrite style Css/is-5 is_5
-rewrite style Css/is-child is_child
-rewrite style Css/box box
-rewrite style Css/is-7 is_7
-rewrite style Css/footer footer_cls
-rewrite style Css/is-size-7 is_size_7
+rewrite style Css/spacer Bulma/spacer
+rewrite style Css/container Bulma/container
+rewrite style Css/content Bulma/content
+rewrite style Css/title Bulma/title
+rewrite style Css/subtitle Bulma/subtitle
+rewrite style Css/tile Bulma/tile
+rewrite style Css/is-ancestor Bulma/is_ancestor
+rewrite style Css/is-parent Bulma/is_parent
+rewrite style Css/is-child Bulma/is_child
+rewrite style Css/is-vertical Bulma/is_vertical
+rewrite style Css/is-light Bulma/is_light
+rewrite style Css/is-5 Bulma/is_5
+rewrite style Css/is-7 Bulma/is_7
+rewrite style Css/box Bulma/box
+rewrite style Css/notification Bulma/notification
+rewrite style Css/footer Bulma/footer
+rewrite style Css/columns Bulma/columns
+rewrite style Css/column Bulma/column
+rewrite style Css/is-primary Bulma/is_primary
+rewrite style Css/is-size-7 Bulma/is_size_7
 rewrite url CompView/widget comp
 rewrite url ShearWeb/*
 link compFetch.o
@@ -60,6 +64,7 @@ benignEffectful CompParse.scoreBack
 comp
 compJson
 fetch
+bulma
 compView
 footer
 siteCssAsset
