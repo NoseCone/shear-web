@@ -54,10 +54,10 @@ fun main () =
                                                 <p></p>
                                                 <ul>
                                                     <li>Italian Open
-                                                        <a href="https://flaretiming.com">2020</a>
+                                                        <a link={CompView.widget("2020-italy-open")}>2020</a>
                                                     </li>
                                                     <li>Dalmatian
-                                                        <a href="https://flaretiming.com">2019</a> <a href="https://flaretiming.com">2018</a>
+                                                        <a link={CompView.widget("2019-dalmatian")}>2019</a> <a link={CompView.widget("2018-dalmatian")}>2018</a>
                                                     </li>
                                                     <ul>
                                                         <p></p>
@@ -68,8 +68,8 @@ fun main () =
                                                 <h3>Comp Archetypes</h3>
                                                 <p></p>
                                                 <ul>
-                                                    <li><a href="https://flaretiming.com">1976 Never Land</a></li>
-                                                    <li><a href="https://flaretiming.com">1989 Lift Lines</a></li>
+                                                    <li><a link={CompView.widget("1976-never-land")}>1976 Never Land</a></li>
+                                                    <li><a link={CompView.widget("1989-lift-lines")}>1989 Lift Lines</a></li>
                                                     <ul>
                                                         <p></p>
                                                     </ul>
@@ -86,10 +86,10 @@ fun main () =
                                                 <h5>Oceania</h5>
                                                 <ul>
                                                     <li>Forbes Flatlands
-                                                        <a href="https://flaretiming.com">2018</a> <a href="https://flaretiming.com">2017</a> <a href="https://flaretiming.com">2016</a>
-                                                        <a href="https://flaretiming.com">2015</a> <a href="https://flaretiming.com">2014</a> <a href="https://flaretiming.com">2012</a>
+                                                        <a link={CompView.widget("2018-forbes")}>2018</a> <a link={CompView.widget("2017-forbes")}>2017</a> <a link={CompView.widget("2016-forbes")}>2016</a>
+                                                        <a link={CompView.widget("2015-forbes")}>2015</a> <a link={CompView.widget("2014-forbes")}>2014</a> <a link={CompView.widget("2012-forbes")}>2012</a>
                                                     </li>
-                                                    <li>Dalby Big Air <a href="https://flaretiming.com">2017</a></li>
+                                                    <li>Dalby Big Air <a link={CompView.widget("2017-dalby")}>2017</a></li>
                                                 </ul>
                                                 <h5>Europe</h5>
                                                 <ul>
@@ -97,19 +97,19 @@ fun main () =
                                                         <a link={CompView.widget("2020-meduno")}>2020</a>
                                                     </li>
                                                     <li>Tolmezzo
-                                                        <a href="https://flaretiming.com">2019</a>
+                                                        <a link={CompView.widget("2019-italy")}>2019</a>
                                                     </li>
                                                 </ul>
                                                 <h5>Americas</h5>
                                                 <ul>
                                                     <li>Green Swamp Klassic 2016
-                                                        <a href="https://flaretiming.com">Topless</a> <a href="https://flaretiming.com">Kingposted</a>
+                                                        <a link={CompView.widget("2016-greenswamp")}>Topless</a> <a link={CompView.widget("2016-greenswamp-sport")}>Kingposted</a>
                                                     </li>
                                                     <li>Big Spring
-                                                        <a href="https://flaretiming.com">2016</a>
+                                                        <a link={CompView.widget("2016-big-spring")}>2016</a>
                                                     </li>
                                                     <li>QuestAir Open
-                                                        <a href="https://flaretiming.com">2016</a>
+                                                        <a link={CompView.widget("2016-quest")}>2016</a>
                                                     </li>
                                                 </ul>
                                             </div>
