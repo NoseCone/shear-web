@@ -32,5 +32,5 @@ datatype compInput =
     , UtcOffset : utcOffset
     , EarthModel : earthModel
     , GiveConfig : giveConfig
-    , ScoreBack : scoreBackTime
+    , ScoreBack : option scoreBackTime
     }

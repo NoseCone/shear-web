@@ -31,7 +31,13 @@ fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput
   scoreBackRaw <- CompParse.scoreBack parsed;
 
   let
-    val scoreBackResult = parseScoreBackTime scoreBackRaw
+    val scoreBackResult =
+      case scoreBackRaw of
+        None => ParseOk None
+      | Some raw =>
+          case parseScoreBackTime raw of
+            ParseError err => ParseError err
+          | ParseOk scoreBack => ParseOk (Some scoreBack)
 
     val disciplineOpt =
       if disciplineCode = "hg" then Some Comp.HangGliding

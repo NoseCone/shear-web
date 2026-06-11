@@ -106,7 +106,7 @@ uw_CompParse_parsedComp uw_CompParse_parse(uw_context ctx, uw_Basis_string json)
   parsed->giveDistance = copy_optional_string(ctx, give, "giveDistance");
   parsed->giveFraction = required_number(ctx, give, "giveFraction");
 
-  parsed->scoreBack = copy_required_string(ctx, obj, "scoreBack");
+  parsed->scoreBack = copy_optional_string(ctx, obj, "scoreBack");
 
   json_value_free(root);
   return parsed;
@@ -145,4 +145,7 @@ uw_Basis_string uw_CompParse_giveDistance(uw_context ctx, uw_CompParse_parsedCom
   return uw_strdup(ctx, parsed->giveDistance);
 }
 uw_Basis_float uw_CompParse_giveFraction(uw_context ctx, uw_CompParse_parsedComp parsed) { (void)ctx; return parsed->giveFraction; }
-uw_Basis_string uw_CompParse_scoreBack(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->scoreBack); }
+uw_Basis_string uw_CompParse_scoreBack(uw_context ctx, uw_CompParse_parsedComp parsed) {
+  if (!parsed->scoreBack) return NULL;
+  return uw_strdup(ctx, parsed->scoreBack);
+}

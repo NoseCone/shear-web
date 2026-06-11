@@ -1,0 +1,22 @@
+{
+  "civilId": "7592",
+  "earthMath": "Haversines",
+  "discipline": "hg",
+  "location": "Forbes, Australia",
+  "to": "2012-01-14",
+  "compName": "2012 Hang Gliding Pre-World Forbes",
+  "from": "2012-01-05",
+  "utcOffset": {
+    "timeZoneMinutes": 660
+  },
+  "earth": {
+    "sphere": {
+      "radius": "6371000.0 m"
+    }
+  },
+  "give": {
+    "giveDistance": null,
+    "giveFraction": 0.005
+  },
+  "scoreBack": null
+}

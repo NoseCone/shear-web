@@ -23,7 +23,10 @@ fun render (comp : Comp.compInput) : string =
 
         val scoreBack =
           case c.ScoreBack of
-            Comp.ScoreBackTime s => show s ^ " s"
+            None => "None"
+          | Some sb =>
+              case sb of
+                Comp.ScoreBackTime s => show s ^ " s"
       in
         "CivilId: " ^ c.CivilId ^ "\n"
         ^ "EarthMath: " ^ c.EarthMath ^ "\n"
