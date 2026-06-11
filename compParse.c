@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 #include <urweb.h>
 #include "parson.h"
@@ -15,6 +16,8 @@ typedef struct uw_CompParse_parsedComp_struct {
   char *compName;
   int utcOffsetMinutes;
   char *earthRadius;
+  char *earthEquatorialR;
+  char *earthRecipF;
   char *giveDistance;
   double giveFraction;
   char *scoreBack;
@@ -50,6 +53,32 @@ static char *copy_optional_string(uw_context ctx, JSON_Object *obj, const char *
   }
 
   return out;
+}
+
+static char *copy_required_string_or_number(uw_context ctx, JSON_Object *obj, const char *field) {
+  const char *s = json_object_get_string(obj, field);
+  if (s) {
+    char *out = strdup(s);
+    if (!out) {
+      uw_error(ctx, FATAL, "CompParse: out of memory while copying '%s'", field);
+    }
+    return out;
+  }
+
+  if (json_object_has_value_of_type(obj, field, JSONNumber)) {
+    double n = json_object_get_number(obj, field);
+    char buf[64];
+    snprintf(buf, sizeof(buf), "%.15g", n);
+
+    char *out = strdup(buf);
+    if (!out) {
+      uw_error(ctx, FATAL, "CompParse: out of memory while copying '%s'", field);
+    }
+    return out;
+  }
+
+  uw_error(ctx, FATAL, "CompParse: missing or invalid field '%s' (expected string or number)", field);
+  return NULL;
 }
 
 static JSON_Object *required_object(uw_context ctx, JSON_Object *obj, const char *field) {
@@ -98,9 +127,24 @@ uw_CompParse_parsedComp uw_CompParse_parse(uw_context ctx, uw_Basis_string json)
   JSON_Object *utcOffset = required_object(ctx, obj, "utcOffset");
   parsed->utcOffsetMinutes = (int)required_number(ctx, utcOffset, "timeZoneMinutes");
 
+  parsed->earthRadius = NULL;
+  parsed->earthEquatorialR = NULL;
+  parsed->earthRecipF = NULL;
+
   JSON_Object *earth = required_object(ctx, obj, "earth");
-  JSON_Object *sphere = required_object(ctx, earth, "sphere");
-  parsed->earthRadius = copy_required_string(ctx, sphere, "radius");
+  JSON_Object *sphere = json_object_get_object(earth, "sphere");
+  JSON_Object *ellipsoid = json_object_get_object(earth, "ellipsoid");
+
+  if (sphere && ellipsoid) {
+    uw_error(ctx, FATAL, "CompParse: earth cannot contain both 'sphere' and 'ellipsoid'");
+  } else if (sphere) {
+    parsed->earthRadius = copy_required_string(ctx, sphere, "radius");
+  } else if (ellipsoid) {
+    parsed->earthEquatorialR = copy_required_string(ctx, ellipsoid, "equatorialR");
+    parsed->earthRecipF = copy_required_string_or_number(ctx, ellipsoid, "recipF");
+  } else {
+    uw_error(ctx, FATAL, "CompParse: earth must contain either 'sphere' or 'ellipsoid'");
+  }
 
   JSON_Object *give = required_object(ctx, obj, "give");
   parsed->giveDistance = copy_optional_string(ctx, give, "giveDistance");
@@ -124,6 +168,8 @@ uw_Basis_unit uw_CompParse_free(uw_context ctx, uw_CompParse_parsedComp parsed) 
   free(parsed->toDate);
   free(parsed->compName);
   free(parsed->earthRadius);
+  free(parsed->earthEquatorialR);
+  free(parsed->earthRecipF);
   free(parsed->giveDistance);
   free(parsed->scoreBack);
 
@@ -139,7 +185,18 @@ uw_Basis_string uw_CompParse_fromDate(uw_context ctx, uw_CompParse_parsedComp pa
 uw_Basis_string uw_CompParse_toDate(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->toDate); }
 uw_Basis_string uw_CompParse_compName(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->compName); }
 uw_Basis_int uw_CompParse_utcOffsetMinutes(uw_context ctx, uw_CompParse_parsedComp parsed) { (void)ctx; return parsed->utcOffsetMinutes; }
-uw_Basis_string uw_CompParse_earthRadius(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->earthRadius); }
+uw_Basis_string uw_CompParse_earthRadius(uw_context ctx, uw_CompParse_parsedComp parsed) {
+  if (!parsed->earthRadius) return NULL;
+  return uw_strdup(ctx, parsed->earthRadius);
+}
+uw_Basis_string uw_CompParse_earthEquatorialR(uw_context ctx, uw_CompParse_parsedComp parsed) {
+  if (!parsed->earthEquatorialR) return NULL;
+  return uw_strdup(ctx, parsed->earthEquatorialR);
+}
+uw_Basis_string uw_CompParse_earthRecipF(uw_context ctx, uw_CompParse_parsedComp parsed) {
+  if (!parsed->earthRecipF) return NULL;
+  return uw_strdup(ctx, parsed->earthRecipF);
+}
 uw_Basis_string uw_CompParse_giveDistance(uw_context ctx, uw_CompParse_parsedComp parsed) {
   if (!parsed->giveDistance) return NULL;
   return uw_strdup(ctx, parsed->giveDistance);

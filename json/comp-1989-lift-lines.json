@@ -1,0 +1,23 @@
+{
+  "civilId": "0",
+  "earthMath": "Vincenty",
+  "discipline": "pg",
+  "location": "Kössen Austria",
+  "to": "1989-09-12",
+  "compName": "Lift Lines 1989",
+  "from": "1989-09-01",
+  "utcOffset": {
+    "timeZoneMinutes": 0
+  },
+  "earth": {
+    "ellipsoid": {
+      "equatorialR": "6378137.0 m",
+      "recipF": 298.257223563
+    }
+  },
+  "give": {
+    "giveDistance": "5.0 m",
+    "giveFraction": 0.0001
+  },
+  "scoreBack": "300.000 s"
+}

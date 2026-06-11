@@ -6,9 +6,13 @@ fun render (comp : Comp.compInput) : string =
           case c.UtcOffset of
             Comp.UtcOffset u => show u.TimeZoneMinutes
 
-        val radius =
+        val earthModelText =
           case c.EarthModel of
-            Comp.EarthAsSphere e => e.Radius
+            Comp.EarthAsSphere e =>
+              "Earth.sphere.radius: " ^ e.Radius
+          | Comp.EarthEllipsoid e =>
+              "Earth.ellipsoid.equatorialR: " ^ e.EquatorialR ^ "\n"
+              ^ "Earth.ellipsoid.recipF: " ^ e.RecipF
 
         val giveDistance =
           case c.GiveConfig of
@@ -40,7 +44,7 @@ fun render (comp : Comp.compInput) : string =
         ^ "To: " ^ c.To ^ "\n"
         ^ "CompName: " ^ c.CompName ^ "\n"
         ^ "UtcOffset.TimeZoneMinutes: " ^ tz ^ "\n"
-        ^ "Earth.sphere.radius: " ^ radius ^ "\n"
+        ^ earthModelText ^ "\n"
         ^ "Give.giveDistance: " ^ giveDistance ^ "\n"
         ^ "Give.giveFraction: " ^ giveFraction ^ "\n"
         ^ "ScoreBack: " ^ scoreBack

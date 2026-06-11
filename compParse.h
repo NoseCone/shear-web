@@ -14,6 +14,8 @@ uw_Basis_string uw_CompParse_toDate(uw_context ctx, uw_CompParse_parsedComp pars
 uw_Basis_string uw_CompParse_compName(uw_context ctx, uw_CompParse_parsedComp parsed);
 uw_Basis_int uw_CompParse_utcOffsetMinutes(uw_context ctx, uw_CompParse_parsedComp parsed);
 uw_Basis_string uw_CompParse_earthRadius(uw_context ctx, uw_CompParse_parsedComp parsed);
+uw_Basis_string uw_CompParse_earthEquatorialR(uw_context ctx, uw_CompParse_parsedComp parsed);
+uw_Basis_string uw_CompParse_earthRecipF(uw_context ctx, uw_CompParse_parsedComp parsed);
 uw_Basis_string uw_CompParse_giveDistance(uw_context ctx, uw_CompParse_parsedComp parsed);
 uw_Basis_float uw_CompParse_giveFraction(uw_context ctx, uw_CompParse_parsedComp parsed);
 uw_Basis_string uw_CompParse_scoreBack(uw_context ctx, uw_CompParse_parsedComp parsed);
