@@ -71,6 +71,7 @@ fun widget (compName : string) : transaction page =
                    <xml><h4>Parsed compInput</h4><pre>{[render comp]}</pre></xml>}
             </div>
           </div>
+          {Footer.render ()}
         </div>
       </body>
     </xml>
