@@ -1,6 +1,18 @@
 datatype compInputParseResult = CompInputParseError of string | CompInputParseOk of Comp.compInput
 datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
 
+datatype parseResult t = ParseError of string | ParseOk of t
+
+fun fromParseCompInput (r : parseResult Comp.compInput) : compInputParseResult =
+  case r of
+    ParseError err => CompInputParseError err
+  | ParseOk v => CompInputParseOk v
+
+fun fromParseNominal (r : parseResult Comp.nominal) : nominalParseResult =
+  case r of
+    ParseError err => NominalParseError err
+  | ParseOk v => NominalParseOk v
+
 datatype scoreBackParseResult = ScoreBackParseError of string | ScoreBackParseOk of Comp.scoreBackTime
 
 datatype earthModelParseResult = EarthModelParseError of string | EarthModelParseOk of Comp.earthModel
@@ -29,13 +41,13 @@ fun parseNominalJson (json : string) : transaction nominalParseResult =
   launch <- CompParse.nominalLaunch parsed;
 
   CompParse.freeNominal parsed;
-  return (NominalParseOk (Comp.Nominal
+  return (fromParseNominal (ParseOk (Comp.Nominal
     { Distance = distance
     , Free = freeDist
     , Time = time
     , Goal = goal
     , Launch = launch
-    }))
+    })))
 
 fun parseCompInputJson (json : string) : transaction compInputParseResult =
   parsed <- CompParse.parse json;
@@ -92,20 +104,20 @@ fun parseCompInputJson (json : string) : transaction compInputParseResult =
     case earthModelResult of
       EarthModelParseError err =>
         CompParse.free parsed;
-        return (CompInputParseError err)
+        return (fromParseCompInput (ParseError err))
     | EarthModelParseOk earthModel =>
         case scoreBackResult of
           Some (ScoreBackParseError err) =>
             CompParse.free parsed;
-            return (CompInputParseError err)
+            return (fromParseCompInput (ParseError err))
         | _ =>
             case disciplineOpt of
               None =>
                 CompParse.free parsed;
-                return (CompInputParseError ("Unsupported discipline value in JSON: " ^ disciplineCode))
+                return (fromParseCompInput (ParseError ("Unsupported discipline value in JSON: " ^ disciplineCode)))
             | Some discipline =>
                 CompParse.free parsed;
-                return (CompInputParseOk (Comp.CompInput
+                return (fromParseCompInput (ParseOk (Comp.CompInput
                   { CivilId = civilId
                   , EarthMath = earthMath
                   , Discipline = discipline
@@ -120,5 +132,5 @@ fun parseCompInputJson (json : string) : transaction compInputParseResult =
                       , GiveFraction = giveFraction
                       }
                   , ScoreBack = scoreBack
-                  }))
+                  })))
   end
