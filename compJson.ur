@@ -56,13 +56,10 @@ fun parseCompInputJson (json : string) : transaction compInputParseResult =
   scoreBackRaw <- CompParse.scoreBack parsed;
 
   let
-    val scoreBackError =
+    val scoreBackResult : option scoreBackParseResult =
       case scoreBackRaw of
         None => None
-      | Some raw =>
-          case parseScoreBackTime raw of
-            ScoreBackParseError err => Some err
-          | ScoreBackParseOk _ => None
+      | Some raw => Some (parseScoreBackTime raw)
 
     val earthModelResult : earthModelParseResult =
       case earthRadius of
@@ -85,47 +82,43 @@ fun parseCompInputJson (json : string) : transaction compInputParseResult =
       if disciplineCode = "hg" then Some Comp.HangGliding
       else if disciplineCode = "pg" then Some Comp.Paragliding
       else None
+
+    val scoreBack : option Comp.scoreBackTime =
+      case scoreBackResult of
+        None => None
+      | Some (ScoreBackParseOk sb) => Some sb
+      | Some (ScoreBackParseError _) => None
   in
     case earthModelResult of
       EarthModelParseError err =>
         CompParse.free parsed;
         return (CompInputParseError err)
     | EarthModelParseOk earthModel =>
-        case scoreBackError of
-          Some err =>
+        case scoreBackResult of
+          Some (ScoreBackParseError err) =>
             CompParse.free parsed;
             return (CompInputParseError err)
-        | None =>
+        | _ =>
             case disciplineOpt of
               None =>
                 CompParse.free parsed;
                 return (CompInputParseError ("Unsupported discipline value in JSON: " ^ disciplineCode))
             | Some discipline =>
-                let
-                  val scoreBack =
-                    case scoreBackRaw of
-                      None => None
-                    | Some raw =>
-                        case parseScoreBackTime raw of
-                          ScoreBackParseError _ => None
-                        | ScoreBackParseOk sb => Some sb
-                in
-                  CompParse.free parsed;
-                  return (CompInputParseOk (Comp.CompInput
-                    { CivilId = civilId
-                    , EarthMath = earthMath
-                    , Discipline = discipline
-                    , Location = location
-                    , From = fromDate
-                    , To = toDate
-                    , CompName = compName
-                    , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
-                    , EarthModel = earthModel
-                    , GiveConfig = Comp.GiveConfig
-                        { GiveDistance = giveDistance
-                        , GiveFraction = giveFraction
-                        }
-                    , ScoreBack = scoreBack
-                    }))
-                end
+                CompParse.free parsed;
+                return (CompInputParseOk (Comp.CompInput
+                  { CivilId = civilId
+                  , EarthMath = earthMath
+                  , Discipline = discipline
+                  , Location = location
+                  , From = fromDate
+                  , To = toDate
+                  , CompName = compName
+                  , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
+                  , EarthModel = earthModel
+                  , GiveConfig = Comp.GiveConfig
+                      { GiveDistance = giveDistance
+                      , GiveFraction = giveFraction
+                      }
+                  , ScoreBack = scoreBack
+                  }))
   end
