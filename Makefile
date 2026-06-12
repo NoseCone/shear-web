@@ -1,15 +1,15 @@
 all: shearWeb
 
 VENDOR_CSS_DIR := vendor/css
-VENDORED_CSS := $(VENDOR_CSS_DIR)/bulma-0.9.3.min.css $(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css
+VENDORED_CSS := $(VENDOR_CSS_DIR)/bulma-0.9.3.css $(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css
 
 vendor-css: $(VENDORED_CSS)
 
 $(VENDOR_CSS_DIR):
 	mkdir -p $(VENDOR_CSS_DIR)
 
-$(VENDOR_CSS_DIR)/bulma-0.9.3.min.css: | $(VENDOR_CSS_DIR)
-	curl -fsSL https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css -o $@
+$(VENDOR_CSS_DIR)/bulma-0.9.3.css: | $(VENDOR_CSS_DIR)
+	curl -fsSL https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.css -o $@
 
 $(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css: | $(VENDOR_CSS_DIR)
 	curl -fsSL http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b13.css -o $@
