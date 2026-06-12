@@ -1,3 +1,15 @@
+(* NOTE:
+   We intentionally keep the exported result types monomorphic (`compInputParseResult`
+   and `nominalParseResult`) even though this module uses a local polymorphic
+   helper `parseResult`.
+
+   In this codebase/Ur/Web toolchain, exposing polymorphic `ParseOk`/`ParseError`
+   across module boundaries has triggered a backend C codegen failure
+   (`__uwd_UNBOUND__...` in generated webapp.c), even when type-checking succeeds.
+
+   So: use `parseResult` only as an internal helper, then convert via
+   `fromParseCompInput` / `fromParseNominal` before returning from public functions.
+*)
 datatype compInputParseResult = CompInputParseError of string | CompInputParseOk of Comp.compInput
 datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
 
