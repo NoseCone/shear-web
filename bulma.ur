@@ -5,6 +5,7 @@ style container
 style content
 style title
 style subtitle
+style example
 
 style tile
 style is_ancestor
@@ -12,6 +13,7 @@ style is_parent
 style is_child
 style is_vertical
 style is_light
+style is_3
 style is_5
 style is_7
 

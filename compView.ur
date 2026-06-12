@@ -87,7 +87,7 @@ fun summary (comp : Comp.compInput) : xbody =
                 Comp.ScoreBackTime s => show s ^ " s"
       in
         <xml>
-          <main>
+          <div>
             <div class={Bulma.container}>
               <div class={Bulma.spacer}></div>
               <section>
@@ -98,13 +98,15 @@ fun summary (comp : Comp.compInput) : xbody =
                       <div class={Bulma.tile}>
                         <div class={classes Bulma.tile Bulma.is_parent}>
                           <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
-                            <p class={classes Bulma.title Bulma.is_5}>{[c.CompName]}</p>
-                            <p class={Bulma.subtitle}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
-                            <div class={classes Bulma.field (classes Bulma.is_grouped Bulma.is_grouped_multiline)}>
-                              {metric "UTC offset" tz Bulma.is_warning}
-                              {metric "Give distance" giveDistance Bulma.is_black}
-                              {metric "Give fraction" giveFraction Bulma.is_info}
-                              {metric "Score-back time" scoreBack Bulma.is_danger}
+                            <p class={classes Bulma.title Bulma.is_3}>{[c.CompName]}</p>
+                            <p class={classes Bulma.title Bulma.is_5}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
+                            <div class={Bulma.example}>
+                              <div class={classes Bulma.field (classes Bulma.is_grouped Bulma.is_grouped_multiline)}>
+                                {metric "UTC offset" tz Bulma.is_warning}
+                                {metric "Give distance" giveDistance Bulma.is_black}
+                                {metric "Give fraction" giveFraction Bulma.is_info}
+                                {metric "Score-back time" scoreBack Bulma.is_danger}
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -114,7 +116,7 @@ fun summary (comp : Comp.compInput) : xbody =
                 </div>
               </section>
             </div>
-          </main>
+          </div>
         </xml>
       end
 
