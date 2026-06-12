@@ -1,3 +1,5 @@
-datatype parseResult t = ParseError of string | ParseOk of t
+datatype compInputParseResult = CompInputParseError of string | CompInputParseOk of Comp.compInput
+datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
 
-val parseCompInputJson : string -> transaction (parseResult Comp.compInput)
+val parseNominalJson : string -> transaction nominalParseResult
+val parseCompInputJson : string -> transaction compInputParseResult

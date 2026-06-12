@@ -23,6 +23,14 @@ typedef struct uw_CompParse_parsedComp_struct {
   char *scoreBack;
 } uw_CompParse_parsedComp_struct;
 
+typedef struct uw_CompParse_parsedNominal_struct {
+  char *distance;
+  char *freeDist;
+  char *time;
+  double goal;
+  double launch;
+} uw_CompParse_parsedNominal_struct;
+
 static char *copy_required_string(uw_context ctx, JSON_Object *obj, const char *field) {
   const char *s = json_object_get_string(obj, field);
   if (!s) {
@@ -177,6 +185,45 @@ uw_Basis_unit uw_CompParse_free(uw_context ctx, uw_CompParse_parsedComp parsed) 
   return 0;
 }
 
+uw_CompParse_parsedNominal uw_CompParse_parseNominal(uw_context ctx, uw_Basis_string json) {
+  JSON_Value *root = json_parse_string(json);
+  if (!root) {
+    uw_error(ctx, FATAL, "CompParse: invalid nominal JSON");
+  }
+
+  JSON_Object *obj = json_value_get_object(root);
+  if (!obj) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: expected nominal top-level object");
+  }
+
+  uw_CompParse_parsedNominal parsed = malloc(sizeof(uw_CompParse_parsedNominal_struct));
+  if (!parsed) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: out of memory");
+  }
+
+  parsed->distance = copy_required_string(ctx, obj, "distance");
+  parsed->freeDist = copy_required_string(ctx, obj, "free");
+  parsed->time = copy_required_string(ctx, obj, "time");
+  parsed->goal = required_number(ctx, obj, "goal");
+  parsed->launch = required_number(ctx, obj, "launch");
+
+  json_value_free(root);
+  return parsed;
+}
+
+uw_Basis_unit uw_CompParse_freeNominal(uw_context ctx, uw_CompParse_parsedNominal parsed) {
+  (void)ctx;
+  if (!parsed) return 0;
+
+  free(parsed->distance);
+  free(parsed->freeDist);
+  free(parsed->time);
+  free(parsed);
+  return 0;
+}
+
 uw_Basis_string uw_CompParse_civilId(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->civilId); }
 uw_Basis_string uw_CompParse_earthMath(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->earthMath); }
 uw_Basis_string uw_CompParse_discipline(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->discipline); }
@@ -206,3 +253,9 @@ uw_Basis_string uw_CompParse_scoreBack(uw_context ctx, uw_CompParse_parsedComp p
   if (!parsed->scoreBack) return NULL;
   return uw_strdup(ctx, parsed->scoreBack);
 }
+
+uw_Basis_string uw_CompParse_nominalDistance(uw_context ctx, uw_CompParse_parsedNominal parsed) { return uw_strdup(ctx, parsed->distance); }
+uw_Basis_string uw_CompParse_nominalFree(uw_context ctx, uw_CompParse_parsedNominal parsed) { return uw_strdup(ctx, parsed->freeDist); }
+uw_Basis_string uw_CompParse_nominalTime(uw_context ctx, uw_CompParse_parsedNominal parsed) { return uw_strdup(ctx, parsed->time); }
+uw_Basis_float uw_CompParse_nominalGoal(uw_context ctx, uw_CompParse_parsedNominal parsed) { (void)ctx; return parsed->goal; }
+uw_Basis_float uw_CompParse_nominalLaunch(uw_context ctx, uw_CompParse_parsedNominal parsed) { (void)ctx; return parsed->launch; }

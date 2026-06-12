@@ -60,7 +60,7 @@ fun metric (label : string) (value : string) (accent : css_class) : xbody =
       </div>
     </xml>
 
-fun summary (comp : Comp.compInput) : xbody =
+fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
   case comp of
     Comp.CompInput c =>
       let
@@ -85,6 +85,41 @@ fun summary (comp : Comp.compInput) : xbody =
           | Some sb =>
               case sb of
                 Comp.ScoreBackTime s => show s ^ " s"
+
+        val nominalDistance =
+          case nominal of
+            None => "Unknown"
+          | Some n =>
+              case n of
+                Comp.Nominal x => x.Distance
+
+        val nominalFree =
+          case nominal of
+            None => "Unknown"
+          | Some n =>
+              case n of
+                Comp.Nominal x => x.Free
+
+        val nominalTime =
+          case nominal of
+            None => "Unknown"
+          | Some n =>
+              case n of
+                Comp.Nominal x => x.Time
+
+        val nominalGoal =
+          case nominal of
+            None => "Unknown"
+          | Some n =>
+              case n of
+                Comp.Nominal x => show x.Goal
+
+        val nominalLaunch =
+          case nominal of
+            None => "Unknown"
+          | Some n =>
+              case n of
+                Comp.Nominal x => show x.Launch
       in
         <xml>
           <div>
@@ -103,7 +138,12 @@ fun summary (comp : Comp.compInput) : xbody =
                             <div class={Bulma.example}>
                               <div class={classes Bulma.field (classes Bulma.is_grouped Bulma.is_grouped_multiline)}>
                                 {metric "UTC offset" tz Bulma.is_warning}
-                                {metric "Give distance" giveDistance Bulma.is_black}
+                                {metric "Minimum distance" giveDistance Bulma.is_black}
+                                {metric "Nominal free" nominalFree Bulma.is_black}
+                                {metric "Nominal distance" nominalDistance Bulma.is_info}
+                                {metric "Nominal time" nominalTime Bulma.is_success}
+                                {metric "Nominal goal" nominalGoal Bulma.is_primary}
+                                {metric "Nominal launch" nominalLaunch Bulma.is_primary}
                                 {metric "Give fraction" giveFraction Bulma.is_info}
                                 {metric "Score-back time" scoreBack Bulma.is_danger}
                               </div>
@@ -121,38 +161,60 @@ fun summary (comp : Comp.compInput) : xbody =
       end
 
 fun widget (compName : string) : transaction page =
-    result <- Fetch.fetchAndParseCompInput compName;
+    compResult <- Fetch.fetchAndParseCompInput compName;
+    nominalResult <- Fetch.fetchAndParseNominal compName;
 
-    return <xml>
-      <head>
-        <title>{[compName]}</title>
-        <link rel="stylesheet" type="text/css" href="http://localhost:8080/css" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </head>
-      <body>
-        {case result of
-           CompJson.ParseError err =>
-             <xml>
-               <div class={Bulma.container}>
-                 <div class={Bulma.spacer}></div>
-                 <div class={classes Bulma.notification Bulma.is_light}>
-                   <h4>Parse failed</h4>
-                   <p>{[err]}</p>
+    let
+      val nominalOpt : option Comp.nominal =
+        case nominalResult of
+          CompJson.NominalParseError _ => None
+        | CompJson.NominalParseOk nominal => Some nominal
+
+      val nominalErr : option string =
+        case nominalResult of
+          CompJson.NominalParseError err => Some err
+        | CompJson.NominalParseOk _ => None
+    in
+      return <xml>
+        <head>
+          <title>{[compName]}</title>
+          <link rel="stylesheet" type="text/css" href="http://localhost:8080/css" />
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+        </head>
+        <body>
+          {case compResult of
+             CompJson.CompInputParseError err =>
+               <xml>
+                 <div class={Bulma.container}>
+                   <div class={Bulma.spacer}></div>
+                   <div class={classes Bulma.notification Bulma.is_light}>
+                     <h4>Parse failed</h4>
+                     <p>{[err]}</p>
+                   </div>
                  </div>
-               </div>
-               {Footer.render ()}
-             </xml>
-         | CompJson.ParseOk comp =>
-             <xml>
-               {summary comp}
-               {Footer.render ()}
-               <div class={Bulma.container}>
-                 <div class={Bulma.spacer}></div>
-                 <div class={Bulma.content}>
-                   <h4>Parsed compInput</h4>
-                   <pre>{[render comp]}</pre>
+                 {Footer.render ()}
+               </xml>
+           | CompJson.CompInputParseOk comp =>
+               <xml>
+                 {summary comp nominalOpt}
+                 {Footer.render ()}
+                 <div class={Bulma.container}>
+                   <div class={Bulma.spacer}></div>
+                   {case nominalErr of
+                      None => <xml></xml>
+                    | Some err =>
+                        <xml>
+                          <div class={classes Bulma.notification Bulma.is_light}>
+                            <h4>Nominals parse failed</h4>
+                            <p>{[err]}</p>
+                          </div>
+                        </xml>}
+                   <div class={Bulma.content}>
+                     <h4>Parsed compInput</h4>
+                     <pre>{[render comp]}</pre>
+                   </div>
                  </div>
-               </div>
-             </xml>}
-      </body>
-    </xml>
+               </xml>}
+        </body>
+      </xml>
+    end

@@ -6,6 +6,7 @@ style content
 style title
 style subtitle
 style example
+style spacer
 
 style tile
 style is_ancestor
@@ -16,6 +17,7 @@ style is_light
 style is_3
 style is_5
 style is_7
+style is_size_7
 
 style box
 style notification
@@ -24,9 +26,6 @@ style footer
 style columns
 style column
 style is_primary
-
-style is_size_7
-style spacer
 
 style field
 style is_grouped

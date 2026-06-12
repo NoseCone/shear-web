@@ -1,20 +1,43 @@
-datatype parseResult t = ParseError of string | ParseOk of t
+datatype compInputParseResult = CompInputParseError of string | CompInputParseOk of Comp.compInput
+datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
 
-fun parseScoreBackTime (raw : string) : parseResult Comp.scoreBackTime =
+datatype scoreBackParseResult = ScoreBackParseError of string | ScoreBackParseOk of Comp.scoreBackTime
+
+datatype earthModelParseResult = EarthModelParseError of string | EarthModelParseOk of Comp.earthModel
+
+fun parseScoreBackTime (raw : string) : scoreBackParseResult =
   let
     val n = strlen raw
   in
     if n < 3 then
-      ParseError "Invalid scoreBack; expected '<number> s'"
+      ScoreBackParseError "Invalid scoreBack; expected '<number> s'"
     else if strsub raw (n - 2) <> #" " || strsub raw (n - 1) <> #"s" then
-      ParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
+      ScoreBackParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
     else
       case (read (substring raw 0 (n - 2)) : option float) of
-        None => ParseError ("Invalid scoreBack number: " ^ raw)
-      | Some seconds => ParseOk (Comp.ScoreBackTime seconds)
+        None => ScoreBackParseError ("Invalid scoreBack number: " ^ raw)
+      | Some seconds => ScoreBackParseOk (Comp.ScoreBackTime seconds)
   end
 
-fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput) =
+fun parseNominalJson (json : string) : transaction nominalParseResult =
+  parsed <- CompParse.parseNominal json;
+
+  distance <- CompParse.nominalDistance parsed;
+  freeDist <- CompParse.nominalFree parsed;
+  time <- CompParse.nominalTime parsed;
+  goal <- CompParse.nominalGoal parsed;
+  launch <- CompParse.nominalLaunch parsed;
+
+  CompParse.freeNominal parsed;
+  return (NominalParseOk (Comp.Nominal
+    { Distance = distance
+    , Free = freeDist
+    , Time = time
+    , Goal = goal
+    , Launch = launch
+    }))
+
+fun parseCompInputJson (json : string) : transaction compInputParseResult =
   parsed <- CompParse.parse json;
 
   civilId <- CompParse.civilId parsed;
@@ -33,30 +56,30 @@ fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput
   scoreBackRaw <- CompParse.scoreBack parsed;
 
   let
-    val scoreBackResult =
+    val scoreBackError =
       case scoreBackRaw of
-        None => ParseOk None
+        None => None
       | Some raw =>
           case parseScoreBackTime raw of
-            ParseError err => ParseError err
-          | ParseOk scoreBack => ParseOk (Some scoreBack)
+            ScoreBackParseError err => Some err
+          | ScoreBackParseOk _ => None
 
-    val earthModelResult : parseResult Comp.earthModel =
+    val earthModelResult : earthModelParseResult =
       case earthRadius of
         Some radius =>
           (case earthEquatorialR of
-             Some _ => ParseError "Invalid earth model: found both sphere and ellipsoid fields"
+             Some _ => EarthModelParseError "Invalid earth model: found both sphere and ellipsoid fields"
            | None =>
                case earthRecipF of
-                 Some _ => ParseError "Invalid earth model: recipF without ellipsoid.equatorialR"
-               | None => ParseOk (Comp.EarthAsSphere {Radius = radius}))
+                 Some _ => EarthModelParseError "Invalid earth model: recipF without ellipsoid.equatorialR"
+               | None => EarthModelParseOk (Comp.EarthAsSphere {Radius = radius}))
       | None =>
           case earthEquatorialR of
-            None => ParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
+            None => EarthModelParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
           | Some equatorialR =>
               case earthRecipF of
-                None => ParseError "Incomplete earth ellipsoid: missing recipF"
-              | Some recipF => ParseOk (Comp.EarthEllipsoid {EquatorialR = equatorialR, RecipF = recipF})
+                None => EarthModelParseError "Incomplete earth ellipsoid: missing recipF"
+              | Some recipF => EarthModelParseOk (Comp.EarthEllipsoid {EquatorialR = equatorialR, RecipF = recipF})
 
     val disciplineOpt =
       if disciplineCode = "hg" then Some Comp.HangGliding
@@ -64,35 +87,45 @@ fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput
       else None
   in
     case earthModelResult of
-      ParseError err =>
+      EarthModelParseError err =>
         CompParse.free parsed;
-        return (ParseError err)
-    | ParseOk earthModel =>
-        case scoreBackResult of
-          ParseError err =>
+        return (CompInputParseError err)
+    | EarthModelParseOk earthModel =>
+        case scoreBackError of
+          Some err =>
             CompParse.free parsed;
-            return (ParseError err)
-        | ParseOk scoreBack =>
+            return (CompInputParseError err)
+        | None =>
             case disciplineOpt of
               None =>
                 CompParse.free parsed;
-                return (ParseError ("Unsupported discipline value in JSON: " ^ disciplineCode))
+                return (CompInputParseError ("Unsupported discipline value in JSON: " ^ disciplineCode))
             | Some discipline =>
-                CompParse.free parsed;
-                return (ParseOk (Comp.CompInput
-                  { CivilId = civilId
-                  , EarthMath = earthMath
-                  , Discipline = discipline
-                  , Location = location
-                  , From = fromDate
-                  , To = toDate
-                  , CompName = compName
-                  , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
-                  , EarthModel = earthModel
-                  , GiveConfig = Comp.GiveConfig
-                      { GiveDistance = giveDistance
-                      , GiveFraction = giveFraction
-                      }
-                  , ScoreBack = scoreBack
-                  }))
+                let
+                  val scoreBack =
+                    case scoreBackRaw of
+                      None => None
+                    | Some raw =>
+                        case parseScoreBackTime raw of
+                          ScoreBackParseError _ => None
+                        | ScoreBackParseOk sb => Some sb
+                in
+                  CompParse.free parsed;
+                  return (CompInputParseOk (Comp.CompInput
+                    { CivilId = civilId
+                    , EarthMath = earthMath
+                    , Discipline = discipline
+                    , Location = location
+                    , From = fromDate
+                    , To = toDate
+                    , CompName = compName
+                    , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
+                    , EarthModel = earthModel
+                    , GiveConfig = Comp.GiveConfig
+                        { GiveDistance = giveDistance
+                        , GiveFraction = giveFraction
+                        }
+                    , ScoreBack = scoreBack
+                    }))
+                end
   end

@@ -35,6 +35,8 @@ rewrite style Css/columns Bulma/columns
 rewrite style Css/column Bulma/column
 rewrite style Css/is-primary Bulma/is_primary
 rewrite style Css/is-size-7 Bulma/is_size_7
+rewrite style Css/is-3 Bulma/is_3
+rewrite style Css/example Bulma/example
 rewrite style Css/field Bulma/field
 rewrite style Css/is-grouped Bulma/is_grouped
 rewrite style Css/is-grouped-multiline Bulma/is_grouped_multiline
@@ -60,6 +62,8 @@ ffi compParse
 effectful CompFetch.fetch
 effectful CompParse.parse
 effectful CompParse.free
+effectful CompParse.parseNominal
+effectful CompParse.freeNominal
 benignEffectful CompParse.civilId
 benignEffectful CompParse.earthMath
 benignEffectful CompParse.discipline
@@ -69,9 +73,16 @@ benignEffectful CompParse.toDate
 benignEffectful CompParse.compName
 benignEffectful CompParse.utcOffsetMinutes
 benignEffectful CompParse.earthRadius
+benignEffectful CompParse.earthEquatorialR
+benignEffectful CompParse.earthRecipF
 benignEffectful CompParse.giveDistance
 benignEffectful CompParse.giveFraction
 benignEffectful CompParse.scoreBack
+benignEffectful CompParse.nominalDistance
+benignEffectful CompParse.nominalFree
+benignEffectful CompParse.nominalTime
+benignEffectful CompParse.nominalGoal
+benignEffectful CompParse.nominalLaunch
 
 cssAsset
 css
