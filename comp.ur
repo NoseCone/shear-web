@@ -18,6 +18,15 @@ datatype giveConfig =
 datatype scoreBackTime =
   ScoreBackTime of float
 
+datatype nominal =
+  Nominal of
+  { Distance : string
+  , Free : string
+  , Time : string
+  , Goal : float
+  , Launch : float
+  }
+
 (* For now, we don't care too much for types other than strings, since we're
 just displaying the comp input. As as example of parsing with failure, look at
 ScoreBack. *)
