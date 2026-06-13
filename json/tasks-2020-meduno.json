@@ -1,0 +1,893 @@
+[
+  {
+    "taskName": "Task 1",
+    "zones": {
+      "raw": [
+        {
+          "giveIn": "395.0 m",
+          "radius": "400.0 m",
+          "giveOut": "405.0 m",
+          "lat": 46.23083,
+          "zoneName": "D01",
+          "lng": 12.80694,
+          "alt": "980.000 m"
+        },
+        {
+          "giveIn": "21978.0 m",
+          "radius": "22000.0 m",
+          "giveOut": "22022.0 m",
+          "lat": 46.33972,
+          "zoneName": "B35",
+          "lng": 13.00639,
+          "alt": "1570.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.15361,
+          "zoneName": "B07",
+          "lng": 12.675,
+          "alt": "270.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.17889,
+          "zoneName": "B27",
+          "lng": 12.87917,
+          "alt": "200.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.23083,
+          "zoneName": "D01",
+          "lng": 12.80694,
+          "alt": "980.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.16917,
+          "zoneName": "B58",
+          "lng": 12.65361,
+          "alt": "300.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.19639,
+          "zoneName": "A01",
+          "lng": 12.85611,
+          "alt": "230.000 m"
+        },
+        {
+          "giveIn": "395.0 m",
+          "radius": "400.0 m",
+          "giveOut": "405.0 m",
+          "lat": 46.19639,
+          "zoneName": "A01",
+          "lng": 12.85611,
+          "alt": "230.000 m"
+        }
+      ],
+      "raceKind": {
+        "race": [
+          {
+            "cylinder": {
+              "radius": "22000.0 m",
+              "center": [
+                "46.33972000 deg",
+                "13.00639000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "1000.0 m",
+              "center": [
+                "46.15361000 deg",
+                "12.67500000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "1000.0 m",
+              "center": [
+                "46.17889000 deg",
+                "12.87917000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "1000.0 m",
+              "center": [
+                "46.23083000 deg",
+                "12.80694000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "1000.0 m",
+              "center": [
+                "46.16917000 deg",
+                "12.65361000 deg"
+              ]
+            }
+          }
+        ],
+        "epilog": [],
+        "goal": {
+          "circle": {
+            "radius": "400.0 m",
+            "center": [
+              "46.19639000 deg",
+              "12.85611000 deg"
+            ]
+          }
+        },
+        "race-ess": {
+          "cylinder": {
+            "radius": "1000.0 m",
+            "center": [
+              "46.19639000 deg",
+              "12.85611000 deg"
+            ]
+          }
+        },
+        "prolog": [
+          {
+            "cylinder": {
+              "radius": "400.0 m",
+              "center": [
+                "46.23083000 deg",
+                "12.80694000 deg"
+              ]
+            }
+          }
+        ]
+      },
+      "openKind": null
+    },
+    "speedSection": [
+      2,
+      7
+    ],
+    "stopped": null,
+    "taskTweak": {
+      "essNotGoalScaling": 0.8,
+      "arrivalTime": false,
+      "leadingWeightScaling": null,
+      "timePowerExponent": 0.83333333,
+      "leadingAreaDistanceSquared": true,
+      "arrivalRank": true
+    },
+    "startGates": [
+      "2020-09-10T12:00:00Z"
+    ],
+    "penalsAuto": [],
+    "penals": [
+      [
+        [
+          "114",
+          "Konrad Lueders"
+        ],
+        {
+          "adds": [],
+          "resets": [],
+          "muls": [
+            {
+              "penalty-fraction": 0
+            }
+          ]
+        },
+        "Airspace"
+      ]
+    ],
+    "zoneTimes": [
+      {
+        "close": "2020-09-10T18:00:00Z",
+        "open": "2020-09-10T10:00:00Z"
+      },
+      {
+        "close": "2020-09-10T18:00:00Z",
+        "open": "2020-09-10T12:00:00Z"
+      },
+      {
+        "close": "2020-09-10T18:00:00Z",
+        "open": "2020-09-10T12:00:00Z"
+      },
+      {
+        "close": "2020-09-10T18:00:00Z",
+        "open": "2020-09-10T12:00:00Z"
+      },
+      {
+        "close": "2020-09-10T18:00:00Z",
+        "open": "2020-09-10T12:00:00Z"
+      },
+      {
+        "close": "2020-09-10T18:00:00Z",
+        "open": "2020-09-10T12:00:00Z"
+      },
+      {
+        "close": "2020-09-10T18:00:00Z",
+        "open": "2020-09-10T12:00:00Z"
+      },
+      {
+        "close": "2020-09-10T18:00:00Z",
+        "open": "2020-09-10T12:00:00Z"
+      }
+    ],
+    "earlyStart": {
+      "tooEarlyReset": 0,
+      "earlyPenalty": "2 s",
+      "earliest": "300 s"
+    },
+    "cancelled": false
+  },
+  {
+    "taskName": "Task 2",
+    "zones": {
+      "raw": [
+        {
+          "giveIn": "395.0 m",
+          "radius": "400.0 m",
+          "giveOut": "405.0 m",
+          "lat": 46.23083,
+          "zoneName": "D01",
+          "lng": 12.80694,
+          "alt": "980.000 m"
+        },
+        {
+          "giveIn": "14485.5 m",
+          "radius": "14500.0 m",
+          "giveOut": "14514.5 m",
+          "lat": 46.16917,
+          "zoneName": "B58",
+          "lng": 12.65361,
+          "alt": "300.000 m"
+        },
+        {
+          "giveIn": "2995.0 m",
+          "radius": "3000.0 m",
+          "giveOut": "3005.0 m",
+          "lat": 46.28065,
+          "zoneName": "Z11",
+          "lng": 13.10928,
+          "alt": "197.000 m"
+        },
+        {
+          "giveIn": "22977.0 m",
+          "radius": "23000.0 m",
+          "giveOut": "23023.0 m",
+          "lat": 46.15808,
+          "zoneName": "A17",
+          "lng": 12.36903,
+          "alt": "594.000 m"
+        },
+        {
+          "giveIn": "10989.0 m",
+          "radius": "11000.0 m",
+          "giveOut": "11011.0 m",
+          "lat": 46.20889,
+          "zoneName": "B71",
+          "lng": 13.04528,
+          "alt": "160.000 m"
+        },
+        {
+          "giveIn": "4995.0 m",
+          "radius": "5000.0 m",
+          "giveOut": "5005.0 m",
+          "lat": 46.17194,
+          "zoneName": "B30",
+          "lng": 12.73306,
+          "alt": "260.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.19639,
+          "zoneName": "A01",
+          "lng": 12.85611,
+          "alt": "230.000 m"
+        },
+        {
+          "giveIn": "395.0 m",
+          "radius": "400.0 m",
+          "giveOut": "405.0 m",
+          "lat": 46.19639,
+          "zoneName": "A01",
+          "lng": 12.85611,
+          "alt": "230.000 m"
+        }
+      ],
+      "raceKind": {
+        "race": [
+          {
+            "cylinder": {
+              "radius": "14500.0 m",
+              "center": [
+                "46.16917000 deg",
+                "12.65361000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "3000.0 m",
+              "center": [
+                "46.28065000 deg",
+                "13.10928000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "23000.0 m",
+              "center": [
+                "46.15808000 deg",
+                "12.36903000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "11000.0 m",
+              "center": [
+                "46.20889000 deg",
+                "13.04528000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "5000.0 m",
+              "center": [
+                "46.17194000 deg",
+                "12.73306000 deg"
+              ]
+            }
+          }
+        ],
+        "epilog": [],
+        "goal": {
+          "circle": {
+            "radius": "400.0 m",
+            "center": [
+              "46.19639000 deg",
+              "12.85611000 deg"
+            ]
+          }
+        },
+        "race-ess": {
+          "cylinder": {
+            "radius": "1000.0 m",
+            "center": [
+              "46.19639000 deg",
+              "12.85611000 deg"
+            ]
+          }
+        },
+        "prolog": [
+          {
+            "cylinder": {
+              "radius": "400.0 m",
+              "center": [
+                "46.23083000 deg",
+                "12.80694000 deg"
+              ]
+            }
+          }
+        ]
+      },
+      "openKind": null
+    },
+    "speedSection": [
+      2,
+      7
+    ],
+    "stopped": null,
+    "taskTweak": {
+      "essNotGoalScaling": 0.8,
+      "arrivalTime": false,
+      "leadingWeightScaling": null,
+      "timePowerExponent": 0.83333333,
+      "leadingAreaDistanceSquared": true,
+      "arrivalRank": true
+    },
+    "startGates": [
+      "2020-09-11T11:45:00Z"
+    ],
+    "penalsAuto": [],
+    "penals": [
+      [
+        [
+          "114",
+          "Konrad Lueders"
+        ],
+        {
+          "adds": [],
+          "resets": [],
+          "muls": [
+            {
+              "penalty-fraction": 0
+            }
+          ]
+        },
+        "Airspace"
+      ]
+    ],
+    "zoneTimes": [
+      {
+        "close": "2020-09-11T13:30:00Z",
+        "open": "2020-09-11T11:00:00Z"
+      },
+      {
+        "close": "2020-09-11T17:30:00Z",
+        "open": "2020-09-11T11:45:00Z"
+      },
+      {
+        "close": "2020-09-11T17:30:00Z",
+        "open": "2020-09-11T11:45:00Z"
+      },
+      {
+        "close": "2020-09-11T17:30:00Z",
+        "open": "2020-09-11T11:45:00Z"
+      },
+      {
+        "close": "2020-09-11T17:30:00Z",
+        "open": "2020-09-11T11:45:00Z"
+      },
+      {
+        "close": "2020-09-11T17:30:00Z",
+        "open": "2020-09-11T11:45:00Z"
+      },
+      {
+        "close": "2020-09-11T17:30:00Z",
+        "open": "2020-09-11T11:45:00Z"
+      },
+      {
+        "close": "2020-09-11T17:30:00Z",
+        "open": "2020-09-11T11:45:00Z"
+      }
+    ],
+    "earlyStart": {
+      "tooEarlyReset": 0,
+      "earlyPenalty": "2 s",
+      "earliest": "300 s"
+    },
+    "cancelled": false
+  },
+  {
+    "taskName": "Task 3",
+    "zones": {
+      "raw": [
+        {
+          "giveIn": "395.0 m",
+          "radius": "400.0 m",
+          "giveOut": "405.0 m",
+          "lat": 46.23083,
+          "zoneName": "D01",
+          "lng": 12.80694,
+          "alt": "980.000 m"
+        },
+        {
+          "giveIn": "21978.0 m",
+          "radius": "22000.0 m",
+          "giveOut": "22022.0 m",
+          "lat": 46.10167,
+          "zoneName": "D13",
+          "lng": 12.54639,
+          "alt": "1160.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.10167,
+          "zoneName": "D13",
+          "lng": 12.54639,
+          "alt": "1160.000 m"
+        },
+        {
+          "giveIn": "6993.0 m",
+          "radius": "7000.0 m",
+          "giveOut": "7007.0 m",
+          "lat": 46.22083,
+          "zoneName": "B23",
+          "lng": 12.65083,
+          "alt": "1990.000 m"
+        },
+        {
+          "giveIn": "5994.0 m",
+          "radius": "6000.0 m",
+          "giveOut": "6006.0 m",
+          "lat": 46.3,
+          "zoneName": "B36",
+          "lng": 13.08472,
+          "alt": "1020.000 m"
+        },
+        {
+          "giveIn": "1995.0 m",
+          "radius": "2000.0 m",
+          "giveOut": "2005.0 m",
+          "lat": 46.1825,
+          "zoneName": "B59",
+          "lng": 12.78667,
+          "alt": "260.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.19639,
+          "zoneName": "A01",
+          "lng": 12.85611,
+          "alt": "230.000 m"
+        },
+        {
+          "giveIn": "395.0 m",
+          "radius": "400.0 m",
+          "giveOut": "405.0 m",
+          "lat": 46.19639,
+          "zoneName": "A01",
+          "lng": 12.85611,
+          "alt": "230.000 m"
+        }
+      ],
+      "raceKind": {
+        "race": [
+          {
+            "cylinder": {
+              "radius": "22000.0 m",
+              "center": [
+                "46.10167000 deg",
+                "12.54639000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "1000.0 m",
+              "center": [
+                "46.10167000 deg",
+                "12.54639000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "7000.0 m",
+              "center": [
+                "46.22083000 deg",
+                "12.65083000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "6000.0 m",
+              "center": [
+                "46.30000000 deg",
+                "13.08472000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "2000.0 m",
+              "center": [
+                "46.18250000 deg",
+                "12.78667000 deg"
+              ]
+            }
+          }
+        ],
+        "epilog": [],
+        "goal": {
+          "circle": {
+            "radius": "400.0 m",
+            "center": [
+              "46.19639000 deg",
+              "12.85611000 deg"
+            ]
+          }
+        },
+        "race-ess": {
+          "cylinder": {
+            "radius": "1000.0 m",
+            "center": [
+              "46.19639000 deg",
+              "12.85611000 deg"
+            ]
+          }
+        },
+        "prolog": [
+          {
+            "cylinder": {
+              "radius": "400.0 m",
+              "center": [
+                "46.23083000 deg",
+                "12.80694000 deg"
+              ]
+            }
+          }
+        ]
+      },
+      "openKind": null
+    },
+    "speedSection": [
+      2,
+      7
+    ],
+    "stopped": null,
+    "taskTweak": {
+      "essNotGoalScaling": 0.8,
+      "arrivalTime": false,
+      "leadingWeightScaling": null,
+      "timePowerExponent": 0.83333333,
+      "leadingAreaDistanceSquared": true,
+      "arrivalRank": true
+    },
+    "startGates": [
+      "2020-09-12T11:40:00Z"
+    ],
+    "penalsAuto": [],
+    "penals": [],
+    "zoneTimes": [
+      {
+        "close": "2020-09-12T13:00:00Z",
+        "open": "2020-09-12T10:45:00Z"
+      },
+      {
+        "close": "2020-09-12T17:00:00Z",
+        "open": "2020-09-12T11:40:00Z"
+      },
+      {
+        "close": "2020-09-12T17:00:00Z",
+        "open": "2020-09-12T11:40:00Z"
+      },
+      {
+        "close": "2020-09-12T17:00:00Z",
+        "open": "2020-09-12T11:40:00Z"
+      },
+      {
+        "close": "2020-09-12T17:00:00Z",
+        "open": "2020-09-12T11:40:00Z"
+      },
+      {
+        "close": "2020-09-12T17:00:00Z",
+        "open": "2020-09-12T11:40:00Z"
+      },
+      {
+        "close": "2020-09-12T17:00:00Z",
+        "open": "2020-09-12T11:40:00Z"
+      },
+      {
+        "close": "2020-09-12T17:00:00Z",
+        "open": "2020-09-12T11:40:00Z"
+      }
+    ],
+    "earlyStart": {
+      "tooEarlyReset": 0,
+      "earlyPenalty": "2 s",
+      "earliest": "300 s"
+    },
+    "cancelled": false
+  },
+  {
+    "taskName": "Task 4",
+    "zones": {
+      "raw": [
+        {
+          "giveIn": "395.0 m",
+          "radius": "400.0 m",
+          "giveOut": "405.0 m",
+          "lat": 46.23083,
+          "zoneName": "D01",
+          "lng": 12.80694,
+          "alt": "980.000 m"
+        },
+        {
+          "giveIn": "10989.0 m",
+          "radius": "11000.0 m",
+          "giveOut": "11011.0 m",
+          "lat": 46.23556,
+          "zoneName": "B24",
+          "lng": 12.70583,
+          "alt": "1300.000 m"
+        },
+        {
+          "giveIn": "7992.0 m",
+          "radius": "8000.0 m",
+          "giveOut": "8008.0 m",
+          "lat": 46.28475,
+          "zoneName": "B33",
+          "lng": 13.36682,
+          "alt": "1570.000 m"
+        },
+        {
+          "giveIn": "3995.0 m",
+          "radius": "4000.0 m",
+          "giveOut": "4005.0 m",
+          "lat": 46.23556,
+          "zoneName": "B24",
+          "lng": 12.70583,
+          "alt": "1300.000 m"
+        },
+        {
+          "giveIn": "995.0 m",
+          "radius": "1000.0 m",
+          "giveOut": "1005.0 m",
+          "lat": 46.19639,
+          "zoneName": "A01",
+          "lng": 12.85611,
+          "alt": "230.000 m"
+        },
+        {
+          "giveIn": "395.0 m",
+          "radius": "400.0 m",
+          "giveOut": "405.0 m",
+          "lat": 46.19639,
+          "zoneName": "A01",
+          "lng": 12.85611,
+          "alt": "230.000 m"
+        }
+      ],
+      "raceKind": {
+        "race": [
+          {
+            "cylinder": {
+              "radius": "11000.0 m",
+              "center": [
+                "46.23556000 deg",
+                "12.70583000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "8000.0 m",
+              "center": [
+                "46.28475000 deg",
+                "13.36682000 deg"
+              ]
+            }
+          },
+          {
+            "cylinder": {
+              "radius": "4000.0 m",
+              "center": [
+                "46.23556000 deg",
+                "12.70583000 deg"
+              ]
+            }
+          }
+        ],
+        "epilog": [],
+        "goal": {
+          "circle": {
+            "radius": "400.0 m",
+            "center": [
+              "46.19639000 deg",
+              "12.85611000 deg"
+            ]
+          }
+        },
+        "race-ess": {
+          "cylinder": {
+            "radius": "1000.0 m",
+            "center": [
+              "46.19639000 deg",
+              "12.85611000 deg"
+            ]
+          }
+        },
+        "prolog": [
+          {
+            "cylinder": {
+              "radius": "400.0 m",
+              "center": [
+                "46.23083000 deg",
+                "12.80694000 deg"
+              ]
+            }
+          }
+        ]
+      },
+      "openKind": null
+    },
+    "speedSection": [
+      2,
+      5
+    ],
+    "stopped": null,
+    "taskTweak": {
+      "essNotGoalScaling": 0.8,
+      "arrivalTime": false,
+      "leadingWeightScaling": null,
+      "timePowerExponent": 0.83333333,
+      "leadingAreaDistanceSquared": true,
+      "arrivalRank": true
+    },
+    "startGates": [
+      "2020-09-13T11:45:00Z"
+    ],
+    "penalsAuto": [],
+    "penals": [
+      [
+        [
+          "122",
+          "Pieter Speeleveld"
+        ],
+        {
+          "adds": [],
+          "resets": [],
+          "muls": [
+            {
+              "penalty-fraction": 0
+            }
+          ]
+        },
+        "Airspace"
+      ],
+      [
+        [
+          "129",
+          "Stepan Zubashev"
+        ],
+        {
+          "adds": [],
+          "resets": [],
+          "muls": [
+            {
+              "penalty-fraction": 0
+            }
+          ]
+        },
+        "Airspace"
+      ]
+    ],
+    "zoneTimes": [
+      {
+        "close": "2020-09-13T13:00:00Z",
+        "open": "2020-09-13T11:00:00Z"
+      },
+      {
+        "close": "2020-09-13T15:30:00Z",
+        "open": "2020-09-13T11:45:00Z"
+      },
+      {
+        "close": "2020-09-13T15:30:00Z",
+        "open": "2020-09-13T11:45:00Z"
+      },
+      {
+        "close": "2020-09-13T15:30:00Z",
+        "open": "2020-09-13T11:45:00Z"
+      },
+      {
+        "close": "2020-09-13T15:30:00Z",
+        "open": "2020-09-13T11:45:00Z"
+      },
+      {
+        "close": "2020-09-13T15:30:00Z",
+        "open": "2020-09-13T11:45:00Z"
+      }
+    ],
+    "earlyStart": {
+      "tooEarlyReset": 0,
+      "earlyPenalty": "2 s",
+      "earliest": "300 s"
+    },
+    "cancelled": false
+  }
+]
