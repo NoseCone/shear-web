@@ -31,6 +31,22 @@ typedef struct uw_CompParse_parsedNominal_struct {
   double launch;
 } uw_CompParse_parsedNominal_struct;
 
+typedef struct uw_CompParse_parsedTasks_struct {
+  int count;
+  char **taskName;
+  int *zoneCounts;
+  char ***zoneNames;
+  char **stoppedAnnounced;
+  char **stoppedRetroactive;
+  int *cancelledPresent;
+  int *cancelledValue;
+} uw_CompParse_parsedTasks_struct;
+
+typedef struct uw_CompParse_parsedTaskLengths_struct {
+  int count;
+  double *lengths;
+} uw_CompParse_parsedTaskLengths_struct;
+
 static char *copy_required_string(uw_context ctx, JSON_Object *obj, const char *field) {
   const char *s = json_object_get_string(obj, field);
   if (!s) {
@@ -104,6 +120,26 @@ static double required_number(uw_context ctx, JSON_Object *obj, const char *fiel
   return json_object_get_number(obj, field);
 }
 
+static double parse_required_km(uw_context ctx, JSON_Value *v, const char *field) {
+  if (json_value_get_type(v) == JSONNumber) {
+    return json_value_get_number(v);
+  }
+
+  if (json_value_get_type(v) == JSONString) {
+    const char *s = json_value_get_string(v);
+    if (!s) uw_error(ctx, FATAL, "CompParse: invalid string in '%s'", field);
+
+    char *end = NULL;
+    double n = strtod(s, &end);
+    if (end == s) {
+      uw_error(ctx, FATAL, "CompParse: invalid numeric string in '%s': %s", field, s);
+    }
+    return n;
+  }
+
+  uw_error(ctx, FATAL, "CompParse: expected number or string in '%s'", field);
+  return 0;
+}
 
 
 uw_CompParse_parsedComp uw_CompParse_parse(uw_context ctx, uw_Basis_string json) {
@@ -224,6 +260,168 @@ uw_Basis_unit uw_CompParse_freeNominal(uw_context ctx, uw_CompParse_parsedNomina
   return 0;
 }
 
+uw_CompParse_parsedTasks uw_CompParse_parseTasks(uw_context ctx, uw_Basis_string json) {
+  JSON_Value *root = json_parse_string(json);
+  if (!root) {
+    uw_error(ctx, FATAL, "CompParse: invalid tasks JSON");
+  }
+
+  JSON_Array *arr = json_value_get_array(root);
+  if (!arr) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: expected tasks top-level array");
+  }
+
+  size_t count = json_array_get_count(arr);
+  uw_CompParse_parsedTasks parsed = malloc(sizeof(uw_CompParse_parsedTasks_struct));
+  if (!parsed) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: out of memory");
+  }
+
+  parsed->count = (int)count;
+  parsed->taskName = calloc(count, sizeof(char*));
+  parsed->zoneCounts = calloc(count, sizeof(int));
+  parsed->zoneNames = calloc(count, sizeof(char**));
+  parsed->stoppedAnnounced = calloc(count, sizeof(char*));
+  parsed->stoppedRetroactive = calloc(count, sizeof(char*));
+  parsed->cancelledPresent = calloc(count, sizeof(int));
+  parsed->cancelledValue = calloc(count, sizeof(int));
+
+  if ((count > 0) &&
+      (!parsed->taskName || !parsed->zoneCounts || !parsed->zoneNames || !parsed->stoppedAnnounced
+       || !parsed->stoppedRetroactive || !parsed->cancelledPresent || !parsed->cancelledValue)) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: out of memory");
+  }
+
+  for (size_t i = 0; i < count; i++) {
+    JSON_Object *task = json_array_get_object(arr, i);
+    if (!task) {
+      json_value_free(root);
+      uw_error(ctx, FATAL, "CompParse: task[%zu] not an object", i);
+    }
+
+    parsed->taskName[i] = copy_required_string(ctx, task, "taskName");
+
+    JSON_Object *zones = required_object(ctx, task, "zones");
+    JSON_Array *raw = json_object_get_array(zones, "raw");
+    if (!raw) {
+      json_value_free(root);
+      uw_error(ctx, FATAL, "CompParse: task[%zu].zones.raw missing or not array", i);
+    }
+
+    size_t zc = json_array_get_count(raw);
+    parsed->zoneCounts[i] = (int)zc;
+    parsed->zoneNames[i] = calloc(zc, sizeof(char*));
+    if (zc > 0 && !parsed->zoneNames[i]) {
+      json_value_free(root);
+      uw_error(ctx, FATAL, "CompParse: out of memory");
+    }
+
+    for (size_t z = 0; z < zc; z++) {
+      JSON_Object *zone = json_array_get_object(raw, z);
+      if (!zone) {
+        json_value_free(root);
+        uw_error(ctx, FATAL, "CompParse: task[%zu].zones.raw[%zu] not object", i, z);
+      }
+      parsed->zoneNames[i][z] = copy_required_string(ctx, zone, "zoneName");
+    }
+
+    if (json_object_has_value(task, "stopped") && !json_object_has_value_of_type(task, "stopped", JSONNull)) {
+      JSON_Object *stopped = json_object_get_object(task, "stopped");
+      if (!stopped) {
+        json_value_free(root);
+        uw_error(ctx, FATAL, "CompParse: task[%zu].stopped must be object or null", i);
+      }
+      parsed->stoppedAnnounced[i] = copy_required_string(ctx, stopped, "announced");
+      parsed->stoppedRetroactive[i] = copy_required_string(ctx, stopped, "retroactive");
+    }
+
+    if (json_object_has_value(task, "cancelled") && !json_object_has_value_of_type(task, "cancelled", JSONNull)) {
+      if (!json_object_has_value_of_type(task, "cancelled", JSONBoolean)) {
+        json_value_free(root);
+        uw_error(ctx, FATAL, "CompParse: task[%zu].cancelled must be boolean or null", i);
+      }
+      parsed->cancelledPresent[i] = 1;
+      parsed->cancelledValue[i] = json_object_get_boolean(task, "cancelled") ? 1 : 0;
+    }
+  }
+
+  json_value_free(root);
+  return parsed;
+}
+
+uw_Basis_unit uw_CompParse_freeTasks(uw_context ctx, uw_CompParse_parsedTasks parsed) {
+  (void)ctx;
+  if (!parsed) return 0;
+
+  for (int i = 0; i < parsed->count; i++) {
+    free(parsed->taskName[i]);
+    free(parsed->stoppedAnnounced[i]);
+    free(parsed->stoppedRetroactive[i]);
+    if (parsed->zoneNames[i]) {
+      for (int z = 0; z < parsed->zoneCounts[i]; z++) {
+        free(parsed->zoneNames[i][z]);
+      }
+      free(parsed->zoneNames[i]);
+    }
+  }
+
+  free(parsed->taskName);
+  free(parsed->zoneCounts);
+  free(parsed->zoneNames);
+  free(parsed->stoppedAnnounced);
+  free(parsed->stoppedRetroactive);
+  free(parsed->cancelledPresent);
+  free(parsed->cancelledValue);
+  free(parsed);
+  return 0;
+}
+
+uw_CompParse_parsedTaskLengths uw_CompParse_parseTaskLengths(uw_context ctx, uw_Basis_string json) {
+  JSON_Value *root = json_parse_string(json);
+  if (!root) {
+    uw_error(ctx, FATAL, "CompParse: invalid task lengths JSON");
+  }
+
+  JSON_Array *arr = json_value_get_array(root);
+  if (!arr) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: expected task lengths top-level array");
+  }
+
+  size_t count = json_array_get_count(arr);
+  uw_CompParse_parsedTaskLengths parsed = malloc(sizeof(uw_CompParse_parsedTaskLengths_struct));
+  if (!parsed) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: out of memory");
+  }
+
+  parsed->count = (int)count;
+  parsed->lengths = calloc(count, sizeof(double));
+  if (count > 0 && !parsed->lengths) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: out of memory");
+  }
+
+  for (size_t i = 0; i < count; i++) {
+    JSON_Value *v = json_array_get_value(arr, i);
+    parsed->lengths[i] = parse_required_km(ctx, v, "task-length");
+  }
+
+  json_value_free(root);
+  return parsed;
+}
+
+uw_Basis_unit uw_CompParse_freeTaskLengths(uw_context ctx, uw_CompParse_parsedTaskLengths parsed) {
+  (void)ctx;
+  if (!parsed) return 0;
+  free(parsed->lengths);
+  free(parsed);
+  return 0;
+}
+
 uw_Basis_string uw_CompParse_civilId(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->civilId); }
 uw_Basis_string uw_CompParse_earthMath(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->earthMath); }
 uw_Basis_string uw_CompParse_discipline(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->discipline); }
@@ -259,3 +457,42 @@ uw_Basis_string uw_CompParse_nominalFree(uw_context ctx, uw_CompParse_parsedNomi
 uw_Basis_string uw_CompParse_nominalTime(uw_context ctx, uw_CompParse_parsedNominal parsed) { return uw_strdup(ctx, parsed->time); }
 uw_Basis_float uw_CompParse_nominalGoal(uw_context ctx, uw_CompParse_parsedNominal parsed) { (void)ctx; return parsed->goal; }
 uw_Basis_float uw_CompParse_nominalLaunch(uw_context ctx, uw_CompParse_parsedNominal parsed) { (void)ctx; return parsed->launch; }
+
+uw_Basis_int uw_CompParse_tasksCount(uw_context ctx, uw_CompParse_parsedTasks parsed) { (void)ctx; return parsed->count; }
+uw_Basis_string uw_CompParse_taskName(uw_context ctx, uw_CompParse_parsedTasks parsed, uw_Basis_int taskIndex) {
+  if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task index out of bounds");
+  return uw_strdup(ctx, parsed->taskName[taskIndex]);
+}
+uw_Basis_int uw_CompParse_taskZoneCount(uw_context ctx, uw_CompParse_parsedTasks parsed, uw_Basis_int taskIndex) {
+  if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task index out of bounds");
+  return parsed->zoneCounts[taskIndex];
+}
+uw_Basis_string uw_CompParse_taskZoneName(uw_context ctx, uw_CompParse_parsedTasks parsed, uw_Basis_int taskIndex, uw_Basis_int zoneIndex) {
+  if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task index out of bounds");
+  if (zoneIndex < 0 || zoneIndex >= parsed->zoneCounts[taskIndex]) uw_error(ctx, FATAL, "CompParse: zone index out of bounds");
+  return uw_strdup(ctx, parsed->zoneNames[taskIndex][zoneIndex]);
+}
+uw_Basis_string uw_CompParse_taskStoppedAnnounced(uw_context ctx, uw_CompParse_parsedTasks parsed, uw_Basis_int taskIndex) {
+  if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task index out of bounds");
+  if (!parsed->stoppedAnnounced[taskIndex]) return NULL;
+  return uw_strdup(ctx, parsed->stoppedAnnounced[taskIndex]);
+}
+uw_Basis_string uw_CompParse_taskStoppedRetroactive(uw_context ctx, uw_CompParse_parsedTasks parsed, uw_Basis_int taskIndex) {
+  if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task index out of bounds");
+  if (!parsed->stoppedRetroactive[taskIndex]) return NULL;
+  return uw_strdup(ctx, parsed->stoppedRetroactive[taskIndex]);
+}
+uw_Basis_int uw_CompParse_taskCancelledPresent(uw_context ctx, uw_CompParse_parsedTasks parsed, uw_Basis_int taskIndex) {
+  if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task index out of bounds");
+  return parsed->cancelledPresent[taskIndex];
+}
+uw_Basis_bool uw_CompParse_taskCancelledValue(uw_context ctx, uw_CompParse_parsedTasks parsed, uw_Basis_int taskIndex) {
+  if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task index out of bounds");
+  return parsed->cancelledValue[taskIndex] ? 1 : 0;
+}
+
+uw_Basis_int uw_CompParse_taskLengthsCount(uw_context ctx, uw_CompParse_parsedTaskLengths parsed) { (void)ctx; return parsed->count; }
+uw_Basis_float uw_CompParse_taskLength(uw_context ctx, uw_CompParse_parsedTaskLengths parsed, uw_Basis_int taskIndex) {
+  if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task length index out of bounds");
+  return parsed->lengths[taskIndex];
+}

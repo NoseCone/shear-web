@@ -1,11 +1,29 @@
 type parsedComp
 type parsedNominal
+type parsedTasks
+type parsedTaskLengths
 
 val parse : string -> transaction parsedComp
 val free : parsedComp -> transaction unit
 
 val parseNominal : string -> transaction parsedNominal
 val freeNominal : parsedNominal -> transaction unit
+
+val parseTasks : string -> transaction parsedTasks
+val freeTasks : parsedTasks -> transaction unit
+val tasksCount : parsedTasks -> transaction int
+val taskName : parsedTasks -> int -> transaction string
+val taskZoneCount : parsedTasks -> int -> transaction int
+val taskZoneName : parsedTasks -> int -> int -> transaction string
+val taskStoppedAnnounced : parsedTasks -> int -> transaction (option string)
+val taskStoppedRetroactive : parsedTasks -> int -> transaction (option string)
+val taskCancelledPresent : parsedTasks -> int -> transaction int
+val taskCancelledValue : parsedTasks -> int -> transaction bool
+
+val parseTaskLengths : string -> transaction parsedTaskLengths
+val freeTaskLengths : parsedTaskLengths -> transaction unit
+val taskLengthsCount : parsedTaskLengths -> transaction int
+val taskLength : parsedTaskLengths -> int -> transaction float
 
 val civilId : parsedComp -> transaction string
 val earthMath : parsedComp -> transaction string

@@ -12,6 +12,8 @@
 *)
 datatype compInputParseResult = CompInputParseError of string | CompInputParseOk of Comp.compInput
 datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
+datatype tasksParseResult = TasksParseError of string | TasksParseOk of list Comp.compTask
+datatype taskLengthsParseResult = TaskLengthsParseError of string | TaskLengthsParseOk of list Comp.taskLength
 
 datatype parseResult t = ParseError of string | ParseOk of t
 
@@ -24,6 +26,16 @@ fun fromParseNominal (r : parseResult Comp.nominal) : nominalParseResult =
   case r of
     ParseError err => NominalParseError err
   | ParseOk v => NominalParseOk v
+
+fun fromParseTasks (r : parseResult (list Comp.compTask)) : tasksParseResult =
+  case r of
+    ParseError err => TasksParseError err
+  | ParseOk v => TasksParseOk v
+
+fun fromParseTaskLengths (r : parseResult (list Comp.taskLength)) : taskLengthsParseResult =
+  case r of
+    ParseError err => TaskLengthsParseError err
+  | ParseOk v => TaskLengthsParseOk v
 
 datatype scoreBackParseResult = ScoreBackParseError of string | ScoreBackParseOk of Comp.scoreBackTime
 
@@ -60,6 +72,79 @@ fun parseNominalJson (json : string) : transaction nominalParseResult =
     , Goal = goal
     , Launch = launch
     })))
+
+fun parseTasksJson (json : string) : transaction tasksParseResult =
+  parsed <- CompParse.parseTasks json;
+
+  n <- CompParse.tasksCount parsed;
+
+  let
+    fun zonesLoop ti zi zc : transaction (list Comp.rawZone) =
+      if zi >= zc then
+        return []
+      else
+        zoneName <- CompParse.taskZoneName parsed ti zi;
+        rest <- zonesLoop ti (zi + 1) zc;
+        return ({ZoneName = zoneName} :: rest)
+
+    fun tasksLoop i : transaction (list Comp.compTask) =
+      if i >= n then
+        return []
+      else
+        taskName <- CompParse.taskName parsed i;
+        zc <- CompParse.taskZoneCount parsed i;
+        rawZones <- zonesLoop i 0 zc;
+        stoppedAnnounced <- CompParse.taskStoppedAnnounced parsed i;
+        stoppedRetroactive <- CompParse.taskStoppedRetroactive parsed i;
+        cancelledPresent <- CompParse.taskCancelledPresent parsed i;
+        cancelledValue <- CompParse.taskCancelledValue parsed i;
+
+        rest <- tasksLoop (i + 1);
+
+        let
+          val stopped =
+            case stoppedAnnounced of
+              None => None
+            | Some announced =>
+                case stoppedRetroactive of
+                  None => None
+                | Some retroactive => Some {Announced = announced, Retroactive = retroactive}
+
+          val cancelled =
+            if cancelledPresent = 0 then
+              None
+            else
+              Some cancelledValue
+        in
+          return ({ TaskName = taskName
+                  , Zones = {Raw = rawZones}
+                  , Stopped = stopped
+                  , Cancelled = cancelled
+                  } :: rest)
+        end
+  in
+    tasks <- tasksLoop 0;
+    CompParse.freeTasks parsed;
+    return (fromParseTasks (ParseOk tasks))
+  end
+
+fun parseTaskLengthsJson (json : string) : transaction taskLengthsParseResult =
+  parsed <- CompParse.parseTaskLengths json;
+  n <- CompParse.taskLengthsCount parsed;
+
+  let
+    fun lengthsLoop i : transaction (list Comp.taskLength) =
+      if i >= n then
+        return []
+      else
+        d <- CompParse.taskLength parsed i;
+        rest <- lengthsLoop (i + 1);
+        return (d :: rest)
+  in
+    lengths <- lengthsLoop 0;
+    CompParse.freeTaskLengths parsed;
+    return (fromParseTaskLengths (ParseOk lengths))
+  end
 
 fun parseCompInputJson (json : string) : transaction compInputParseResult =
   parsed <- CompParse.parse json;

@@ -49,6 +49,18 @@ rewrite style Css/is-black Bulma/is_black
 rewrite style Css/is-info Bulma/is_info
 rewrite style Css/is-success Bulma/is_success
 rewrite style Css/is-danger Bulma/is_danger
+rewrite style Css/table Bulma/table_cls
+rewrite style Css/is-striped Bulma/is_striped
+rewrite style Css/th-task-name Bulma/th_task_name
+rewrite style Css/th-task-tps Bulma/th_task_tps
+rewrite style Css/th-task-dist Bulma/th_task_dist
+rewrite style Css/th-task-stopped Bulma/th_task_stopped
+rewrite style Css/th-task-cancelled Bulma/th_task_cancelled
+rewrite style Css/td-task-name Bulma/td_task_name
+rewrite style Css/td-task-tps Bulma/td_task_tps
+rewrite style Css/td-task-dist Bulma/td_task_dist
+rewrite style Css/td-task-stopped Bulma/td_task_stopped
+rewrite style Css/td-task-cancelled Bulma/td_task_cancelled
 rewrite url CompView/widget comp
 rewrite url ShearWeb/*
 link compFetch.o
@@ -64,6 +76,10 @@ effectful CompParse.parse
 effectful CompParse.free
 effectful CompParse.parseNominal
 effectful CompParse.freeNominal
+effectful CompParse.parseTasks
+effectful CompParse.freeTasks
+effectful CompParse.parseTaskLengths
+effectful CompParse.freeTaskLengths
 benignEffectful CompParse.civilId
 benignEffectful CompParse.earthMath
 benignEffectful CompParse.discipline
@@ -83,6 +99,16 @@ benignEffectful CompParse.nominalFree
 benignEffectful CompParse.nominalTime
 benignEffectful CompParse.nominalGoal
 benignEffectful CompParse.nominalLaunch
+benignEffectful CompParse.tasksCount
+benignEffectful CompParse.taskName
+benignEffectful CompParse.taskZoneCount
+benignEffectful CompParse.taskZoneName
+benignEffectful CompParse.taskStoppedAnnounced
+benignEffectful CompParse.taskStoppedRetroactive
+benignEffectful CompParse.taskCancelledPresent
+benignEffectful CompParse.taskCancelledValue
+benignEffectful CompParse.taskLengthsCount
+benignEffectful CompParse.taskLength
 
 cssAsset
 css

@@ -15,3 +15,21 @@ fun fetchAndParseNominal (compName : string) : transaction CompJson.nominalParse
     fun mkNominalUrl (compName : string) =
       "http://" ^ compName ^ ".flaretiming.com/json/comp-input/nominals.json"
   end
+
+fun fetchAndParseTasks (compName : string) : transaction CompJson.tasksParseResult =
+  let
+    json <- CompFetch.fetch(mkTasksUrl compName);
+    CompJson.parseTasksJson json
+  where
+    fun mkTasksUrl (compName : string) =
+      "http://" ^ compName ^ ".flaretiming.com/json/comp-input/tasks.json"
+  end
+
+fun fetchAndParseTaskLengths (compName : string) : transaction CompJson.taskLengthsParseResult =
+  let
+    json <- CompFetch.fetch(mkTaskLengthsUrl compName);
+    CompJson.parseTaskLengthsJson json
+  where
+    fun mkTaskLengthsUrl (compName : string) =
+      "http://" ^ compName ^ ".flaretiming.com/json/task-length/task-lengths.json"
+  end

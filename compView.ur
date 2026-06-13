@@ -160,9 +160,77 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
         </xml>
       end
 
+fun joinZoneNames (zones : list Comp.rawZone) : string =
+  case zones of
+    [] => ""
+  | z :: zs =>
+      z.ZoneName ^
+      (case zs of
+         [] => ""
+       | _ => "-" ^ joinZoneNames zs)
+
+fun taskRows (tasks : list Comp.compTask) (lengths : list Comp.taskLength) (i : int) =
+  case tasks of
+    [] => <xml></xml>
+  | t :: ts =>
+      let
+        val turnpoints = joinZoneNames t.Zones.Raw
+        val stoppedText =
+          case t.Stopped of
+            None => ""
+          | Some _ => "STOPPED"
+
+        val cancelledText =
+          case t.Cancelled of
+            None => ""
+          | Some True => "CANCELLED"
+          | Some False => ""
+
+        val distanceText =
+          case lengths of
+            [] => ""
+          | d :: _ => show d ^ " km"
+
+        val nextLengths =
+          case lengths of
+            [] => []
+          | _ :: ls => ls
+      in
+        <xml>
+          <tr>
+            <td>{[show i]}</td>
+            <td class={Bulma.td_task_name}>{[t.TaskName]}</td>
+            <td class={Bulma.td_task_tps}>{[turnpoints]}</td>
+            <td class={Bulma.td_task_dist}>{[distanceText]}</td>
+            <td class={Bulma.td_task_stopped}>{[stoppedText]}</td>
+            <td class={Bulma.td_task_cancelled}>{[cancelledText]}</td>
+          </tr>
+          {taskRows ts nextLengths (i + 1)}
+        </xml>
+      end
+
+fun tasksTable (tasks : list Comp.compTask) (lengths : list Comp.taskLength) =
+  <xml>
+    <table class={classes Bulma.table_cls Bulma.is_striped}>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th class={Bulma.th_task_name}>Name</th>
+          <th class={Bulma.th_task_tps}>Turnpoints</th>
+          <th class={Bulma.th_task_dist}>Distance</th>
+          <th class={Bulma.th_task_stopped}>Stopped</th>
+          <th class={Bulma.th_task_cancelled}>Cancelled</th>
+        </tr>
+      </thead>
+      <tbody>{taskRows tasks lengths 1}</tbody>
+    </table>
+  </xml>
+
 fun widget (compName : string) : transaction page =
     compResult <- Fetch.fetchAndParseCompInput compName;
     nominalResult <- Fetch.fetchAndParseNominal compName;
+    tasksResult <- Fetch.fetchAndParseTasks compName;
+    taskLengthsResult <- Fetch.fetchAndParseTaskLengths compName;
 
     let
       val nominalOpt : option Comp.nominal =
@@ -174,6 +242,26 @@ fun widget (compName : string) : transaction page =
         case nominalResult of
           CompJson.NominalParseError err => Some err
         | CompJson.NominalParseOk _ => None
+
+      val tasksOpt : option (list Comp.compTask) =
+        case tasksResult of
+          CompJson.TasksParseError _ => None
+        | CompJson.TasksParseOk tasks => Some tasks
+
+      val tasksErr : option string =
+        case tasksResult of
+          CompJson.TasksParseError err => Some err
+        | CompJson.TasksParseOk _ => None
+
+      val taskLengthsOpt : option (list Comp.taskLength) =
+        case taskLengthsResult of
+          CompJson.TaskLengthsParseError _ => None
+        | CompJson.TaskLengthsParseOk lengths => Some lengths
+
+      val taskLengthsErr : option string =
+        case taskLengthsResult of
+          CompJson.TaskLengthsParseError err => Some err
+        | CompJson.TaskLengthsParseOk _ => None
     in
       return <xml>
         <head>
@@ -197,6 +285,15 @@ fun widget (compName : string) : transaction page =
            | CompJson.CompInputParseOk comp =>
                <xml>
                  {summary comp nominalOpt}
+                 <div class={Bulma.container}>
+                   {case tasksOpt of
+                      None => <xml></xml>
+                    | Some tasks =>
+                        <xml>
+                          <div class={Bulma.spacer}></div>
+                          {tasksTable tasks (case taskLengthsOpt of None => [] | Some lengths => lengths)}
+                        </xml>}
+                 </div>
                  {Footer.render ()}
                  <div class={Bulma.container}>
                    <div class={Bulma.spacer}></div>
@@ -206,6 +303,24 @@ fun widget (compName : string) : transaction page =
                         <xml>
                           <div class={classes Bulma.notification Bulma.is_light}>
                             <h4>Nominals parse failed</h4>
+                            <p>{[err]}</p>
+                          </div>
+                        </xml>}
+                   {case tasksErr of
+                      None => <xml></xml>
+                    | Some err =>
+                        <xml>
+                          <div class={classes Bulma.notification Bulma.is_light}>
+                            <h4>Tasks parse failed</h4>
+                            <p>{[err]}</p>
+                          </div>
+                        </xml>}
+                   {case taskLengthsErr of
+                      None => <xml></xml>
+                    | Some err =>
+                        <xml>
+                          <div class={classes Bulma.notification Bulma.is_light}>
+                            <h4>Task lengths parse failed</h4>
                             <p>{[err]}</p>
                           </div>
                         </xml>}

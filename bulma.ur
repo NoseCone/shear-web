@@ -39,3 +39,16 @@ style is_black
 style is_info
 style is_success
 style is_danger
+
+style table_cls
+style is_striped
+style th_task_name
+style th_task_tps
+style th_task_dist
+style th_task_stopped
+style th_task_cancelled
+style td_task_name
+style td_task_tps
+style td_task_dist
+style td_task_stopped
+style td_task_cancelled
