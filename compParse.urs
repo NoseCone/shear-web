@@ -2,6 +2,7 @@ type parsedComp
 type parsedNominal
 type parsedTasks
 type parsedTaskLengths
+type parsedPilots
 
 val parse : string -> transaction parsedComp
 val free : parsedComp -> transaction unit
@@ -24,6 +25,14 @@ val parseTaskLengths : string -> transaction parsedTaskLengths
 val freeTaskLengths : parsedTaskLengths -> transaction unit
 val taskLengthsCount : parsedTaskLengths -> transaction int
 val taskLength : parsedTaskLengths -> int -> transaction float
+
+val parsePilots : string -> transaction parsedPilots
+val freePilots : parsedPilots -> transaction unit
+val pilotsCount : parsedPilots -> transaction int
+val pilotId : parsedPilots -> int -> transaction string
+val pilotName : parsedPilots -> int -> transaction string
+val pilotStatusCount : parsedPilots -> int -> transaction int
+val pilotStatus : parsedPilots -> int -> int -> transaction string
 
 val civilId : parsedComp -> transaction string
 val earthMath : parsedComp -> transaction string

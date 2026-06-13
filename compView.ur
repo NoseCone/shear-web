@@ -226,11 +226,73 @@ fun tasksTable (tasks : list Comp.compTask) (lengths : list Comp.taskLength) =
     </table>
   </xml>
 
+fun statusCells (statuses : list string) =
+  case statuses of
+    [] => <xml></xml>
+  | s :: ss =>
+      <xml>
+        {case s of
+           "" => <xml><td></td></xml>
+         | "DF" => <xml><td></td></xml>
+         | _ => <xml><td>{[s]}</td></xml>}
+        {statusCells ss}
+      </xml>
+
+fun pilotRows (pilots : list Comp.pilotStatus) =
+  case pilots of
+    [] => <xml></xml>
+  | p :: ps =>
+      <xml>
+        <tr>
+          <td class={Bulma.td_pid}>{[p.PilotId]}</td>
+          <td>{[p.PilotName]}</td>
+          {statusCells p.PilotStatus}
+        </tr>
+        {pilotRows ps}
+      </xml>
+
+fun taskNameHeaders (taskNames : list string) =
+  case taskNames of
+    [] => <xml></xml>
+  | n :: ns =>
+      <xml><th>{[n]}</th>{taskNameHeaders ns}</xml>
+
+fun taskNamesFromTasks (tasks : list Comp.compTask) =
+  case tasks of
+    [] => []
+  | t :: ts => t.TaskName :: taskNamesFromTasks ts
+
+fun defaultTaskNames (n : int) (i : int) =
+  if i > n then
+    []
+  else
+    ("Task " ^ show i) :: defaultTaskNames n (i + 1)
+
+fun countStrings (xs : list string) =
+  case xs of
+    [] => 0
+  | _ :: ys => 1 + countStrings ys
+
+fun pilotsTable (taskNames : list string) (pilots : list Comp.pilotStatus) =
+  <xml>
+    <table class={classes Bulma.table_cls (classes Bulma.is_bordered Bulma.is_striped)}>
+      <thead>
+        <tr>
+          <th class={Bulma.th_pid}>Id</th>
+          <th>Name</th>
+          {taskNameHeaders taskNames}
+        </tr>
+      </thead>
+      <tbody>{pilotRows pilots}</tbody>
+    </table>
+  </xml>
+
 fun widget (compName : string) : transaction page =
     compResult <- Fetch.fetchAndParseCompInput compName;
     nominalResult <- Fetch.fetchAndParseNominal compName;
     tasksResult <- Fetch.fetchAndParseTasks compName;
     taskLengthsResult <- Fetch.fetchAndParseTaskLengths compName;
+    pilotsResult <- Fetch.fetchAndParsePilots compName;
 
     let
       val nominalOpt : option Comp.nominal =
@@ -262,6 +324,27 @@ fun widget (compName : string) : transaction page =
         case taskLengthsResult of
           CompJson.TaskLengthsParseError err => Some err
         | CompJson.TaskLengthsParseOk _ => None
+
+      val pilotsOpt : option (list Comp.pilotStatus) =
+        case pilotsResult of
+          CompJson.PilotsParseError _ => None
+        | CompJson.PilotsParseOk pilots => Some pilots
+
+      val pilotsErr : option string =
+        case pilotsResult of
+          CompJson.PilotsParseError err => Some err
+        | CompJson.PilotsParseOk _ => None
+
+      val pilotTaskNames : list string =
+        case tasksOpt of
+          Some tasks => taskNamesFromTasks tasks
+        | None =>
+            case pilotsOpt of
+              None => []
+            | Some pilots =>
+                case pilots of
+                  [] => []
+                | p :: _ => defaultTaskNames (countStrings p.PilotStatus) 1
     in
       return <xml>
         <head>
@@ -294,6 +377,15 @@ fun widget (compName : string) : transaction page =
                           {tasksTable tasks (case taskLengthsOpt of None => [] | Some lengths => lengths)}
                         </xml>}
                  </div>
+                 {case pilotsOpt of
+                    None => <xml></xml>
+                  | Some pilots =>
+                      <xml>
+                        <div class={Bulma.container}>
+                          <div class={Bulma.spacer}></div>
+                          {pilotsTable pilotTaskNames pilots}
+                        </div>
+                      </xml>}
                  {Footer.render ()}
                  <div class={Bulma.container}>
                    <div class={Bulma.spacer}></div>
@@ -321,6 +413,15 @@ fun widget (compName : string) : transaction page =
                         <xml>
                           <div class={classes Bulma.notification Bulma.is_light}>
                             <h4>Task lengths parse failed</h4>
+                            <p>{[err]}</p>
+                          </div>
+                        </xml>}
+                   {case pilotsErr of
+                      None => <xml></xml>
+                    | Some err =>
+                        <xml>
+                          <div class={classes Bulma.notification Bulma.is_light}>
+                            <h4>Pilots parse failed</h4>
                             <p>{[err]}</p>
                           </div>
                         </xml>}

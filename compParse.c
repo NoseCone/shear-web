@@ -47,6 +47,14 @@ typedef struct uw_CompParse_parsedTaskLengths_struct {
   double *lengths;
 } uw_CompParse_parsedTaskLengths_struct;
 
+typedef struct uw_CompParse_parsedPilots_struct {
+  int count;
+  char **pilotId;
+  char **pilotName;
+  int *statusCounts;
+  char ***statuses;
+} uw_CompParse_parsedPilots_struct;
+
 static char *copy_required_string(uw_context ctx, JSON_Object *obj, const char *field) {
   const char *s = json_object_get_string(obj, field);
   if (!s) {
@@ -422,6 +430,113 @@ uw_Basis_unit uw_CompParse_freeTaskLengths(uw_context ctx, uw_CompParse_parsedTa
   return 0;
 }
 
+uw_CompParse_parsedPilots uw_CompParse_parsePilots(uw_context ctx, uw_Basis_string json) {
+  JSON_Value *root = json_parse_string(json);
+  if (!root) {
+    uw_error(ctx, FATAL, "CompParse: invalid pilots JSON");
+  }
+
+  JSON_Array *arr = json_value_get_array(root);
+  if (!arr) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: expected pilots top-level array");
+  }
+
+  size_t count = json_array_get_count(arr);
+  uw_CompParse_parsedPilots parsed = malloc(sizeof(uw_CompParse_parsedPilots_struct));
+  if (!parsed) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: out of memory");
+  }
+
+  parsed->count = (int)count;
+  parsed->pilotId = calloc(count, sizeof(char*));
+  parsed->pilotName = calloc(count, sizeof(char*));
+  parsed->statusCounts = calloc(count, sizeof(int));
+  parsed->statuses = calloc(count, sizeof(char**));
+
+  if (count > 0 && (!parsed->pilotId || !parsed->pilotName || !parsed->statusCounts || !parsed->statuses)) {
+    json_value_free(root);
+    uw_error(ctx, FATAL, "CompParse: out of memory");
+  }
+
+  for (size_t i = 0; i < count; i++) {
+    JSON_Array *pilot = json_array_get_array(arr, i);
+    if (!pilot || json_array_get_count(pilot) < 2) {
+      json_value_free(root);
+      uw_error(ctx, FATAL, "CompParse: pilot[%zu] must be [ [id,name], [statuses...] ]", i);
+    }
+
+    JSON_Array *idName = json_array_get_array(pilot, 0);
+    JSON_Array *statuses = json_array_get_array(pilot, 1);
+    if (!idName || !statuses || json_array_get_count(idName) < 2) {
+      json_value_free(root);
+      uw_error(ctx, FATAL, "CompParse: pilot[%zu] malformed", i);
+    }
+
+    const char *pid = json_array_get_string(idName, 0);
+    const char *pname = json_array_get_string(idName, 1);
+    if (!pid || !pname) {
+      json_value_free(root);
+      uw_error(ctx, FATAL, "CompParse: pilot[%zu] id/name must be strings", i);
+    }
+
+    parsed->pilotId[i] = strdup(pid);
+    parsed->pilotName[i] = strdup(pname);
+    if (!parsed->pilotId[i] || !parsed->pilotName[i]) {
+      json_value_free(root);
+      uw_error(ctx, FATAL, "CompParse: out of memory");
+    }
+
+    size_t sc = json_array_get_count(statuses);
+    parsed->statusCounts[i] = (int)sc;
+    parsed->statuses[i] = calloc(sc, sizeof(char*));
+    if (sc > 0 && !parsed->statuses[i]) {
+      json_value_free(root);
+      uw_error(ctx, FATAL, "CompParse: out of memory");
+    }
+
+    for (size_t s = 0; s < sc; s++) {
+      const char *st = json_array_get_string(statuses, s);
+      if (!st) {
+        json_value_free(root);
+        uw_error(ctx, FATAL, "CompParse: pilot[%zu] status[%zu] not string", i, s);
+      }
+      parsed->statuses[i][s] = strdup(st);
+      if (!parsed->statuses[i][s]) {
+        json_value_free(root);
+        uw_error(ctx, FATAL, "CompParse: out of memory");
+      }
+    }
+  }
+
+  json_value_free(root);
+  return parsed;
+}
+
+uw_Basis_unit uw_CompParse_freePilots(uw_context ctx, uw_CompParse_parsedPilots parsed) {
+  (void)ctx;
+  if (!parsed) return 0;
+
+  for (int i = 0; i < parsed->count; i++) {
+    free(parsed->pilotId[i]);
+    free(parsed->pilotName[i]);
+    if (parsed->statuses[i]) {
+      for (int s = 0; s < parsed->statusCounts[i]; s++) {
+        free(parsed->statuses[i][s]);
+      }
+      free(parsed->statuses[i]);
+    }
+  }
+
+  free(parsed->pilotId);
+  free(parsed->pilotName);
+  free(parsed->statusCounts);
+  free(parsed->statuses);
+  free(parsed);
+  return 0;
+}
+
 uw_Basis_string uw_CompParse_civilId(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->civilId); }
 uw_Basis_string uw_CompParse_earthMath(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->earthMath); }
 uw_Basis_string uw_CompParse_discipline(uw_context ctx, uw_CompParse_parsedComp parsed) { return uw_strdup(ctx, parsed->discipline); }
@@ -495,4 +610,23 @@ uw_Basis_int uw_CompParse_taskLengthsCount(uw_context ctx, uw_CompParse_parsedTa
 uw_Basis_float uw_CompParse_taskLength(uw_context ctx, uw_CompParse_parsedTaskLengths parsed, uw_Basis_int taskIndex) {
   if (taskIndex < 0 || taskIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: task length index out of bounds");
   return parsed->lengths[taskIndex];
+}
+
+uw_Basis_int uw_CompParse_pilotsCount(uw_context ctx, uw_CompParse_parsedPilots parsed) { (void)ctx; return parsed->count; }
+uw_Basis_string uw_CompParse_pilotId(uw_context ctx, uw_CompParse_parsedPilots parsed, uw_Basis_int pilotIndex) {
+  if (pilotIndex < 0 || pilotIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: pilot index out of bounds");
+  return uw_strdup(ctx, parsed->pilotId[pilotIndex]);
+}
+uw_Basis_string uw_CompParse_pilotName(uw_context ctx, uw_CompParse_parsedPilots parsed, uw_Basis_int pilotIndex) {
+  if (pilotIndex < 0 || pilotIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: pilot index out of bounds");
+  return uw_strdup(ctx, parsed->pilotName[pilotIndex]);
+}
+uw_Basis_int uw_CompParse_pilotStatusCount(uw_context ctx, uw_CompParse_parsedPilots parsed, uw_Basis_int pilotIndex) {
+  if (pilotIndex < 0 || pilotIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: pilot index out of bounds");
+  return parsed->statusCounts[pilotIndex];
+}
+uw_Basis_string uw_CompParse_pilotStatus(uw_context ctx, uw_CompParse_parsedPilots parsed, uw_Basis_int pilotIndex, uw_Basis_int statusIndex) {
+  if (pilotIndex < 0 || pilotIndex >= parsed->count) uw_error(ctx, FATAL, "CompParse: pilot index out of bounds");
+  if (statusIndex < 0 || statusIndex >= parsed->statusCounts[pilotIndex]) uw_error(ctx, FATAL, "CompParse: pilot status index out of bounds");
+  return uw_strdup(ctx, parsed->statuses[pilotIndex][statusIndex]);
 }

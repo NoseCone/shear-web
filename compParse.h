@@ -4,6 +4,7 @@ typedef struct uw_CompParse_parsedComp_struct *uw_CompParse_parsedComp;
 typedef struct uw_CompParse_parsedNominal_struct *uw_CompParse_parsedNominal;
 typedef struct uw_CompParse_parsedTasks_struct *uw_CompParse_parsedTasks;
 typedef struct uw_CompParse_parsedTaskLengths_struct *uw_CompParse_parsedTaskLengths;
+typedef struct uw_CompParse_parsedPilots_struct *uw_CompParse_parsedPilots;
 
 uw_CompParse_parsedComp uw_CompParse_parse(uw_context ctx, uw_Basis_string json);
 uw_Basis_unit uw_CompParse_free(uw_context ctx, uw_CompParse_parsedComp parsed);
@@ -26,6 +27,14 @@ uw_CompParse_parsedTaskLengths uw_CompParse_parseTaskLengths(uw_context ctx, uw_
 uw_Basis_unit uw_CompParse_freeTaskLengths(uw_context ctx, uw_CompParse_parsedTaskLengths parsed);
 uw_Basis_int uw_CompParse_taskLengthsCount(uw_context ctx, uw_CompParse_parsedTaskLengths parsed);
 uw_Basis_float uw_CompParse_taskLength(uw_context ctx, uw_CompParse_parsedTaskLengths parsed, uw_Basis_int taskIndex);
+
+uw_CompParse_parsedPilots uw_CompParse_parsePilots(uw_context ctx, uw_Basis_string json);
+uw_Basis_unit uw_CompParse_freePilots(uw_context ctx, uw_CompParse_parsedPilots parsed);
+uw_Basis_int uw_CompParse_pilotsCount(uw_context ctx, uw_CompParse_parsedPilots parsed);
+uw_Basis_string uw_CompParse_pilotId(uw_context ctx, uw_CompParse_parsedPilots parsed, uw_Basis_int pilotIndex);
+uw_Basis_string uw_CompParse_pilotName(uw_context ctx, uw_CompParse_parsedPilots parsed, uw_Basis_int pilotIndex);
+uw_Basis_int uw_CompParse_pilotStatusCount(uw_context ctx, uw_CompParse_parsedPilots parsed, uw_Basis_int pilotIndex);
+uw_Basis_string uw_CompParse_pilotStatus(uw_context ctx, uw_CompParse_parsedPilots parsed, uw_Basis_int pilotIndex, uw_Basis_int statusIndex);
 
 uw_Basis_string uw_CompParse_civilId(uw_context ctx, uw_CompParse_parsedComp parsed);
 uw_Basis_string uw_CompParse_earthMath(uw_context ctx, uw_CompParse_parsedComp parsed);

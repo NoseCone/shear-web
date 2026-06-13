@@ -40,6 +40,7 @@ style is_success
 style is_danger
 
 style table_cls
+style is_bordered
 style is_striped
 style th_task_name
 style th_task_tps
@@ -51,3 +52,6 @@ style td_task_tps
 style td_task_dist
 style td_task_stopped
 style td_task_cancelled
+
+style th_pid
+style td_pid

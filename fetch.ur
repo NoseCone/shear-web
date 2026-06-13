@@ -33,3 +33,12 @@ fun fetchAndParseTaskLengths (compName : string) : transaction CompJson.taskLeng
     fun mkTaskLengthsUrl (compName : string) =
       "http://" ^ compName ^ ".flaretiming.com/json/task-length/task-lengths.json"
   end
+
+fun fetchAndParsePilots (compName : string) : transaction CompJson.pilotsParseResult =
+  let
+    json <- CompFetch.fetch(mkPilotsUrl compName);
+    CompJson.parsePilotsJson json
+  where
+    fun mkPilotsUrl (compName : string) =
+      "http://" ^ compName ^ ".flaretiming.com/json/gap-point/pilots-status.json"
+  end

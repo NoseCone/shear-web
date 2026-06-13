@@ -2,8 +2,10 @@ datatype compInputParseResult = CompInputParseError of string | CompInputParseOk
 datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
 datatype tasksParseResult = TasksParseError of string | TasksParseOk of list Comp.compTask
 datatype taskLengthsParseResult = TaskLengthsParseError of string | TaskLengthsParseOk of list Comp.taskLength
+datatype pilotsParseResult = PilotsParseError of string | PilotsParseOk of list Comp.pilotStatus
 
 val parseNominalJson : string -> transaction nominalParseResult
 val parseCompInputJson : string -> transaction compInputParseResult
 val parseTasksJson : string -> transaction tasksParseResult
 val parseTaskLengthsJson : string -> transaction taskLengthsParseResult
+val parsePilotsJson : string -> transaction pilotsParseResult

@@ -14,6 +14,7 @@ datatype compInputParseResult = CompInputParseError of string | CompInputParseOk
 datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
 datatype tasksParseResult = TasksParseError of string | TasksParseOk of list Comp.compTask
 datatype taskLengthsParseResult = TaskLengthsParseError of string | TaskLengthsParseOk of list Comp.taskLength
+datatype pilotsParseResult = PilotsParseError of string | PilotsParseOk of list Comp.pilotStatus
 
 datatype parseResult t = ParseError of string | ParseOk of t
 
@@ -36,6 +37,11 @@ fun fromParseTaskLengths (r : parseResult (list Comp.taskLength)) : taskLengthsP
   case r of
     ParseError err => TaskLengthsParseError err
   | ParseOk v => TaskLengthsParseOk v
+
+fun fromParsePilots (r : parseResult (list Comp.pilotStatus)) : pilotsParseResult =
+  case r of
+    ParseError err => PilotsParseError err
+  | ParseOk v => PilotsParseOk v
 
 datatype scoreBackParseResult = ScoreBackParseError of string | ScoreBackParseOk of Comp.scoreBackTime
 
@@ -144,6 +150,38 @@ fun parseTaskLengthsJson (json : string) : transaction taskLengthsParseResult =
     lengths <- lengthsLoop 0;
     CompParse.freeTaskLengths parsed;
     return (fromParseTaskLengths (ParseOk lengths))
+  end
+
+fun parsePilotsJson (json : string) : transaction pilotsParseResult =
+  parsed <- CompParse.parsePilots json;
+  n <- CompParse.pilotsCount parsed;
+
+  let
+    fun statusesLoop pi si sc : transaction (list string) =
+      if si >= sc then
+        return []
+      else
+        st <- CompParse.pilotStatus parsed pi si;
+        rest <- statusesLoop pi (si + 1) sc;
+        return (st :: rest)
+
+    fun pilotsLoop i : transaction (list Comp.pilotStatus) =
+      if i >= n then
+        return []
+      else
+        pid <- CompParse.pilotId parsed i;
+        pname <- CompParse.pilotName parsed i;
+        sc <- CompParse.pilotStatusCount parsed i;
+        statuses <- statusesLoop i 0 sc;
+        rest <- pilotsLoop (i + 1);
+        return ({ PilotId = pid
+                , PilotName = pname
+                , PilotStatus = statuses
+                } :: rest)
+  in
+    pilots <- pilotsLoop 0;
+    CompParse.freePilots parsed;
+    return (fromParsePilots (ParseOk pilots))
   end
 
 fun parseCompInputJson (json : string) : transaction compInputParseResult =
