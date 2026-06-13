@@ -44,3 +44,14 @@ datatype compInput =
     , GiveConfig : giveConfig
     , ScoreBack : option scoreBackTime
     }
+
+type taskLength = float
+type rawZone = { ZoneName: string }
+type stopped = { Announced: string, Retroactive: string }
+
+type compTask =
+    { TaskName: string
+    , Zones: { Raw: list rawZone }
+    , Stopped: option stopped
+    , Cancelled: option bool
+    }
