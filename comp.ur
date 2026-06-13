@@ -55,3 +55,9 @@ type compTask =
     , Stopped: option stopped
     , Cancelled: option bool
     }
+
+type pilotStatus =
+    { PilotId: string
+    , PilotName: string
+    , PilotStatus: list string
+    }
