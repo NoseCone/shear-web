@@ -514,10 +514,6 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                             <p>{[err]}</p>
                           </div>
                         </xml>}
-                   <div class={Bulma.content}>
-                     <h4>Parsed compInput</h4>
-                     <pre>{[render comp]}</pre>
-                   </div>
                  </div>
                </xml>}
         </body>
