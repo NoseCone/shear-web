@@ -379,6 +379,7 @@ fun widget (compName : string) : transaction page =
                <xml>
                  {summary comp nominalOpt}
                  <div class={Bulma.container}>
+                   <div class={Bulma.spacer}></div>
                    {case comp of Comp.CompInput c => breadcrumb c.CompName}
                    {case tasksOpt of
                       None => <xml></xml>
