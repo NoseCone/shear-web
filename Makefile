@@ -14,9 +14,10 @@ $(VENDOR_CSS_DIR)/bulma-0.9.3.css: | $(VENDOR_CSS_DIR)
 $(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css: | $(VENDOR_CSS_DIR)
 	curl -fsSL http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b13.css -o $@
 
-site.css: vendor-css
+site.css: vendor-css shearWeb-bridge.css
 	cat $(VENDORED_CSS) > $@.tmp
 	python3 scripts/transform_css.py $@.tmp $@.tmp
+	cat shearWeb-bridge.css >> $@.tmp
 	mv $@.tmp $@
 
 cssAsset.ur: site.css

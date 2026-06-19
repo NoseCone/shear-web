@@ -108,3 +108,34 @@
 .Bulma_is_size_7 {
   font-size: 0.75rem !important;
 }
+
+.Bulma_tabs {
+  border-bottom: 1px solid #dbdbdb;
+  margin: 1rem 0;
+}
+
+.Bulma_tabs ul {
+  align-items: center;
+  border-bottom: 1px solid #dbdbdb;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.Bulma_tabs li {
+  display: block;
+}
+
+.Bulma_tabs a {
+  border-bottom: 1px solid #dbdbdb;
+  color: #4a4a4a;
+  display: block;
+  margin-bottom: -1px;
+  padding: 0.5em 1em;
+  text-decoration: none;
+}
+
+.Bulma_tabs li.Bulma_is_active a {
+  border-bottom-color: #3273dc;
+  color: #3273dc;
+}
