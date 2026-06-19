@@ -60,6 +60,16 @@ fun metric (label : string) (value : string) (accent : css_class) : xbody =
       </div>
     </xml>
 
+fun breadcrumb (compName : string) : xbody =
+    <xml>
+      <nav class={Bulma.breadcrumb} aria-label="breadcrumbs">
+        <ul>
+          <li><a href="http://localhost:8080/main">Shear Web (Ur/Web)</a></li>
+          <li class={Bulma.is_active}>{[compName]}</li>
+        </ul>
+      </nav>
+    </xml>
+
 fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
   case comp of
     Comp.CompInput c =>
@@ -133,12 +143,6 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
                       <div class={Bulma.tile}>
                         <div class={classes Bulma.tile Bulma.is_parent}>
                           <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
-                            <nav class={Bulma.breadcrumb} aria-label="breadcrumbs">
-                              <ul>
-                                <li><a href="http://localhost:8080/main">Shear Web (Ur/Web)</a></li>
-                                <li class={Bulma.is_active}>{[c.CompName]}</li>
-                              </ul>
-                            </nav>
                             <p class={classes Bulma.title Bulma.is_3}>{[c.CompName]}</p>
                             <p class={classes Bulma.title Bulma.is_5}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
                             <div class={Bulma.example}>
@@ -375,6 +379,7 @@ fun widget (compName : string) : transaction page =
                <xml>
                  {summary comp nominalOpt}
                  <div class={Bulma.container}>
+                   {case comp of Comp.CompInput c => breadcrumb c.CompName}
                    {case tasksOpt of
                       None => <xml></xml>
                     | Some tasks =>
