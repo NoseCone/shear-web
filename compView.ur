@@ -135,7 +135,7 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
                           <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
                             <nav class={Bulma.breadcrumb} aria-label="breadcrumbs">
                               <ul>
-                                <li><a href="http://localhost:8080/">Variable Geometry (Svelte)</a></li>
+                                <li><a href="http://localhost:8080/main">Shear Web (Ur/Web)</a></li>
                                 <li class={Bulma.is_active}>{[c.CompName]}</li>
                               </ul>
                             </nav>
