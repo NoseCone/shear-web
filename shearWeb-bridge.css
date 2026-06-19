@@ -136,6 +136,8 @@
 }
 
 .Bulma_tabs li.Bulma_is_active a {
-  border-bottom-color: #3273dc;
-  color: #3273dc;
+  border-bottom-color: #485fc7 !important;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  color: #485fc7 !important;
 }
