@@ -141,3 +141,41 @@
   border-bottom-width: 1px;
   color: #485fc7 !important;
 }
+
+/* Alias for Ur/Web table class wrapper (table_cls -> Bulma_table behavior) */
+.Bulma_table_cls {
+  background-color: #fff;
+  color: #363636;
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.Bulma_table_cls td,
+.Bulma_table_cls th {
+  border: 1px solid #dbdbdb;
+  border-width: 0 0 1px;
+  padding: 0.5em 0.75em;
+  vertical-align: top;
+}
+
+.Bulma_table_cls thead td,
+.Bulma_table_cls thead th {
+  border-width: 0 0 2px;
+  color: #363636;
+}
+
+.Bulma_table_cls tfoot td,
+.Bulma_table_cls tfoot th {
+  border-width: 2px 0 0;
+  color: #363636;
+}
+
+.Bulma_table_cls.Bulma_is_bordered td,
+.Bulma_table_cls.Bulma_is_bordered th {
+  border-width: 1px;
+}
+
+.Bulma_table_cls.Bulma_is_striped tbody tr:not(.Bulma_is_selected):nth-child(even) {
+  background-color: #fafafa;
+}
