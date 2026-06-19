@@ -74,7 +74,6 @@ fun compHeader (comp : Comp.compInput) : xbody =
   case comp of
     Comp.CompInput c =>
       <xml>
-        {breadcrumb c.CompName}
         <p class={classes Bulma.title Bulma.is_3}>{[c.CompName]}</p>
         <p class={classes Bulma.title Bulma.is_5}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
       </xml>
@@ -154,6 +153,64 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
               {metric "Score-back time" scoreBack Bulma.is_danger}
             </div>
           </div>
+        </xml>
+      end
+
+fun settingsTable (comp : Comp.compInput) : xbody =
+  case comp of
+    Comp.CompInput c =>
+      let
+        val giveDescription =
+          case c.GiveConfig of
+            Comp.GiveConfig g =>
+              case g.GiveDistance of
+                None => "give fraction only, no give distance"
+              | Some d => "give distance " ^ d ^ " and give fraction"
+
+        val giveValue =
+          case c.GiveConfig of
+            Comp.GiveConfig g => show g.GiveFraction
+
+        val earthDescription =
+          case c.EarthModel of
+            Comp.EarthAsSphere _ => "Sphere with radius"
+          | Comp.EarthEllipsoid _ => "Ellipsoid"
+
+        val earthValue =
+          case c.EarthModel of
+            Comp.EarthAsSphere e => e.Radius ^ " m"
+          | Comp.EarthEllipsoid e => "equatorialR " ^ e.EquatorialR ^ " m, recipF " ^ e.RecipF
+      in
+        <xml>
+          <table class={classes Bulma.table_cls Bulma.is_bordered}>
+            <thead>
+              <tr>
+                <th colspan={3}></th>
+                <th>Value</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th>* Give</th>
+                <td colspan={2}>{[giveDescription]}</td>
+                <td>{[giveValue]}</td>
+              </tr>
+              <tr>
+                <th>Earth model</th>
+                <td colspan={2}>{[earthDescription]}</td>
+                <td>{[earthValue]}</td>
+              </tr>
+              <tr>
+                <th colspan={3}>Earth math</th>
+                <td>{[c.EarthMath]}</td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan={4}>* Adjusting the turnpoint radius with some give for pilots just short of the control zone</td>
+              </tr>
+            </tfoot>
+          </table>
         </xml>
       end
 
@@ -386,6 +443,8 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                              <div class={classes Bulma.tile Bulma.is_parent}>
                                <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
                                  {compHeader comp}
+                                 {summary comp nominalOpt}
+                                 {case comp of Comp.CompInput c => breadcrumb c.CompName}
                                  <div class={Bulma.tabs}>
                                    <ul>
                                      {case activeTab of
@@ -401,7 +460,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                                  </div>
                                  {case activeTab of
                                     SettingsTab =>
-                                      <xml>{summary comp nominalOpt}</xml>
+                                      <xml>{settingsTable comp}</xml>
                                   | TasksTab =>
                                       <xml>{case tasksOpt of
                                               None => <xml></xml>
