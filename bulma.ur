@@ -5,6 +5,8 @@ style container
 style content
 style title
 style subtitle
+style breadcrumb
+style is_active
 style example
 style spacer
 
