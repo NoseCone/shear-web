@@ -15,6 +15,8 @@ allow meta charset
 allow meta viewport
 allow mime text/css
 safeGet comp
+safeGet compSettings
+safeGet compPilots
 rewrite style Css/quote quote
 rewrite style Css/spacer Bulma/spacer
 rewrite style Css/container Bulma/container
@@ -22,6 +24,7 @@ rewrite style Css/content Bulma/content
 rewrite style Css/title Bulma/title
 rewrite style Css/subtitle Bulma/subtitle
 rewrite style Css/breadcrumb Bulma/breadcrumb
+rewrite style Css/tabs Bulma/tabs
 rewrite style Css/is-active Bulma/is_active
 rewrite style Css/tile Bulma/tile
 rewrite style Css/is-ancestor Bulma/is_ancestor
@@ -68,6 +71,8 @@ rewrite style Css/td-task-cancelled Bulma/td_task_cancelled
 rewrite style Css/th-pid Bulma/th_pid
 rewrite style Css/td-pid Bulma/td_pid
 rewrite url CompView/widget comp
+rewrite url CompView/widgetSettings compSettings
+rewrite url CompView/widgetPilots compPilots
 rewrite url ShearWeb/*
 link compFetch.o
 link compParse.o

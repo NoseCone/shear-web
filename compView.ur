@@ -70,6 +70,15 @@ fun breadcrumb (compName : string) : xbody =
       </nav>
     </xml>
 
+fun compHeader (comp : Comp.compInput) : xbody =
+  case comp of
+    Comp.CompInput c =>
+      <xml>
+        {breadcrumb c.CompName}
+        <p class={classes Bulma.title Bulma.is_3}>{[c.CompName]}</p>
+        <p class={classes Bulma.title Bulma.is_5}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
+      </xml>
+
 fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
   case comp of
     Comp.CompInput c =>
@@ -132,43 +141,23 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
                 Comp.Nominal x => show x.Launch
       in
         <xml>
-          <div>
-            <div class={Bulma.container}>
-              <div class={Bulma.spacer}></div>
-              <section>
-                <div class={classes Bulma.container Bulma.is_size_7}>
-                  <div class={Bulma.spacer}></div>
-                  <div class={Bulma.container}>
-                    <div class={classes Bulma.tile Bulma.is_ancestor}>
-                      <div class={Bulma.tile}>
-                        <div class={classes Bulma.tile Bulma.is_parent}>
-                          <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
-                            <p class={classes Bulma.title Bulma.is_3}>{[c.CompName]}</p>
-                            <p class={classes Bulma.title Bulma.is_5}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
-                            <div class={Bulma.example}>
-                              <div class={classes Bulma.field (classes Bulma.is_grouped Bulma.is_grouped_multiline)}>
-                                {metric "UTC offset" tz Bulma.is_warning}
-                                {metric "Minimum distance" giveDistance Bulma.is_black}
-                                {metric "Nominal free" nominalFree Bulma.is_black}
-                                {metric "Nominal distance" nominalDistance Bulma.is_info}
-                                {metric "Nominal time" nominalTime Bulma.is_success}
-                                {metric "Nominal goal" nominalGoal Bulma.is_primary}
-                                {metric "Nominal launch" nominalLaunch Bulma.is_primary}
-                                {metric "Give fraction" giveFraction Bulma.is_info}
-                                {metric "Score-back time" scoreBack Bulma.is_danger}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
+          <div class={Bulma.example}>
+            <div class={classes Bulma.field (classes Bulma.is_grouped Bulma.is_grouped_multiline)}>
+              {metric "UTC offset" tz Bulma.is_warning}
+              {metric "Minimum distance" giveDistance Bulma.is_black}
+              {metric "Nominal free" nominalFree Bulma.is_black}
+              {metric "Nominal distance" nominalDistance Bulma.is_info}
+              {metric "Nominal time" nominalTime Bulma.is_success}
+              {metric "Nominal goal" nominalGoal Bulma.is_primary}
+              {metric "Nominal launch" nominalLaunch Bulma.is_primary}
+              {metric "Give fraction" giveFraction Bulma.is_info}
+              {metric "Score-back time" scoreBack Bulma.is_danger}
             </div>
           </div>
         </xml>
       end
+
+datatype compTab = SettingsTab | TasksTab | PilotsTab
 
 fun joinZoneNames (zones : list Comp.rawZone) : string =
   case zones of
@@ -298,6 +287,15 @@ fun pilotsTable (taskNames : list string) (pilots : list Comp.pilotStatus) =
   </xml>
 
 fun widget (compName : string) : transaction page =
+    widgetTab compName TasksTab
+
+and widgetSettings (compName : string) : transaction page =
+    widgetTab compName SettingsTab
+
+and widgetPilots (compName : string) : transaction page =
+    widgetTab compName PilotsTab
+
+and widgetTab (compName : string) (activeTab : compTab) : transaction page =
     compResult <- Fetch.fetchAndParseCompInput compName;
     nominalResult <- Fetch.fetchAndParseNominal compName;
     tasksResult <- Fetch.fetchAndParseTasks compName;
@@ -377,27 +375,50 @@ fun widget (compName : string) : transaction page =
                </xml>
            | CompJson.CompInputParseOk comp =>
                <xml>
-                 {summary comp nominalOpt}
                  <div class={Bulma.container}>
                    <div class={Bulma.spacer}></div>
-                   {case comp of Comp.CompInput c => breadcrumb c.CompName}
-                   {case tasksOpt of
-                      None => <xml></xml>
-                    | Some tasks =>
-                        <xml>
-                          <div class={Bulma.spacer}></div>
-                          {tasksTable tasks (case taskLengthsOpt of None => [] | Some lengths => lengths)}
-                        </xml>}
+                   <section>
+                     <div class={classes Bulma.container Bulma.is_size_7}>
+                       <div class={Bulma.spacer}></div>
+                       <div class={Bulma.container}>
+                         <div class={classes Bulma.tile Bulma.is_ancestor}>
+                           <div class={Bulma.tile}>
+                             <div class={classes Bulma.tile Bulma.is_parent}>
+                               <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
+                                 {compHeader comp}
+                                 <div class={Bulma.tabs}>
+                                   <ul>
+                                     {case activeTab of
+                                        SettingsTab => <xml><li class={Bulma.is_active}><a link={widgetSettings compName}>Settings</a></li></xml>
+                                      | _ => <xml><li><a link={widgetSettings compName}>Settings</a></li></xml>}
+                                     {case activeTab of
+                                        TasksTab => <xml><li class={Bulma.is_active}><a link={widget compName}>Tasks</a></li></xml>
+                                      | _ => <xml><li><a link={widget compName}>Tasks</a></li></xml>}
+                                     {case activeTab of
+                                        PilotsTab => <xml><li class={Bulma.is_active}><a link={widgetPilots compName}>Pilots</a></li></xml>
+                                      | _ => <xml><li><a link={widgetPilots compName}>Pilots</a></li></xml>}
+                                   </ul>
+                                 </div>
+                                 {case activeTab of
+                                    SettingsTab =>
+                                      <xml>{summary comp nominalOpt}</xml>
+                                  | TasksTab =>
+                                      <xml>{case tasksOpt of
+                                              None => <xml></xml>
+                                            | Some tasks =>
+                                                tasksTable tasks (case taskLengthsOpt of None => [] | Some lengths => lengths)}</xml>
+                                  | PilotsTab =>
+                                      <xml>{case pilotsOpt of
+                                              None => <xml></xml>
+                                            | Some pilots => pilotsTable pilotTaskNames pilots}</xml>}
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                       </div>
+                     </div>
+                   </section>
                  </div>
-                 {case pilotsOpt of
-                    None => <xml></xml>
-                  | Some pilots =>
-                      <xml>
-                        <div class={Bulma.container}>
-                          <div class={Bulma.spacer}></div>
-                          {pilotsTable pilotTaskNames pilots}
-                        </div>
-                      </xml>}
                  {Footer.render ()}
                  <div class={Bulma.container}>
                    <div class={Bulma.spacer}></div>

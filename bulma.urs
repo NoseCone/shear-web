@@ -5,6 +5,7 @@ style content
 style title
 style subtitle
 style breadcrumb
+style tabs
 style is_active
 style example
 style spacer
