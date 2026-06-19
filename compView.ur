@@ -438,44 +438,38 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                      <div class={classes Bulma.container Bulma.is_size_7}>
                        <div class={Bulma.spacer}></div>
                        <div class={Bulma.container}>
-                         <div class={classes Bulma.tile Bulma.is_ancestor}>
-                           <div class={Bulma.tile}>
-                             <div class={classes Bulma.tile Bulma.is_parent}>
-                               <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
-                                  {compHeader comp}
-                                  {summary comp nominalOpt}
-                                </div>
-                                <div class={Bulma.spacer}></div>
-                                <div class={Bulma.box}>
-                                  {case comp of Comp.CompInput c => breadcrumb c.CompName}
-                                  <div class={Bulma.tabs}>
-                                    <ul>
-                                      {case activeTab of
-                                         SettingsTab => <xml><li class={Bulma.is_active}><a link={widgetSettings compName}>Settings</a></li></xml>
-                                       | _ => <xml><li><a link={widgetSettings compName}>Settings</a></li></xml>}
-                                      {case activeTab of
-                                         TasksTab => <xml><li class={Bulma.is_active}><a link={widget compName}>Tasks</a></li></xml>
-                                       | _ => <xml><li><a link={widget compName}>Tasks</a></li></xml>}
-                                      {case activeTab of
-                                         PilotsTab => <xml><li class={Bulma.is_active}><a link={widgetPilots compName}>Pilots</a></li></xml>
-                                       | _ => <xml><li><a link={widgetPilots compName}>Pilots</a></li></xml>}
-                                    </ul>
-                                  </div>
-                                  {case activeTab of
-                                     SettingsTab =>
-                                       <xml>{settingsTable comp}</xml>
-                                   | TasksTab =>
-                                       <xml>{case tasksOpt of
-                                               None => <xml></xml>
-                                             | Some tasks =>
-                                                 tasksTable tasks (case taskLengthsOpt of None => [] | Some lengths => lengths)}</xml>
-                                   | PilotsTab =>
-                                       <xml>{case pilotsOpt of
-                                               None => <xml></xml>
-                                             | Some pilots => pilotsTable pilotTaskNames pilots}</xml>}
-                                </div>
-                             </div>
+                         <div class={Bulma.box}>
+                           {compHeader comp}
+                           {summary comp nominalOpt}
+                         </div>
+                         <div class={Bulma.spacer}></div>
+                         <div class={Bulma.box}>
+                           {case comp of Comp.CompInput c => breadcrumb c.CompName}
+                           <div class={Bulma.tabs}>
+                             <ul>
+                               {case activeTab of
+                                  SettingsTab => <xml><li class={Bulma.is_active}><a link={widgetSettings compName}>Settings</a></li></xml>
+                                | _ => <xml><li><a link={widgetSettings compName}>Settings</a></li></xml>}
+                               {case activeTab of
+                                  TasksTab => <xml><li class={Bulma.is_active}><a link={widget compName}>Tasks</a></li></xml>
+                                | _ => <xml><li><a link={widget compName}>Tasks</a></li></xml>}
+                               {case activeTab of
+                                  PilotsTab => <xml><li class={Bulma.is_active}><a link={widgetPilots compName}>Pilots</a></li></xml>
+                                | _ => <xml><li><a link={widgetPilots compName}>Pilots</a></li></xml>}
+                             </ul>
                            </div>
+                           {case activeTab of
+                              SettingsTab =>
+                                <xml>{settingsTable comp}</xml>
+                            | TasksTab =>
+                                <xml>{case tasksOpt of
+                                        None => <xml></xml>
+                                      | Some tasks =>
+                                          tasksTable tasks (case taskLengthsOpt of None => [] | Some lengths => lengths)}</xml>
+                            | PilotsTab =>
+                                <xml>{case pilotsOpt of
+                                        None => <xml></xml>
+                                      | Some pilots => pilotsTable pilotTaskNames pilots}</xml>}
                          </div>
                        </div>
                      </div>
