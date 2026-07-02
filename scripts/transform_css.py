@@ -3,7 +3,7 @@ import re
 import sys
 from pathlib import Path
 
-CLASS_SELECTOR = re.compile(r"(?<![A-Za-z0-9_-])\.([A-Za-z_][A-Za-z0-9_-]*)")
+CLASS_SELECTOR = re.compile(r"\.(?!Bulma_)([A-Za-z_][A-Za-z0-9_-]*)")
 PREFIXED_CLASS = re.compile(r"\.Bulma_([A-Za-z0-9_-]+)")
 
 def main() -> int:
