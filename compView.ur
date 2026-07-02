@@ -308,6 +308,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
     tasksResult <- Fetch.fetchAndParseTasks compName;
     taskLengthsResult <- Fetch.fetchAndParseTaskLengths compName;
     pilotsResult <- Fetch.fetchAndParsePilots compName;
+    idUw <- fresh; (* serves no purpose other than to show how to use #ids in Ur/Web *)
 
     let
       val nominalOpt : option Comp.nominal =
@@ -382,32 +383,38 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                </xml>
            | CompJson.CompInputParseOk comp =>
                <xml>
-                 <div class={Bulma.container}>
-                   <div class={Bulma.spacer}></div>
-                   <section>
-                     <div class={classes Bulma.container Bulma.is_size_7}>
+                 <div class={Bulma.spacer}></div>
+                   <div id={idUw} class={classes Bulma.container Bulma.is_size_7}>
+                     <div>
                        <div class={Bulma.spacer}></div>
                        <div class={Bulma.container}>
-                         <div class={Bulma.box}>
-                           {compHeader comp}
-                           {summary comp nominalOpt}
-                         </div>
-                         <div class={Bulma.spacer}></div>
-                         <div class={Bulma.box}>
-                           {case comp of Comp.CompInput c => breadcrumb c.CompName}
-                           <div class={Bulma.tabs}>
-                             <ul>
-                               {case activeTab of
-                                  SettingsTab => <xml><li class={Bulma.is_active}><a link={widgetSettings compName}>Settings</a></li></xml>
-                                | _ => <xml><li><a link={widgetSettings compName}>Settings</a></li></xml>}
-                               {case activeTab of
-                                  TasksTab => <xml><li class={Bulma.is_active}><a link={widget compName}>Tasks</a></li></xml>
-                                | _ => <xml><li><a link={widget compName}>Tasks</a></li></xml>}
-                               {case activeTab of
-                                  PilotsTab => <xml><li class={Bulma.is_active}><a link={widgetPilots compName}>Pilots</a></li></xml>
-                                | _ => <xml><li><a link={widgetPilots compName}>Pilots</a></li></xml>}
-                             </ul>
+                         <div class={classes Bulma.tile Bulma.is_ancestor}>
+                           <div class={Bulma.tile}>
+                             <div class={classes Bulma.tile Bulma.is_parent}>
+                               <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
+                                 {compHeader comp}
+                                 {summary comp nominalOpt}
+                               </div>
+                             </div>
                            </div>
+                         </div>
+                       </div>
+                       <div class={Bulma.spacer}></div>
+                       <div class={Bulma.box}>
+                         {case comp of Comp.CompInput c => breadcrumb c.CompName}
+                         <div class={Bulma.tabs}>
+                           <ul>
+                             {case activeTab of
+                                SettingsTab => <xml><li class={Bulma.is_active}><a link={widgetSettings compName}>Settings</a></li></xml>
+                              | _ => <xml><li><a link={widgetSettings compName}>Settings</a></li></xml>}
+                             {case activeTab of
+                                TasksTab => <xml><li class={Bulma.is_active}><a link={widget compName}>Tasks</a></li></xml>
+                              | _ => <xml><li><a link={widget compName}>Tasks</a></li></xml>}
+                             {case activeTab of
+                                PilotsTab => <xml><li class={Bulma.is_active}><a link={widgetPilots compName}>Pilots</a></li></xml>
+                              | _ => <xml><li><a link={widgetPilots compName}>Pilots</a></li></xml>}
+                           </ul>
+                         </div>
                            {case activeTab of
                               SettingsTab =>
                                 <xml>{settingsTable comp}</xml>
@@ -420,11 +427,9 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                                 <xml>{case pilotsOpt of
                                         None => <xml></xml>
                                       | Some pilots => pilotsTable pilotTaskNames pilots}</xml>}
-                         </div>
                        </div>
                      </div>
-                   </section>
-                 </div>
+                   </div>
                  {Footer.render ()}
                  <div class={Bulma.container}>
                    <div class={Bulma.spacer}></div>
