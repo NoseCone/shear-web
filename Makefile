@@ -1,23 +1,19 @@
 all: shearWeb
 
 VENDOR_CSS_DIR := vendor/css
-VENDORED_CSS := $(VENDOR_CSS_DIR)/bulma-0.9.3.css $(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css
+VENDORED_CSS := $(VENDOR_CSS_DIR)/ft-styles.css
 
 vendor-css: $(VENDORED_CSS)
 
 $(VENDOR_CSS_DIR):
 	mkdir -p $(VENDOR_CSS_DIR)
 
-$(VENDOR_CSS_DIR)/bulma-0.9.3.css: | $(VENDOR_CSS_DIR)
-	curl -fsSL https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.css -o $@
+$(VENDOR_CSS_DIR)/ft-styles.css: | $(VENDOR_CSS_DIR)
+	curl -fsSL http://2017-dalby.flaretiming.com/styles.css -o $@
 
-$(VENDOR_CSS_DIR)/layout.svelte-a0a62b13.css: | $(VENDOR_CSS_DIR)
-	curl -fsSL http://svelte.flaretiming.com/_app/assets/pages/__layout.svelte-a0a62b13.css -o $@
-
-site.css: vendor-css shearWeb-bridge.css
+site.css: vendor-css
 	cat $(VENDORED_CSS) > $@.tmp
 	python3 scripts/transform_css.py $@.tmp $@.tmp
-	cat shearWeb-bridge.css >> $@.tmp
 	mv $@.tmp $@
 
 cssAsset.ur: site.css
