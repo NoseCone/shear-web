@@ -109,36 +109,33 @@ fun main () =
             <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>
         <body>
-            <div>
-                <div>
-                    <div class={Bulma.container}>
-                        <div class={Bulma.spacer}></div>
-                        <div class={Bulma.content}>
-                            <div class={classes Bulma.tile Bulma.is_ancestor}>
-                                <div class={classes Bulma.tile Bulma.is_parent}>{header ()}</div>
-                            </div>
-                            {invite ()}
-                            <div class={classes Bulma.tile Bulma.is_ancestor}>
-                                <div class={classes Bulma.is_vertical Bulma.is_5}>
-                                    <div class={Bulma.tile}>
-                                        <div class={classes Bulma.tile Bulma.is_vertical}>
-                                            <div class={classes Bulma.is_child Bulma.box}>{paragliding ()}</div>
-                                            <div class={classes Bulma.is_child Bulma.box}>{archetypes ()}</div>
-                                        </div>
-                                    </div>
+            <div class={Bulma.spacer}></div>
+            <div class={classes Bulma.container Bulma.is_size_7}>
+                <div class={Bulma.content}>
+                    <div class={classes Bulma.tile Bulma.is_ancestor}>
+                        <div class={classes Bulma.tile Bulma.is_parent}>{header ()}</div>
+                    </div>
+                    {invite ()}
+                    <div class={classes Bulma.tile Bulma.is_ancestor}>
+                        <div class={classes Bulma.tile (classes Bulma.is_vertical Bulma.is_5)}>
+                            <div class={Bulma.tile}>
+                                <div class={classes Bulma.tile (classes Bulma.is_parent Bulma.is_vertical)}>
+                                    <div class={classes Bulma.is_child Bulma.box}>{paragliding ()}</div>
+                                    <div class={classes Bulma.is_child Bulma.box}>{archetypes ()}</div>
                                 </div>
-                                <div class={classes Bulma.is_vertical Bulma.is_7}>
-                                    <div class={Bulma.tile}>
-                                        <div class={classes Bulma.tile Bulma.is_vertical}>
-                                            <div class={classes Bulma.is_child Bulma.box}>{hanggliding ()}</div>
-                                        </div>
-                                    </div>
+                            </div>
+                        </div>
+                        <div class={classes Bulma.tile (classes Bulma.is_vertical Bulma.is_7)}>
+                            <div class={Bulma.tile}>
+                                <div class={classes Bulma.tile (classes Bulma.is_parent Bulma.is_vertical)}>
+                                    <div class={classes Bulma.is_child Bulma.box}>{hanggliding ()}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {Footer.render ()}
             </div>
+            <div class={Bulma.spacer}></div>
+            {Footer.render ()}
         </body>
     </xml>
