@@ -12,9 +12,7 @@ $(VENDOR_CSS_DIR)/ft-styles.css: | $(VENDOR_CSS_DIR)
 	curl -fsSL http://2017-dalby.flaretiming.com/styles.css -o $@
 
 site.css: vendor-css
-	cat $(VENDORED_CSS) > $@.tmp
-	python3 scripts/transform_css.py $@.tmp $@.tmp
-	mv $@.tmp $@
+	cat $(VENDORED_CSS) > $@
 
 cssAsset.ur: site.css
 	python3 -c "import json,pathlib; css=pathlib.Path('site.css').read_text(); pathlib.Path('cssAsset.ur').write_text('val content = ' + json.dumps(css) + '\\n')"

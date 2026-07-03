@@ -42,7 +42,7 @@ style is_info
 style is_success
 style is_danger
 
-style table_
+style tabular
 style is_bordered
 style is_striped
 style th_task_name
