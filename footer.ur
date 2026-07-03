@@ -8,7 +8,7 @@ fun render () : xbody =
                             href="http://www.flaretiming.com/about.html" target="_blank">About</a>, <a
                             href="http://www.flaretiming.com/disclaim.html" target="_blank">Disclaimer</a>,
                         <a href="http://www.flaretiming.com/blog.html" target="_blank">Blog</a>)<br/><br/>Map data
-                        © <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors
+                        © <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors
                     </div>
                 </div>
             </div>

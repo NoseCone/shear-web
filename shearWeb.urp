@@ -10,7 +10,7 @@ allow url http://www.blockscope.com
 allow url http://www.flaretiming.com/about.html
 allow url http://www.flaretiming.com/disclaim.html
 allow url http://www.flaretiming.com/blog.html
-allow url http://www.openstreetmap.org/copyright
+allow url https://www.openstreetmap.org/copyright
 allow meta charset
 allow meta viewport
 allow mime text/css
