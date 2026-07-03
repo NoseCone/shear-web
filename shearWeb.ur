@@ -17,14 +17,14 @@ fun main () =
                                 <div class={classes Bulma.tile Bulma.is_parent}>
                                     <article class={classes Bulma.tile (classes Bulma.is_child (classes Bulma.notification Bulma.is_light))}>
                                         <p>Shear Web</p>
-                                        <p class={Bulma.subtitle}>Comps scored with <a href="https://flaretiming.com">Flare Timing</a> and
+                                        <p class={Bulma.subtitle}>Comps scored with <a href="http://flaretiming.com" target="_blank">Flare Timing</a> and
                                             presented with
-                                            <a href="http://www.impredicative.com/ur/">Ur/Web</a>
+                                            <a href="http://www.impredicative.com/ur/" target="_blank">Ur/Web</a>
                                         </p>
                                     </article>
                                 </div>
                             </div>
-                            <p>Want <a href="https://flaretiming.com/posts/2018-12-19-add-a-comp.html">your comp here</a>?</p>
+                            <p>Want <a href="http://flaretiming.com/posts/2018-12-19-add-a-comp.html" target="_blank">your comp here</a>?</p>
                             <div class={classes Bulma.tile Bulma.is_ancestor}>
                                 <div class={classes Bulma.is_vertical Bulma.is_5}>
                                     <div class={Bulma.tile}>
