@@ -55,7 +55,7 @@ rewrite style Css/is-black Bulma/is_black
 rewrite style Css/is-info Bulma/is_info
 rewrite style Css/is-success Bulma/is_success
 rewrite style Css/is-danger Bulma/is_danger
-rewrite style Css/table Bulma/table_cls
+rewrite style Bulma/table_ Bulma/table
 rewrite style Css/is-bordered Bulma/is_bordered
 rewrite style Css/is-striped Bulma/is_striped
 rewrite style Css/th-task-name Bulma/th_task_name

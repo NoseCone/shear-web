@@ -132,7 +132,7 @@ fun settingsTable (comp : Comp.compInput) : xbody =
           | Comp.EarthEllipsoid e => "equatorialR " ^ e.EquatorialR ^ " m, recipF " ^ e.RecipF
       in
         <xml>
-          <table class={classes Bulma.table_cls Bulma.is_bordered}>
+          <table class={classes Bulma.table_ Bulma.is_bordered}>
             <thead>
               <tr>
                 <th colspan={3}></th>
@@ -217,7 +217,7 @@ fun taskRows (tasks : list Comp.compTask) (lengths : list Comp.taskLength) (i : 
 
 fun tasksTable (tasks : list Comp.compTask) (lengths : list Comp.taskLength) =
   <xml>
-    <table class={classes Bulma.table_cls Bulma.is_striped}>
+    <table class={classes Bulma.table_ Bulma.is_striped}>
       <thead>
         <tr>
           <th>#</th>
@@ -281,7 +281,7 @@ fun countStrings (xs : list string) =
 
 fun pilotsTable (taskNames : list string) (pilots : list Comp.pilotStatus) =
   <xml>
-    <table class={classes Bulma.table_cls (classes Bulma.is_bordered Bulma.is_striped)}>
+    <table class={classes Bulma.table_ (classes Bulma.is_bordered Bulma.is_striped)}>
       <thead>
         <tr>
           <th class={Bulma.th_pid}>Id</th>
