@@ -89,7 +89,7 @@ fun hanggliding () =
 
 fun header () =
     <xml>
-        <article class="tile is_child notification is_light">
+        <article class="tile is-child notification is-light">
             <p>Shear Web</p>
             <p class="subtitle">Comps scored with <a href="http://flaretiming.com" target="_blank">Flare Timing</a> and
                 presented with
@@ -112,25 +112,25 @@ fun main () =
         </head>
         <body>
             <div class="spacer"></div>
-            <div class="container is_size_7">
+            <div class="container is-size-7">
                 <div class="content">
-                    <div class="tile is_ancestor">
-                        <div class="tile is_parent">{header ()}</div>
+                    <div class="tile is-ancestor">
+                        <div class="tile is-parent">{header ()}</div>
                     </div>
                     {invite ()}
-                    <div class="tile is_ancestor">
-                        <div class="tile is_vertical is_5">
+                    <div class="tile is-ancestor">
+                        <div class="tile is-vertical is-5">
                             <div class="tile">
-                                <div class="tile is_parent is_vertical">
-                                    <div class="is_child box">{paragliding ()}</div>
-                                    <div class="is_child box">{archetypes ()}</div>
+                                <div class="tile is-parent is-vertical">
+                                    <div class="is-child box">{paragliding ()}</div>
+                                    <div class="is-child box">{archetypes ()}</div>
                                 </div>
                             </div>
                         </div>
-                        <div class="tile is_vertical is_7">
+                        <div class="tile is-vertical is-7">
                             <div class="tile">
-                                <div class="tile is_parent is_vertical">
-                                    <div class="is_child box">{hanggliding ()}</div>
+                                <div class="tile is-parent is-vertical">
+                                    <div class="is-child box">{hanggliding ()}</div>
                                 </div>
                             </div>
                         </div>
