@@ -106,7 +106,7 @@ fun invite () =
 fun main () =
     return <xml>
         <head>
-            (* <title>Ur/Web Shear Web</title> *)
+            <title>Ur/Web Shear Web</title>
             <link rel="stylesheet" type="text/css" href="http://localhost:8080/css" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>

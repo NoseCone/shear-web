@@ -24,8 +24,8 @@ fun compHeader (comp : Comp.compInput) : xbody =
   case comp of
     Comp.CompInput c =>
       <xml>
-        <p class={classes Bulma.title Bulma.is_3}>{[c.CompName]}</p>
-        <p class={classes Bulma.title Bulma.is_5}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
+        <p class={classes Bulma.titular Bulma.is_3}>{[c.CompName]}</p>
+        <p class={classes Bulma.titular Bulma.is_5}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
       </xml>
 
 fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =

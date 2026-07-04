@@ -3,7 +3,7 @@
 
 style container
 style content
-style title
+style titular
 style subtitle
 style breadcrumb
 style tabs

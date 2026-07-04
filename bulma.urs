@@ -2,7 +2,7 @@
 
 style container
 style content
-style title
+style titular (* clashes with <title> *)
 style subtitle
 style breadcrumb
 style tabs
@@ -42,7 +42,7 @@ style is_info
 style is_success
 style is_danger
 
-style tabular
+style tabular (* clashes with <table> *)
 style is_bordered
 style is_striped
 style th_task_name

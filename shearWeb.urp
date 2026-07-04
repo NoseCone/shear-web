@@ -18,6 +18,7 @@ safeGet comp
 safeGet compSettings
 safeGet compPilots
 rewrite style Bulma/tabular table
+rewrite style Bulma/titular title
 rewrite style Bulma/* [-]
 rewrite url CompView/widget comp
 rewrite url CompView/widgetSettings compSettings
