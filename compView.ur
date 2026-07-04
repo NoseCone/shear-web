@@ -34,7 +34,7 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
       let
         val tz =
           case c.UtcOffset of
-            Comp.UtcOffset u => show u.TimeZoneMinutes
+            Comp.UtcOffset u => show u.TimeZoneMinutes ^ " mins"
 
         val Comp.GiveConfig g = c.GiveConfig
         val giveDistance =
