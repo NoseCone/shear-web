@@ -1,10 +1,10 @@
-
+open Bulma
 
 fun metric (label : string) (value : string) (accent : css_class) : xbody =
     <xml>
-      <div class={Bulma.control}>
-        <div class={classes Bulma.tags Bulma.has_addons}>
-          <span class={Bulma.tag}>{[label]}</span>
+      <div class="control">
+        <div class="tags has_addons">
+          <span class="tag">{[label]}</span>
           <span class={classes Bulma.tag accent}>{[value]}</span>
         </div>
       </div>
@@ -15,7 +15,7 @@ fun breadcrumb (compName : string) : xbody =
       <nav class={Bulma.breadcrumb} aria-label="breadcrumbs">
         <ul>
           <li><a href="http://localhost:8080/main">Shear Web (Ur/Web)</a></li>
-          <li class={Bulma.is_active}>{[compName]}</li>
+          <li class="is_active">{[compName]}</li>
         </ul>
       </nav>
     </xml>
@@ -24,8 +24,8 @@ fun compHeader (comp : Comp.compInput) : xbody =
   case comp of
     Comp.CompInput c =>
       <xml>
-        <p class={classes Bulma.titular Bulma.is_3}>{[c.CompName]}</p>
-        <p class={classes Bulma.titular Bulma.is_5}>{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
+        <p class="titular is_3">{[c.CompName]}</p>
+        <p class="titular is_5">{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
       </xml>
 
 fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
@@ -90,8 +90,8 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
                 Comp.Nominal x => show x.Launch
       in
         <xml>
-          <div class={Bulma.example}>
-            <div class={classes Bulma.field (classes Bulma.is_grouped Bulma.is_grouped_multiline)}>
+          <div class="example">
+            <div class="field is_grouped is_grouped_multiline">
               {metric "UTC offset" tz Bulma.is_warning}
               {metric "Minimum distance" giveDistance Bulma.is_black}
               {metric "Nominal free" nominalFree Bulma.is_black}
@@ -132,7 +132,7 @@ fun settingsTable (comp : Comp.compInput) : xbody =
           | Comp.EarthEllipsoid e => "equatorialR " ^ e.EquatorialR ^ " m, recipF " ^ e.RecipF
       in
         <xml>
-          <table class={classes Bulma.tabular Bulma.is_bordered}>
+          <table class="tabular is_bordered">
             <thead>
               <tr>
                 <th colspan={3}></th>
@@ -205,11 +205,11 @@ fun taskRows (tasks : list Comp.compTask) (lengths : list Comp.taskLength) (i : 
         <xml>
           <tr>
             <td>{[show i]}</td>
-            <td class={Bulma.td_task_name}>{[t.TaskName]}</td>
-            <td class={Bulma.td_task_tps}>{[turnpoints]}</td>
-            <td class={Bulma.td_task_dist}>{[distanceText]}</td>
-            <td class={Bulma.td_task_stopped}>{[stoppedText]}</td>
-            <td class={Bulma.td_task_cancelled}>{[cancelledText]}</td>
+            <td class="td_task_name">{[t.TaskName]}</td>
+            <td class="td_task_tps">{[turnpoints]}</td>
+            <td class="td_task_dist">{[distanceText]}</td>
+            <td class="td_task_stopped">{[stoppedText]}</td>
+            <td class="td_task_cancelled">{[cancelledText]}</td>
           </tr>
           {taskRows ts nextLengths (i + 1)}
         </xml>
@@ -217,15 +217,15 @@ fun taskRows (tasks : list Comp.compTask) (lengths : list Comp.taskLength) (i : 
 
 fun tasksTable (tasks : list Comp.compTask) (lengths : list Comp.taskLength) =
   <xml>
-    <table class={classes Bulma.tabular Bulma.is_striped}>
+    <table class="tabular is_striped">
       <thead>
         <tr>
           <th>#</th>
-          <th class={Bulma.th_task_name}>Name</th>
-          <th class={Bulma.th_task_tps}>Turnpoints</th>
-          <th class={Bulma.th_task_dist}>Distance</th>
-          <th class={Bulma.th_task_stopped}>Stopped</th>
-          <th class={Bulma.th_task_cancelled}>Cancelled</th>
+          <th class="th_task_name">Name</th>
+          <th class="th_task_tps">Turnpoints</th>
+          <th class="th_task_dist">Distance</th>
+          <th class="th_task_stopped">Stopped</th>
+          <th class="th_task_cancelled">Cancelled</th>
         </tr>
       </thead>
       <tbody>{taskRows tasks lengths 1}</tbody>
@@ -250,7 +250,7 @@ fun pilotRows (pilots : list Comp.pilotStatus) =
   | p :: ps =>
       <xml>
         <tr>
-          <td class={Bulma.td_pid}>{[p.PilotId]}</td>
+          <td class="td_pid">{[p.PilotId]}</td>
           <td>{[p.PilotName]}</td>
           {statusCells p.PilotStatus}
         </tr>
@@ -281,10 +281,10 @@ fun countStrings (xs : list string) =
 
 fun pilotsTable (taskNames : list string) (pilots : list Comp.pilotStatus) =
   <xml>
-    <table class={classes Bulma.tabular (classes Bulma.is_bordered Bulma.is_striped)}>
+    <table class="tabular is_bordered is_striped">
       <thead>
         <tr>
-          <th class={Bulma.th_pid}>Id</th>
+          <th class="th_pid">Id</th>
           <th>Name</th>
           {taskNameHeaders taskNames}
         </tr>
@@ -372,9 +372,9 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
           {case compResult of
              CompJson.CompInputParseError err =>
                <xml>
-                 <div class={Bulma.container}>
-                   <div class={Bulma.spacer}></div>
-                   <div class={classes Bulma.notification Bulma.is_light}>
+                 <div class="container">
+                   <div class="spacer"></div>
+                   <div class="notification is_light">
                      <h4>Parse failed</h4>
                      <p>{[err]}</p>
                    </div>
@@ -383,15 +383,15 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                </xml>
            | CompJson.CompInputParseOk comp =>
                <xml>
-                 <div class={Bulma.spacer}></div>
-                   <div id={idUw} class={classes Bulma.container Bulma.is_size_7}>
+                 <div class="spacer"></div>
+                   <div id={idUw} class="container is_size_7">
                      <div>
-                       <div class={Bulma.spacer}></div>
-                       <div class={Bulma.container}>
-                         <div class={classes Bulma.tile Bulma.is_ancestor}>
-                           <div class={Bulma.tile}>
-                             <div class={classes Bulma.tile Bulma.is_parent}>
-                               <div class={classes Bulma.tile (classes Bulma.is_child Bulma.box)}>
+                       <div class="spacer"></div>
+                       <div class="container">
+                         <div class="tile is-ancestor">
+                           <div class="tile">
+                             <div class="tile is_parent">
+                               <div class="tile is_child box">
                                  {compHeader comp}
                                  {summary comp nominalOpt}
                                </div>
@@ -399,19 +399,19 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                            </div>
                          </div>
                        </div>
-                       <div class={Bulma.spacer}></div>
-                       <div class={Bulma.box}>
+                       <div class="spacer"></div>
+                       <div class="box">
                          {case comp of Comp.CompInput c => breadcrumb c.CompName}
-                         <div class={Bulma.tabs}>
+                         <div class="tabs">
                            <ul>
                              {case activeTab of
-                                SettingsTab => <xml><li class={Bulma.is_active}><a link={widgetSettings compName}>Settings</a></li></xml>
+                                SettingsTab => <xml><li class="is_active"><a link={widgetSettings compName}>Settings</a></li></xml>
                               | _ => <xml><li><a link={widgetSettings compName}>Settings</a></li></xml>}
                              {case activeTab of
-                                TasksTab => <xml><li class={Bulma.is_active}><a link={widget compName}>Tasks</a></li></xml>
+                                TasksTab => <xml><li class="is_active"><a link={widget compName}>Tasks</a></li></xml>
                               | _ => <xml><li><a link={widget compName}>Tasks</a></li></xml>}
                              {case activeTab of
-                                PilotsTab => <xml><li class={Bulma.is_active}><a link={widgetPilots compName}>Pilots</a></li></xml>
+                                PilotsTab => <xml><li class="is_active"><a link={widgetPilots compName}>Pilots</a></li></xml>
                               | _ => <xml><li><a link={widgetPilots compName}>Pilots</a></li></xml>}
                            </ul>
                          </div>
@@ -431,13 +431,13 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                      </div>
                    </div>
                  {Footer.render ()}
-                 <div class={Bulma.container}>
-                   <div class={Bulma.spacer}></div>
+                 <div class="container">
+                   <div class="spacer"></div>
                    {case nominalErr of
                       None => <xml></xml>
                     | Some err =>
                         <xml>
-                          <div class={classes Bulma.notification Bulma.is_light}>
+                          <div class="notification is_light">
                             <h4>Nominals parse failed</h4>
                             <p>{[err]}</p>
                           </div>
@@ -446,7 +446,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                       None => <xml></xml>
                     | Some err =>
                         <xml>
-                          <div class={classes Bulma.notification Bulma.is_light}>
+                          <div class="notification is_light">
                             <h4>Tasks parse failed</h4>
                             <p>{[err]}</p>
                           </div>
@@ -455,7 +455,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                       None => <xml></xml>
                     | Some err =>
                         <xml>
-                          <div class={classes Bulma.notification Bulma.is_light}>
+                          <div class="notification is_light">
                             <h4>Task lengths parse failed</h4>
                             <p>{[err]}</p>
                           </div>
@@ -464,7 +464,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                       None => <xml></xml>
                     | Some err =>
                         <xml>
-                          <div class={classes Bulma.notification Bulma.is_light}>
+                          <div class="notification is_light">
                             <h4>Pilots parse failed</h4>
                             <p>{[err]}</p>
                           </div>
