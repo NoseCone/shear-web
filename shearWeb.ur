@@ -1,3 +1,5 @@
+open Bulma
+
 val css = Css.siteCss
 
 fun paragliding () =
@@ -87,9 +89,9 @@ fun hanggliding () =
 
 fun header () =
     <xml>
-        <article class={classes Bulma.tile (classes Bulma.is_child (classes Bulma.notification Bulma.is_light))}>
+        <article class="tile is_child notification is_light">
             <p>Shear Web</p>
-            <p class={Bulma.subtitle}>Comps scored with <a href="http://flaretiming.com" target="_blank">Flare Timing</a> and
+            <p class="subtitle">Comps scored with <a href="http://flaretiming.com" target="_blank">Flare Timing</a> and
                 presented with
                 <a href="http://www.impredicative.com/ur/" target="_blank">Ur/Web</a>
             </p>
@@ -104,38 +106,38 @@ fun invite () =
 fun main () =
     return <xml>
         <head>
-            <title>Ur/Web Shear Web</title>
+            (* <title>Ur/Web Shear Web</title> *)
             <link rel="stylesheet" type="text/css" href="http://localhost:8080/css" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>
         <body>
-            <div class={Bulma.spacer}></div>
-            <div class={classes Bulma.container Bulma.is_size_7}>
-                <div class={Bulma.content}>
-                    <div class={classes Bulma.tile Bulma.is_ancestor}>
-                        <div class={classes Bulma.tile Bulma.is_parent}>{header ()}</div>
+            <div class="spacer"></div>
+            <div class="container is_size_7">
+                <div class="content">
+                    <div class="tile is_ancestor">
+                        <div class="tile is_parent">{header ()}</div>
                     </div>
                     {invite ()}
-                    <div class={classes Bulma.tile Bulma.is_ancestor}>
-                        <div class={classes Bulma.tile (classes Bulma.is_vertical Bulma.is_5)}>
-                            <div class={Bulma.tile}>
-                                <div class={classes Bulma.tile (classes Bulma.is_parent Bulma.is_vertical)}>
-                                    <div class={classes Bulma.is_child Bulma.box}>{paragliding ()}</div>
-                                    <div class={classes Bulma.is_child Bulma.box}>{archetypes ()}</div>
+                    <div class="tile is_ancestor">
+                        <div class="tile is_vertical is_5">
+                            <div class="tile">
+                                <div class="tile is_parent is_vertical">
+                                    <div class="is_child box">{paragliding ()}</div>
+                                    <div class="is_child box">{archetypes ()}</div>
                                 </div>
                             </div>
                         </div>
-                        <div class={classes Bulma.tile (classes Bulma.is_vertical Bulma.is_7)}>
-                            <div class={Bulma.tile}>
-                                <div class={classes Bulma.tile (classes Bulma.is_parent Bulma.is_vertical)}>
-                                    <div class={classes Bulma.is_child Bulma.box}>{hanggliding ()}</div>
+                        <div class="tile is_vertical is_7">
+                            <div class="tile">
+                                <div class="tile is_parent is_vertical">
+                                    <div class="is_child box">{hanggliding ()}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class={Bulma.spacer}></div>
+            <div class="spacer"></div>
             {Footer.render ()}
         </body>
     </xml>
