@@ -59,7 +59,7 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
             None => "None"
           | Some sb =>
               case sb of
-                Comp.ScoreBackTime s => show s ^ " s"
+                Comp.ScoreBackTime s => show (round (s/ 60.)) ^ " mins"
       in
         <xml>
           <div class="example">
@@ -72,7 +72,7 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
               {metric "Nominal goal" nominalGoal Bulma.is_primary}
               {metric "Nominal launch" nominalLaunch Bulma.is_primary}
               {metric "Give fraction" giveFraction Bulma.is_info}
-              {metric "Score-back time" scoreBack Bulma.is_danger}
+              {metric "Score back time" scoreBack Bulma.is_danger}
             </div>
           </div>
         </xml>
