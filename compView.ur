@@ -36,16 +36,23 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
           case c.UtcOffset of
             Comp.UtcOffset u => show u.TimeZoneMinutes
 
+        val Comp.GiveConfig g = c.GiveConfig
         val giveDistance =
-          case c.GiveConfig of
-            Comp.GiveConfig g =>
-              case g.GiveDistance of
-                None => "None"
-              | Some d => d
+          case g.GiveDistance of
+            None => "None"
+          | Some d => d
+        val giveFraction = show g.GiveFraction
 
-        val giveFraction =
-          case c.GiveConfig of
-            Comp.GiveConfig g => show g.GiveFraction
+        fun nominalField f =
+          case nominal of
+            None => "Unknown"
+          | Some (Comp.Nominal x) => f x
+
+        val nominalDistance = nominalField (fn x => x.Distance)
+        val nominalFree = nominalField (fn x => x.Free)
+        val nominalTime = nominalField (fn x => x.Time)
+        val nominalGoal = nominalField (fn x => show x.Goal)
+        val nominalLaunch = nominalField (fn x => show x.Launch)
 
         val scoreBack =
           case c.ScoreBack of
@@ -53,41 +60,6 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
           | Some sb =>
               case sb of
                 Comp.ScoreBackTime s => show s ^ " s"
-
-        val nominalDistance =
-          case nominal of
-            None => "Unknown"
-          | Some n =>
-              case n of
-                Comp.Nominal x => x.Distance
-
-        val nominalFree =
-          case nominal of
-            None => "Unknown"
-          | Some n =>
-              case n of
-                Comp.Nominal x => x.Free
-
-        val nominalTime =
-          case nominal of
-            None => "Unknown"
-          | Some n =>
-              case n of
-                Comp.Nominal x => x.Time
-
-        val nominalGoal =
-          case nominal of
-            None => "Unknown"
-          | Some n =>
-              case n of
-                Comp.Nominal x => show x.Goal
-
-        val nominalLaunch =
-          case nominal of
-            None => "Unknown"
-          | Some n =>
-              case n of
-                Comp.Nominal x => show x.Launch
       in
         <xml>
           <div class="example">
