@@ -103,22 +103,18 @@ fun parseNominalJson (json : string) : transaction nominalParseResult =
   launch <- CompParse.nominalLaunch parsed;
 
   CompParse.freeNominal parsed;
-  return (case parseNominalDistance distanceRaw of
-    NominalDistanceParseError err => NominalParseError err
-  | NominalDistanceParseOk distance =>
-    case parseNominalDistance freeDistRaw of
-      NominalDistanceParseError err => NominalParseError err
-    | NominalDistanceParseOk freeDist =>
-      case parseNominalTime timeRaw of
-        NominalTimeParseError err => NominalParseError err
-      | NominalTimeParseOk hours =>
-          fromParseNominal (ParseOk (Comp.Nominal
-            { Distance = distance
-            , Free = freeDist
-            , Time = hours
-            , Goal = goal
-            , Launch = launch
-            })))
+  return (case (parseNominalDistance distanceRaw, parseNominalDistance freeDistRaw, parseNominalTime timeRaw) of
+    (NominalDistanceParseError err, _, _) => NominalParseError err
+  | (_, NominalDistanceParseError err, _) => NominalParseError err
+  | (_, _, NominalTimeParseError err) => NominalParseError err
+  | (NominalDistanceParseOk distance, NominalDistanceParseOk freeDist, NominalTimeParseOk hours) =>
+      fromParseNominal (ParseOk (Comp.Nominal
+        { Distance = distance
+        , Free = freeDist
+        , Time = hours
+        , Goal = goal
+        , Launch = launch
+        })))
 
 fun parseTasksJson (json : string) : transaction tasksParseResult =
   parsed <- CompParse.parseTasks json;
