@@ -93,12 +93,14 @@ fun parseNominalTime (raw : string) : nominalTimeParseResult =
       | Some hours => NominalTimeParseOk hours
   end
 
+fun tmap [a] [b] (f : a -> b) (m : transaction a) : transaction b = x <- m; return (f x)
+
 fun parseNominalJson (json : string) : transaction nominalParseResult =
   parsed <- CompParse.parseNominal json;
 
-  distance <- (x <- CompParse.nominalDistance parsed; return (parseNominalDistance x));
-  freeDist <- (x <- CompParse.nominalFree parsed; return (parseNominalDistance x));
-  time <- (x <- CompParse.nominalTime parsed; return (parseNominalTime x));
+  distance <- tmap parseNominalDistance (CompParse.nominalDistance parsed);
+  freeDist <- tmap parseNominalDistance (CompParse.nominalFree parsed);
+  time <- tmap parseNominalTime (CompParse.nominalTime parsed);
   goal <- CompParse.nominalGoal parsed;
   launch <- CompParse.nominalLaunch parsed;
 
