@@ -20,8 +20,8 @@ datatype scoreBackTime =
 
 datatype nominal =
   Nominal of
-  { Distance : string
-  , Free : string
+  { Distance : float
+  , Free : float
   , Time : float
   , Goal : float
   , Launch : float

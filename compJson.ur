@@ -45,6 +45,8 @@ fun fromParsePilots (r : parseResult (list Comp.pilotStatus)) : pilotsParseResul
 
 datatype scoreBackParseResult = ScoreBackParseError of string | ScoreBackParseOk of Comp.scoreBackTime
 
+datatype nominalDistanceParseResult = NominalDistanceParseError of string | NominalDistanceParseOk of float
+
 datatype nominalTimeParseResult = NominalTimeParseError of string | NominalTimeParseOk of float
 
 datatype earthModelParseResult = EarthModelParseError of string | EarthModelParseOk of Comp.earthModel
@@ -61,6 +63,20 @@ fun parseScoreBackTime (raw : string) : scoreBackParseResult =
       case (read (substring raw 0 (n - 2)) : option float) of
         None => ScoreBackParseError ("Invalid scoreBack number: " ^ raw)
       | Some seconds => ScoreBackParseOk (Comp.ScoreBackTime seconds)
+  end
+
+fun parseNominalDistance (raw : string) : nominalDistanceParseResult =
+  let
+    val n = strlen raw
+  in
+    if n < 4 then
+      NominalDistanceParseError "Invalid nominalDistance; expected '<number> km'"
+    else if strsub raw (n - 3) <> #" " || strsub raw (n - 2) <> #"k" || strsub raw (n - 1) <> #"m" then
+      NominalDistanceParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
+    else
+      case (read (substring raw 0 (n - 3)) : option float) of
+        None => NominalDistanceParseError ("Invalid nominalDistance number: " ^ raw)
+      | Some km => NominalDistanceParseOk km
   end
 
 fun parseNominalTime (raw : string) : nominalTimeParseResult =
@@ -80,24 +96,29 @@ fun parseNominalTime (raw : string) : nominalTimeParseResult =
 fun parseNominalJson (json : string) : transaction nominalParseResult =
   parsed <- CompParse.parseNominal json;
 
-  distance <- CompParse.nominalDistance parsed;
-  freeDist <- CompParse.nominalFree parsed;
+  distanceRaw <- CompParse.nominalDistance parsed;
+  freeDistRaw <- CompParse.nominalFree parsed;
   timeRaw <- CompParse.nominalTime parsed;
   goal <- CompParse.nominalGoal parsed;
   launch <- CompParse.nominalLaunch parsed;
 
   CompParse.freeNominal parsed;
-
-  return (case parseNominalTime timeRaw of
-    NominalTimeParseError err => NominalParseError err
-  | NominalTimeParseOk hours =>
-      fromParseNominal (ParseOk (Comp.Nominal
-        { Distance = distance
-        , Free = freeDist
-        , Time = hours
-        , Goal = goal
-        , Launch = launch
-        })))
+  return (case parseNominalDistance distanceRaw of
+    NominalDistanceParseError err => NominalParseError err
+  | NominalDistanceParseOk distance =>
+    case parseNominalDistance freeDistRaw of
+      NominalDistanceParseError err => NominalParseError err
+    | NominalDistanceParseOk freeDist =>
+      case parseNominalTime timeRaw of
+        NominalTimeParseError err => NominalParseError err
+      | NominalTimeParseOk hours =>
+          fromParseNominal (ParseOk (Comp.Nominal
+            { Distance = distance
+            , Free = freeDist
+            , Time = hours
+            , Goal = goal
+            , Launch = launch
+            })))
 
 fun parseTasksJson (json : string) : transaction tasksParseResult =
   parsed <- CompParse.parseTasks json;

@@ -48,8 +48,8 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
             None => "Unknown"
           | Some (Comp.Nominal x) => f x
 
-        val nominalDistance = nominalField (fn x => x.Distance)
-        val nominalFree = nominalField (fn x => x.Free)
+        val nominalDistance = nominalField (fn x => show x.Distance ^ " km")
+        val nominalFree = nominalField (fn x => show x.Free ^ " km")
         val nominalTime = nominalField (fn x => show x.Time ^ " h")
         val nominalGoal = nominalField (fn x => show x.Goal)
         val nominalLaunch = nominalField (fn x => show x.Launch)
