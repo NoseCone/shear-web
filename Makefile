@@ -15,7 +15,7 @@ site.css: vendor-css
 	cat $(VENDORED_CSS) > $@
 
 cssAsset.ur: site.css
-	python3 -c "import json,pathlib; css=pathlib.Path('site.css').read_text(); pathlib.Path('cssAsset.ur').write_text('val content = ' + json.dumps(css) + '\\n')"
+	printf 'val content = %s\n' "$$(jq -Rs '.' site.css)" > $@
 
 URWEB_CINCLUDE := $(shell urweb -print-cinclude)
 
