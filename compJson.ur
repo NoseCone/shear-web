@@ -96,14 +96,14 @@ fun parseNominalTime (raw : string) : nominalTimeParseResult =
 fun parseNominalJson (json : string) : transaction nominalParseResult =
   parsed <- CompParse.parseNominal json;
 
-  distanceRaw <- CompParse.nominalDistance parsed;
-  freeDistRaw <- CompParse.nominalFree parsed;
-  timeRaw <- CompParse.nominalTime parsed;
+  distance <- (x <- CompParse.nominalDistance parsed; return (parseNominalDistance x));
+  freeDist <- (x <- CompParse.nominalFree parsed; return (parseNominalDistance x));
+  time <- (x <- CompParse.nominalTime parsed; return (parseNominalTime x));
   goal <- CompParse.nominalGoal parsed;
   launch <- CompParse.nominalLaunch parsed;
 
   CompParse.freeNominal parsed;
-  return (case (parseNominalDistance distanceRaw, parseNominalDistance freeDistRaw, parseNominalTime timeRaw) of
+  return (case (distance, freeDist, time) of
     (NominalDistanceParseError err, _, _) => NominalParseError err
   | (_, NominalDistanceParseError err, _) => NominalParseError err
   | (_, _, NominalTimeParseError err) => NominalParseError err
