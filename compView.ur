@@ -41,7 +41,6 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
           case g.GiveDistance of
             None => "None"
           | Some d => d
-        val giveFraction = show g.GiveFraction
 
         fun nominalField f =
           case nominal of
@@ -71,7 +70,6 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
               {metric "Nominal time" nominalTime Bulma.is_success}
               {metric "Nominal goal" nominalGoal Bulma.is_primary}
               {metric "Nominal launch" nominalLaunch Bulma.is_primary}
-              {metric "Give fraction" giveFraction Bulma.is_info}
               {metric "Score back time" scoreBack Bulma.is_danger}
             </div>
           </div>
