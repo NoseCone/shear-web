@@ -1,3 +1,5 @@
+open Monad
+
 (* NOTE:
    We intentionally keep the exported result types monomorphic (`compInputParseResult`
    and `nominalParseResult`) even though this module uses a local polymorphic
@@ -93,14 +95,12 @@ fun parseNominalTime (raw : string) : nominalTimeParseResult =
       | Some hours => NominalTimeParseOk hours
   end
 
-fun tmap [a] [b] (f : a -> b) (m : transaction a) : transaction b = x <- m; return (f x)
-
 fun parseNominalJson (json : string) : transaction nominalParseResult =
   parsed <- CompParse.parseNominal json;
 
-  distance <- tmap parseNominalDistance (CompParse.nominalDistance parsed);
-  freeDist <- tmap parseNominalDistance (CompParse.nominalFree parsed);
-  time <- tmap parseNominalTime (CompParse.nominalTime parsed);
+  distance <- Monad.mp parseNominalDistance (CompParse.nominalDistance parsed);
+  freeDist <- Monad.mp parseNominalDistance (CompParse.nominalFree parsed);
+  time <- Monad.mp parseNominalTime (CompParse.nominalTime parsed);
   goal <- CompParse.nominalGoal parsed;
   launch <- CompParse.nominalLaunch parsed;
 
