@@ -51,7 +51,18 @@ datatype nominalDistanceParseResult = NominalDistanceParseError of string | Nomi
 
 datatype nominalTimeParseResult = NominalTimeParseError of string | NominalTimeParseOk of float
 
+datatype earthRadiusParseResult = EarthRadiusParseError of string | EarthRadiusParseOk of float
+
 datatype earthModelParseResult = EarthModelParseError of string | EarthModelParseOk of Comp.earthModel
+
+fun parseEarthRadius (raw : string) : earthRadiusParseResult =
+  case String.ssplit {Haystack = raw, Needle = " m"} of
+    None => EarthRadiusParseError ("Invalid earth radius units; expected '<number> m', a quantity of metres: " ^ raw)
+  | Some (num, rest) =>
+      if rest <> "" then EarthRadiusParseError ("Invalid earth radius units; expected '<number> m', a quantity of metres: " ^ raw)
+      else (case (read num : option float) of
+        None => EarthRadiusParseError ("Invalid earth radius number: " ^ raw)
+      | Some m => EarthRadiusParseOk m)
 
 fun parseScoreBackTime (raw : string) : scoreBackParseResult =
   case String.ssplit {Haystack = raw, Needle = " s"} of
@@ -240,7 +251,10 @@ fun parseCompInputJson (json : string) : transaction compInputParseResult =
            | None =>
                case earthRecipF of
                  Some _ => EarthModelParseError "Invalid earth model: recipF without ellipsoid.equatorialR"
-               | None => EarthModelParseOk (Comp.EarthAsSphere {Radius = radius}))
+               | None =>
+                   (case parseEarthRadius radius of
+                      EarthRadiusParseError err => EarthModelParseError err
+                    | EarthRadiusParseOk r => EarthModelParseOk (Comp.EarthAsSphere {Radius = r})))
       | None =>
           case earthEquatorialR of
             None => EarthModelParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"

@@ -9,7 +9,7 @@ datatype earthSphere =
   EarthSphere of string
 
 datatype earthModel =
-    EarthAsSphere of {Radius : string}
+    EarthAsSphere of {Radius : float}
   | EarthEllipsoid of {EquatorialR: string, RecipF : string}
 
 datatype giveConfig =
