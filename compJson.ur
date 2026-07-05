@@ -54,46 +54,31 @@ datatype nominalTimeParseResult = NominalTimeParseError of string | NominalTimeP
 datatype earthModelParseResult = EarthModelParseError of string | EarthModelParseOk of Comp.earthModel
 
 fun parseScoreBackTime (raw : string) : scoreBackParseResult =
-  let
-    val n = strlen raw
-  in
-    if n < 3 then
-      ScoreBackParseError "Invalid scoreBack; expected '<number> s'"
-    else if strsub raw (n - 2) <> #" " || strsub raw (n - 1) <> #"s" then
-      ScoreBackParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
-    else
-      case (read (substring raw 0 (n - 2)) : option float) of
+  case String.ssplit {Haystack = raw, Needle = " s"} of
+    None => ScoreBackParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
+  | Some (num, rest) =>
+      if rest <> "" then ScoreBackParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
+      else (case (read num : option float) of
         None => ScoreBackParseError ("Invalid scoreBack number: " ^ raw)
-      | Some seconds => ScoreBackParseOk (Comp.ScoreBackTime seconds)
-  end
+      | Some seconds => ScoreBackParseOk (Comp.ScoreBackTime seconds))
 
 fun parseNominalDistance (raw : string) : nominalDistanceParseResult =
-  let
-    val n = strlen raw
-  in
-    if n < 4 then
-      NominalDistanceParseError "Invalid nominalDistance; expected '<number> km'"
-    else if strsub raw (n - 3) <> #" " || strsub raw (n - 2) <> #"k" || strsub raw (n - 1) <> #"m" then
-      NominalDistanceParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
-    else
-      case (read (substring raw 0 (n - 3)) : option float) of
+  case String.ssplit {Haystack = raw, Needle = " km"} of
+    None => NominalDistanceParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
+  | Some (num, rest) =>
+      if rest <> "" then NominalDistanceParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
+      else (case (read num : option float) of
         None => NominalDistanceParseError ("Invalid nominalDistance number: " ^ raw)
-      | Some km => NominalDistanceParseOk km
-  end
+      | Some km => NominalDistanceParseOk km)
 
 fun parseNominalTime (raw : string) : nominalTimeParseResult =
-  let
-    val n = strlen raw
-  in
-    if n < 3 then
-      NominalTimeParseError "Invalid nominalTime; expected '<number> h'"
-    else if strsub raw (n - 2) <> #" " || strsub raw (n - 1) <> #"h" then
-      NominalTimeParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
-    else
-      case (read (substring raw 0 (n - 2)) : option float) of
+  case String.ssplit {Haystack = raw, Needle = " h"} of
+    None => NominalTimeParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
+  | Some (num, rest) =>
+      if rest <> "" then NominalTimeParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
+      else (case (read num : option float) of
         None => NominalTimeParseError ("Invalid nominalTime number: " ^ raw)
-      | Some hours => NominalTimeParseOk hours
-  end
+      | Some hours => NominalTimeParseOk hours)
 
 fun parseNominalJson (json : string) : transaction nominalParseResult =
   parsed <- CompParse.parseNominal json;

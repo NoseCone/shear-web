@@ -79,6 +79,7 @@ benignEffectful CompParse.pilotStatusCount
 benignEffectful CompParse.pilotStatus
 
 $/monad
+$/string
 cssAsset
 css
 comp
