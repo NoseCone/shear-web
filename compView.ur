@@ -64,13 +64,13 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody =
           <div class="example">
             <div class="field is-grouped is-grouped-multiline">
               {metric "UTC offset" tz Bulma.is_warning}
-              {metric "Minimum distance" giveDistance Bulma.is_black}
-              {metric "Nominal free" nominalFree Bulma.is_black}
-              {metric "Nominal distance" nominalDistance Bulma.is_info}
-              {metric "Nominal time" nominalTime Bulma.is_success}
-              {metric "Nominal goal" nominalGoal Bulma.is_primary}
-              {metric "Nominal launch" nominalLaunch Bulma.is_primary}
-              {metric "Score back time" scoreBack Bulma.is_danger}
+              {metric "minimum distance" giveDistance Bulma.is_black}
+              {metric "nominal free" nominalFree Bulma.is_black}
+              {metric "nominal distance" nominalDistance Bulma.is_info}
+              {metric "nominal time" nominalTime Bulma.is_success}
+              {metric "nominal goal" nominalGoal Bulma.is_primary}
+              {metric "nominal launch" nominalLaunch Bulma.is_primary}
+              {metric "score back time" scoreBack Bulma.is_danger}
             </div>
           </div>
         </xml>
