@@ -28,8 +28,8 @@ link compFetch.o
 link compParse.o
 link parson.o
 link -lcurl
-include compFetch.h
-include compParse.h
+include ffi/compFetch.h
+include ffi/compParse.h
 ffi compFetch
 ffi compParse
 effectful CompFetch.fetch

@@ -20,14 +20,14 @@ cssAsset.ur: site.css
 URWEB_CINCLUDE := $(shell urweb -print-cinclude)
 
 # SEE: https://github.com/kgabis/parson
-parson.o: parson.c parson.h
-	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c parson.c -o parson.o
+parson.o: ffi/parson.c ffi/parson.h
+	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c ffi/parson.c -o parson.o
 
-compFetch.o: compFetch.c compFetch.h
-	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c compFetch.c -o compFetch.o
+compFetch.o: ffi/compFetch.c ffi/compFetch.h
+	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c ffi/compFetch.c -o compFetch.o
 
-compParse.o: compParse.c compParse.h parson.h
-	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c compParse.c -o compParse.o
+compParse.o: ffi/compParse.c ffi/compParse.h ffi/parson.h
+	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c ffi/compParse.c -o compParse.o
 
 shearWeb: parson.o compFetch.o compParse.o cssAsset.ur site.css
 	urweb shearWeb -protocol http
