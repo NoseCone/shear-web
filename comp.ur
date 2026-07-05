@@ -22,7 +22,7 @@ datatype nominal =
   Nominal of
   { Distance : string
   , Free : string
-  , Time : string
+  , Time : float
   , Goal : float
   , Launch : float
   }

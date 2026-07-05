@@ -45,6 +45,8 @@ fun fromParsePilots (r : parseResult (list Comp.pilotStatus)) : pilotsParseResul
 
 datatype scoreBackParseResult = ScoreBackParseError of string | ScoreBackParseOk of Comp.scoreBackTime
 
+datatype nominalTimeParseResult = NominalTimeParseError of string | NominalTimeParseOk of float
+
 datatype earthModelParseResult = EarthModelParseError of string | EarthModelParseOk of Comp.earthModel
 
 fun parseScoreBackTime (raw : string) : scoreBackParseResult =
@@ -61,23 +63,41 @@ fun parseScoreBackTime (raw : string) : scoreBackParseResult =
       | Some seconds => ScoreBackParseOk (Comp.ScoreBackTime seconds)
   end
 
+fun parseNominalTime (raw : string) : nominalTimeParseResult =
+  let
+    val n = strlen raw
+  in
+    if n < 3 then
+      NominalTimeParseError "Invalid nominalTime; expected '<number> h'"
+    else if strsub raw (n - 2) <> #" " || strsub raw (n - 1) <> #"h" then
+      NominalTimeParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
+    else
+      case (read (substring raw 0 (n - 2)) : option float) of
+        None => NominalTimeParseError ("Invalid nominalTime number: " ^ raw)
+      | Some hours => NominalTimeParseOk hours
+  end
+
 fun parseNominalJson (json : string) : transaction nominalParseResult =
   parsed <- CompParse.parseNominal json;
 
   distance <- CompParse.nominalDistance parsed;
   freeDist <- CompParse.nominalFree parsed;
-  time <- CompParse.nominalTime parsed;
+  timeRaw <- CompParse.nominalTime parsed;
   goal <- CompParse.nominalGoal parsed;
   launch <- CompParse.nominalLaunch parsed;
 
   CompParse.freeNominal parsed;
-  return (fromParseNominal (ParseOk (Comp.Nominal
-    { Distance = distance
-    , Free = freeDist
-    , Time = time
-    , Goal = goal
-    , Launch = launch
-    })))
+
+  return (case parseNominalTime timeRaw of
+    NominalTimeParseError err => NominalParseError err
+  | NominalTimeParseOk hours =>
+      fromParseNominal (ParseOk (Comp.Nominal
+        { Distance = distance
+        , Free = freeDist
+        , Time = hours
+        , Goal = goal
+        , Launch = launch
+        })))
 
 fun parseTasksJson (json : string) : transaction tasksParseResult =
   parsed <- CompParse.parseTasks json;
