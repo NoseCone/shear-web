@@ -1,9 +1,6 @@
-(* Typed Bulma class wrapper for Bulma 0.9.3.
-   Class mappings are configured via rewrite style directives in shearWeb.urp. *)
-
 style container
 style content
-style titular
+style titular (* clashes with <title> *)
 style subtitle
 style breadcrumb
 style tabs
@@ -43,7 +40,7 @@ style is_info
 style is_success
 style is_danger
 
-style tabular
+style tabular (* clashes with <table> *)
 style is_bordered
 style is_striped
 style th_task_name
