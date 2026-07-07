@@ -1,7 +1,5 @@
 open Bulma
 
-val css = Css.siteCss
-
 fun paragliding () =
    <xml>
         <h3>Paragliding</h3>
@@ -107,7 +105,7 @@ fun main () =
     return <xml>
         <head>
             <title>Ur/Web Shear Web</title>
-            <link rel="stylesheet" type="text/css" href="http://localhost:8080/css" />
+            <link rel="stylesheet" type="text/css" href="http://2017-dalby.flaretiming.com/styles.css" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>
         <body>

@@ -2,6 +2,3 @@
 *.html
 build
 *.o
-vendor/css/
-cssAsset.ur
-site.css

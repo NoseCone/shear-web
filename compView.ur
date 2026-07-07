@@ -335,7 +335,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
       return <xml>
         <head>
           <title>{[compName]}</title>
-          <link rel="stylesheet" type="text/css" href="http://localhost:8080/css" />
+          <link rel="stylesheet" type="text/css" href="http://2017-dalby.flaretiming.com/styles.css" />
           <meta name="viewport" content="width=device-width, initial-scale=1" />
         </head>
         <body>
