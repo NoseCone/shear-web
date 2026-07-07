@@ -21,7 +21,7 @@ rewrite style Bulma/* [-]
 rewrite url CompView/widget comp
 rewrite url CompView/widgetSettings compSettings
 rewrite url CompView/widgetPilots compPilots
-rewrite url ShearWeb/*
+rewrite url Main/*
 link compFetch.o
 link compParse.o
 link parson.o
@@ -84,4 +84,4 @@ fetch
 bulma
 footer
 compView
-shearWeb
+main
