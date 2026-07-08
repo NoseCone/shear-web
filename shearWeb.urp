@@ -25,6 +25,7 @@ rewrite url CompView/widgetPilots compPilots
 rewrite url Main/*
 library comp-json/compJson
 
+$/list
 $/option
 bulma
 footer

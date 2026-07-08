@@ -123,62 +123,51 @@ fun joinZoneNames (zones : list Comp.rawZone) : string =
       [] => ""
     | z :: zs => z.ZoneName ^ case zs of [] => "" | _ => "-" ^ joinZoneNames zs
 
-fun taskRows (tasks : list Comp.compTask) (lengths : list Comp.taskLength) (i : int) =
-    case tasks of
-      [] => <xml></xml>
-    | t :: ts =>
-        let
-            val turnpoints = joinZoneNames t.Zones.Raw
-            val stoppedText =
-                case t.Stopped of
-                  None => ""
-                | Some _ => "STOPPED"
-
-            val cancelledText =
-                case t.Cancelled of
-                  None => ""
-                | Some True => "CANCELLED"
-                | Some False => ""
-
-            val distanceText =
-                case lengths of
-                  [] => ""
-                | d :: _ => show d ^ " km"
-
-            val nextLengths =
-                case lengths of
-                  [] => []
-                | _ :: ls => ls
-        in
-            <xml>
-                <tr>
-                    <td>{[show i]}</td>
-                    <td class="td-task-name">{[t.TaskName]}</td>
-                    <td class="td-task-tps">{[turnpoints]}</td>
-                    <td class="td-task-dist">{[distanceText]}</td>
-                    <td class="td-task-stopped">{[stoppedText]}</td>
-                    <td class="td-task-cancelled">{[cancelledText]}</td>
-                </tr>
-                {taskRows ts nextLengths (i + 1)}
-            </xml>
-        end
-
 fun tasksTable (tasks : list Comp.compTask) (lengths : list Comp.taskLength) =
-    <xml>
-        <table class="tabular is-striped">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th class="th-task-name">Name</th>
-                    <th class="th-task-tps">Turnpoints</th>
-                    <th class="th-task-dist">Distance</th>
-                    <th class="th-task-stopped">Stopped</th>
-                    <th class="th-task-cancelled">Cancelled</th>
-                </tr>
-            </thead>
-            <tbody>{taskRows tasks lengths 1}</tbody>
-        </table>
-    </xml>
+    let
+        fun taskRow i t =
+            let
+                val turnpoints = joinZoneNames t.Zones.Raw
+                val stoppedText =
+                    case t.Stopped of
+                      None => ""
+                    | Some _ => "STOPPED"
+                val cancelledText =
+                    case t.Cancelled of
+                      None => ""
+                    | Some True => "CANCELLED"
+                    | Some False => ""
+                val distanceText =
+                    Option.get "" (Option.mp (fn d => show d ^ " km") (List.nth lengths i))
+            in
+                <xml>
+                    <tr>
+                        <td>{[show (i + 1)]}</td>
+                        <td class="td-task-name">{[t.TaskName]}</td>
+                        <td class="td-task-tps">{[turnpoints]}</td>
+                        <td class="td-task-dist">{[distanceText]}</td>
+                        <td class="td-task-stopped">{[stoppedText]}</td>
+                        <td class="td-task-cancelled">{[cancelledText]}</td>
+                    </tr>
+                </xml>
+            end
+    in
+        <xml>
+            <table class="tabular is-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th class="th-task-name">Name</th>
+                        <th class="th-task-tps">Turnpoints</th>
+                        <th class="th-task-dist">Distance</th>
+                        <th class="th-task-stopped">Stopped</th>
+                        <th class="th-task-cancelled">Cancelled</th>
+                    </tr>
+                </thead>
+                <tbody>{List.mapXi taskRow tasks}</tbody>
+            </table>
+        </xml>
+    end
 
 fun statusCells (statuses : list string) =
     case statuses of
