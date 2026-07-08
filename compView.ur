@@ -21,13 +21,13 @@ fun breadcrumb (compName : string) : xbody =
         </nav>
     </xml>
 
-fun compHeader (comp : Comp.compInput) : xbody = case comp of Comp.CompInput c =>
+fun compHeader ((Comp.CompInput c) : Comp.compInput) : xbody =
     <xml>
         <p class="titular is-3">{[c.CompName]}</p>
         <p class="titular is-5">{[c.From ^ " to " ^ c.To ^ ", " ^ c.Location]}</p>
     </xml>
 
-fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody = case comp of Comp.CompInput c =>
+fun summary ((Comp.CompInput c) : Comp.compInput) (nominal : option Comp.nominal) : xbody =
     let
         val tz = case c.UtcOffset of Comp.UtcOffset u => show u.TimeZoneMinutes ^ " mins"
         val Comp.GiveConfig g = c.GiveConfig
@@ -69,7 +69,7 @@ fun summary (comp : Comp.compInput) (nominal : option Comp.nominal) : xbody = ca
         </xml>
     end
 
-fun settingsTable (comp : Comp.compInput) : xbody = case comp of Comp.CompInput c =>
+fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
     let
         val giveDescription = case c.GiveConfig of Comp.GiveConfig g =>
                 case g.GiveDistance of
