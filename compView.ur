@@ -129,11 +129,7 @@ fun tasksTable (tasks : list Comp.compTask) (lengths : list Comp.taskLength) =
             let
                 val turnpoints = joinZoneNames t.Zones.Raw
                 val stoppedText = if Option.isSome t.Stopped then "STOPPED" else ""
-                val cancelledText =
-                    case t.Cancelled of
-                      None => ""
-                    | Some True => "CANCELLED"
-                    | Some False => ""
+                val cancelledText = if t.Cancelled = Some True then "CANCELLED" else ""
                 val distanceText =
                     Option.get "" (Option.mp (fn d => show d ^ " km") (List.nth lengths i))
             in
