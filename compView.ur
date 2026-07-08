@@ -128,10 +128,7 @@ fun tasksTable (tasks : list Comp.compTask) (lengths : list Comp.taskLength) =
         fun taskRow i t =
             let
                 val turnpoints = joinZoneNames t.Zones.Raw
-                val stoppedText =
-                    case t.Stopped of
-                      None => ""
-                    | Some _ => "STOPPED"
+                val stoppedText = if Option.isSome t.Stopped then "STOPPED" else ""
                 val cancelledText =
                     case t.Cancelled of
                       None => ""
