@@ -3,16 +3,16 @@ all: shearWeb
 URWEB_CINCLUDE := $(shell urweb -print-cinclude)
 
 # SEE: https://github.com/kgabis/parson
-parson.o: ffi/parson.c ffi/parson.h
-	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c ffi/parson.c -o parson.o
+comp-json/parson.o: comp-json/ffi/parson.c comp-json/ffi/parson.h
+	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c comp-json/ffi/parson.c -o comp-json/parson.o
 
-compFetch.o: ffi/compFetch.c ffi/compFetch.h
-	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c ffi/compFetch.c -o compFetch.o
+comp-json/compFetch.o: comp-json/ffi/compFetch.c comp-json/ffi/compFetch.h
+	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c comp-json/ffi/compFetch.c -o comp-json/compFetch.o
 
-compParse.o: ffi/compParse.c ffi/compParse.h ffi/parson.h
-	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c ffi/compParse.c -o compParse.o
+comp-json/compParse.o: comp-json/ffi/compParse.c comp-json/ffi/compParse.h comp-json/ffi/parson.h
+	cc -fPIC -O2 -I $(URWEB_CINCLUDE) -c comp-json/ffi/compParse.c -o comp-json/compParse.o
 
-shearWeb: parson.o compFetch.o compParse.o
+shearWeb: comp-json/parson.o comp-json/compFetch.o comp-json/compParse.o
 	urweb shearWeb -protocol http
 
 run: shearWeb
@@ -20,8 +20,8 @@ run: shearWeb
 
 clean:
 	rm -f shearWeb.exe
-	rm -f parson.o
-	rm -f compFetch.o
-	rm -f compParse.o
+	rm -f comp-json/parson.o
+	rm -f comp-json/compFetch.o
+	rm -f comp-json/compParse.o
 	rm -f site.css
 	rm -f cssAsset.ur

@@ -23,7 +23,7 @@ rewrite url CompView/widget comp
 rewrite url CompView/widgetSettings compSettings
 rewrite url CompView/widgetPilots compPilots
 rewrite url Main/*
-library compJson
+library comp-json/compJson
 
 bulma
 footer
