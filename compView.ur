@@ -240,6 +240,14 @@ fun pilotsTable (taskNames : list string) (pilots : list Comp.pilotStatus) =
         </table>
     </xml>
 
+fun parseErrorNotice (title : string) (err : string) : xbody =
+    <xml>
+        <div class="notification is-light">
+            <h4>{[title]}</h4>
+            <p>{[err]}</p>
+        </div>
+    </xml>
+
 fun widget (compName : string) : transaction page =
     widgetTab compName TasksTab
 
@@ -385,40 +393,16 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                             <div class="spacer"></div>
                             {case nominalErr of
                               None => <xml></xml>
-                            | Some err =>
-                                <xml>
-                                    <div class="notification is-light">
-                                        <h4>Nominals parse failed</h4>
-                                        <p>{[err]}</p>
-                                    </div>
-                                </xml>}
+                            | Some err => parseErrorNotice "Nominals parse failed" err}
                             {case tasksErr of
                               None => <xml></xml>
-                            | Some err =>
-                                <xml>
-                                    <div class="notification is-light">
-                                        <h4>Tasks parse failed</h4>
-                                        <p>{[err]}</p>
-                                    </div>
-                                </xml>}
+                            | Some err => parseErrorNotice "Tasks parse failed" err}
                             {case taskLengthsErr of
                               None => <xml></xml>
-                            | Some err =>
-                                <xml>
-                                    <div class="notification is-light">
-                                        <h4>Task lengths parse failed</h4>
-                                        <p>{[err]}</p>
-                                    </div>
-                                </xml>}
+                            | Some err => parseErrorNotice "Task lengths parse failed" err}
                             {case pilotsErr of
                               None => <xml></xml>
-                            | Some err =>
-                                <xml>
-                                    <div class="notification is-light">
-                                        <h4>Pilots parse failed</h4>
-                                        <p>{[err]}</p>
-                                    </div>
-                                </xml>}
+                            | Some err => parseErrorNotice "Pilots parse failed" err}
                         </div>
                     </xml>}
             </body>
