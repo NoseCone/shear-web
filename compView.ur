@@ -240,16 +240,18 @@ fun pilotsTable (taskNames : list string) (pilots : list Comp.pilotStatus) =
         </table>
     </xml>
 
-fun parseErrorNotice (title : string) (err : string) : xbody =
-    <xml>
-        <div class="notification is-light">
-            <h4>{[title]}</h4>
-            <p>{[err]}</p>
-        </div>
-    </xml>
-
 fun maybeParseError (title : string) (err : option string) : xbody =
-    Option.get <xml></xml> (Option.mp (parseErrorNotice title) err)
+    let
+        fun notice e =
+            <xml>
+                <div class="notification is-light">
+                    <h4>{[title]}</h4>
+                    <p>{[e]}</p>
+                </div>
+            </xml>
+    in
+        Option.get <xml></xml> (Option.mp notice err)
+    end
 
 fun widget (compName : string) : transaction page =
     widgetTab compName TasksTab
