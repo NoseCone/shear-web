@@ -23,65 +23,8 @@ rewrite url CompView/widget comp
 rewrite url CompView/widgetSettings compSettings
 rewrite url CompView/widgetPilots compPilots
 rewrite url Main/*
-link compFetch.o
-link compParse.o
-link parson.o
-link -lcurl
-include ffi/compFetch.h
-include ffi/compParse.h
-ffi compFetch
-ffi compParse
-effectful CompFetch.fetch
-effectful CompParse.parse
-effectful CompParse.free
-effectful CompParse.parseNominal
-effectful CompParse.freeNominal
-effectful CompParse.parseTasks
-effectful CompParse.freeTasks
-effectful CompParse.parseTaskLengths
-effectful CompParse.freeTaskLengths
-effectful CompParse.parsePilots
-effectful CompParse.freePilots
-benignEffectful CompParse.civilId
-benignEffectful CompParse.earthMath
-benignEffectful CompParse.discipline
-benignEffectful CompParse.location
-benignEffectful CompParse.fromDate
-benignEffectful CompParse.toDate
-benignEffectful CompParse.compName
-benignEffectful CompParse.utcOffsetMinutes
-benignEffectful CompParse.earthRadius
-benignEffectful CompParse.earthEquatorialR
-benignEffectful CompParse.earthRecipF
-benignEffectful CompParse.giveDistance
-benignEffectful CompParse.giveFraction
-benignEffectful CompParse.scoreBack
-benignEffectful CompParse.nominalDistance
-benignEffectful CompParse.nominalFree
-benignEffectful CompParse.nominalTime
-benignEffectful CompParse.nominalGoal
-benignEffectful CompParse.nominalLaunch
-benignEffectful CompParse.tasksCount
-benignEffectful CompParse.taskName
-benignEffectful CompParse.taskZoneCount
-benignEffectful CompParse.taskZoneName
-benignEffectful CompParse.taskStoppedAnnounced
-benignEffectful CompParse.taskStoppedRetroactive
-benignEffectful CompParse.taskCancelledPresent
-benignEffectful CompParse.taskCancelledValue
-benignEffectful CompParse.taskLengthsCount
-benignEffectful CompParse.taskLength
-benignEffectful CompParse.pilotsCount
-benignEffectful CompParse.pilotId
-benignEffectful CompParse.pilotName
-benignEffectful CompParse.pilotStatusCount
-benignEffectful CompParse.pilotStatus
+library compJson
 
-$/monad
-$/string
-comp
-compJson
-fetch
 bulma
 footer
 compView
