@@ -1,3 +1,5 @@
+(* Flare Timing uses the Bulma CSS framework (https://bulma.io/). *)
+
 style container
 style content
 style titular (* clashes with <title> *)
