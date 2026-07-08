@@ -2,8 +2,8 @@ datatype utcOffset =
   UtcOffset of {TimeZoneMinutes : int}
 
 datatype discipline =
-  HangGliding
-| Paragliding
+    HangGliding
+  | Paragliding
 
 datatype earthSphere =
   EarthSphere of string
@@ -20,12 +20,12 @@ datatype scoreBackTime =
 
 datatype nominal =
   Nominal of
-  { Distance : float
-  , Free : float
-  , Time : float
-  , Goal : float
-  , Launch : float
-  }
+    { Distance : float
+    , Free : float
+    , Time : float
+    , Goal : float
+    , Launch : float
+    }
 
 (* For now, we don't care too much for types other than strings, since we're
 just displaying the comp input. As as example of parsing with failure, look at
