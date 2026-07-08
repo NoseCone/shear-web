@@ -1,97 +1,44 @@
 open Monad
 
-(* NOTE:
-   We intentionally keep the exported result types monomorphic (`compInputParseResult`
-   and `nominalParseResult`) even though this module uses a local polymorphic
-   helper `parseResult`.
-
-   In this codebase/Ur/Web toolchain, exposing polymorphic `ParseOk`/`ParseError`
-   across module boundaries has triggered a backend C codegen failure
-   (`__uwd_UNBOUND__...` in generated webapp.c), even when type-checking succeeds.
-
-   So: use `parseResult` only as an internal helper, then convert via
-   `fromParseCompInput` / `fromParseNominal` before returning from public functions.
-*)
-datatype compInputParseResult = CompInputParseError of string | CompInputParseOk of Comp.compInput
-datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
-datatype tasksParseResult = TasksParseError of string | TasksParseOk of list Comp.compTask
-datatype taskLengthsParseResult = TaskLengthsParseError of string | TaskLengthsParseOk of list Comp.taskLength
-datatype pilotsParseResult = PilotsParseError of string | PilotsParseOk of list Comp.pilotStatus
-
 datatype parseResult t = ParseError of string | ParseOk of t
 
-fun fromParseCompInput (r : parseResult Comp.compInput) : compInputParseResult =
-  case r of
-    ParseError err => CompInputParseError err
-  | ParseOk v => CompInputParseOk v
-
-fun fromParseNominal (r : parseResult Comp.nominal) : nominalParseResult =
-  case r of
-    ParseError err => NominalParseError err
-  | ParseOk v => NominalParseOk v
-
-fun fromParseTasks (r : parseResult (list Comp.compTask)) : tasksParseResult =
-  case r of
-    ParseError err => TasksParseError err
-  | ParseOk v => TasksParseOk v
-
-fun fromParseTaskLengths (r : parseResult (list Comp.taskLength)) : taskLengthsParseResult =
-  case r of
-    ParseError err => TaskLengthsParseError err
-  | ParseOk v => TaskLengthsParseOk v
-
-fun fromParsePilots (r : parseResult (list Comp.pilotStatus)) : pilotsParseResult =
-  case r of
-    ParseError err => PilotsParseError err
-  | ParseOk v => PilotsParseOk v
-
-datatype scoreBackParseResult = ScoreBackParseError of string | ScoreBackParseOk of Comp.scoreBackTime
-
-datatype nominalDistanceParseResult = NominalDistanceParseError of string | NominalDistanceParseOk of float
-
-datatype nominalTimeParseResult = NominalTimeParseError of string | NominalTimeParseOk of float
-
-datatype earthRadiusParseResult = EarthRadiusParseError of string | EarthRadiusParseOk of float
-
-datatype earthModelParseResult = EarthModelParseError of string | EarthModelParseOk of Comp.earthModel
-
-fun parseEarthRadius (raw : string) : earthRadiusParseResult =
+fun parseEarthRadius (raw : string) : parseResult float =
   case String.ssplit {Haystack = raw, Needle = " m"} of
-    None => EarthRadiusParseError ("Invalid earth radius units; expected '<number> m', a quantity of metres: " ^ raw)
+    None => ParseError ("Invalid earth radius units; expected '<number> m', a quantity of metres: " ^ raw)
   | Some (num, rest) =>
-      if rest <> "" then EarthRadiusParseError ("Invalid earth radius units; expected '<number> m', a quantity of metres: " ^ raw)
+      if rest <> "" then ParseError ("Invalid earth radius units; expected '<number> m', a quantity of metres: " ^ raw)
       else (case (read num : option float) of
-        None => EarthRadiusParseError ("Invalid earth radius number: " ^ raw)
-      | Some m => EarthRadiusParseOk m)
+        None => ParseError ("Invalid earth radius number: " ^ raw)
+      | Some m => ParseOk m)
 
-fun parseScoreBackTime (raw : string) : scoreBackParseResult =
+fun parseScoreBackTime (raw : string) : parseResult Comp.scoreBackTime =
   case String.ssplit {Haystack = raw, Needle = " s"} of
-    None => ScoreBackParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
+    None => ParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
   | Some (num, rest) =>
-      if rest <> "" then ScoreBackParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
+      if rest <> "" then ParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
       else (case (read num : option float) of
-        None => ScoreBackParseError ("Invalid scoreBack number: " ^ raw)
-      | Some seconds => ScoreBackParseOk (Comp.ScoreBackTime seconds))
+        None => ParseError ("Invalid scoreBack number: " ^ raw)
+      | Some seconds => ParseOk (Comp.ScoreBackTime seconds))
 
-fun parseNominalDistance (raw : string) : nominalDistanceParseResult =
+fun parseNominalDistance (raw : string) : parseResult float =
   case String.ssplit {Haystack = raw, Needle = " km"} of
-    None => NominalDistanceParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
+    None => ParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
   | Some (num, rest) =>
-      if rest <> "" then NominalDistanceParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
+      if rest <> "" then ParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
       else (case (read num : option float) of
-        None => NominalDistanceParseError ("Invalid nominalDistance number: " ^ raw)
-      | Some km => NominalDistanceParseOk km)
+        None => ParseError ("Invalid nominalDistance number: " ^ raw)
+      | Some km => ParseOk km)
 
-fun parseNominalTime (raw : string) : nominalTimeParseResult =
+fun parseNominalTime (raw : string) : parseResult float =
   case String.ssplit {Haystack = raw, Needle = " h"} of
-    None => NominalTimeParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
+    None => ParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
   | Some (num, rest) =>
-      if rest <> "" then NominalTimeParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
+      if rest <> "" then ParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
       else (case (read num : option float) of
-        None => NominalTimeParseError ("Invalid nominalTime number: " ^ raw)
-      | Some hours => NominalTimeParseOk hours)
+        None => ParseError ("Invalid nominalTime number: " ^ raw)
+      | Some hours => ParseOk hours)
 
-fun parseNominalJson (json : string) : transaction nominalParseResult =
+fun parseNominalJson (json : string) : transaction (parseResult Comp.nominal) =
   parsed <- CompParse.parseNominal json;
 
   distance <- Monad.mp parseNominalDistance (CompParse.nominalDistance parsed);
@@ -102,19 +49,19 @@ fun parseNominalJson (json : string) : transaction nominalParseResult =
 
   CompParse.freeNominal parsed;
   return (case (distance, freeDist, time) of
-    (NominalDistanceParseError err, _, _) => NominalParseError err
-  | (_, NominalDistanceParseError err, _) => NominalParseError err
-  | (_, _, NominalTimeParseError err) => NominalParseError err
-  | (NominalDistanceParseOk distance, NominalDistanceParseOk freeDist, NominalTimeParseOk hours) =>
-      fromParseNominal (ParseOk (Comp.Nominal
+    (ParseError err, _, _) => ParseError err
+  | (_, ParseError err, _) => ParseError err
+  | (_, _, ParseError err) => ParseError err
+  | (ParseOk distance, ParseOk freeDist, ParseOk hours) =>
+      ParseOk (Comp.Nominal
         { Distance = distance
         , Free = freeDist
         , Time = hours
         , Goal = goal
         , Launch = launch
-        })))
+        }))
 
-fun parseTasksJson (json : string) : transaction tasksParseResult =
+fun parseTasksJson (json : string) : transaction (parseResult (list Comp.compTask)) =
   parsed <- CompParse.parseTasks json;
 
   n <- CompParse.tasksCount parsed;
@@ -166,10 +113,10 @@ fun parseTasksJson (json : string) : transaction tasksParseResult =
   in
     tasks <- tasksLoop 0;
     CompParse.freeTasks parsed;
-    return (fromParseTasks (ParseOk tasks))
+    return (ParseOk tasks)
   end
 
-fun parseTaskLengthsJson (json : string) : transaction taskLengthsParseResult =
+fun parseTaskLengthsJson (json : string) : transaction (parseResult (list Comp.taskLength)) =
   parsed <- CompParse.parseTaskLengths json;
   n <- CompParse.taskLengthsCount parsed;
 
@@ -184,10 +131,10 @@ fun parseTaskLengthsJson (json : string) : transaction taskLengthsParseResult =
   in
     lengths <- lengthsLoop 0;
     CompParse.freeTaskLengths parsed;
-    return (fromParseTaskLengths (ParseOk lengths))
+    return (ParseOk lengths)
   end
 
-fun parsePilotsJson (json : string) : transaction pilotsParseResult =
+fun parsePilotsJson (json : string) : transaction (parseResult (list Comp.pilotStatus)) =
   parsed <- CompParse.parsePilots json;
   n <- CompParse.pilotsCount parsed;
 
@@ -216,10 +163,10 @@ fun parsePilotsJson (json : string) : transaction pilotsParseResult =
   in
     pilots <- pilotsLoop 0;
     CompParse.freePilots parsed;
-    return (fromParsePilots (ParseOk pilots))
+    return (ParseOk pilots)
   end
 
-fun parseCompInputJson (json : string) : transaction compInputParseResult =
+fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput) =
   parsed <- CompParse.parse json;
 
   civilId <- CompParse.civilId parsed;
@@ -238,30 +185,30 @@ fun parseCompInputJson (json : string) : transaction compInputParseResult =
   scoreBackRaw <- CompParse.scoreBack parsed;
 
   let
-    val scoreBackResult : option scoreBackParseResult =
+    val scoreBackResult : option (parseResult Comp.scoreBackTime) =
       case scoreBackRaw of
         None => None
       | Some raw => Some (parseScoreBackTime raw)
 
-    val earthModelResult : earthModelParseResult =
+    val earthModelResult : parseResult Comp.earthModel =
       case earthRadius of
         Some radius =>
           (case earthEquatorialR of
-             Some _ => EarthModelParseError "Invalid earth model: found both sphere and ellipsoid fields"
+             Some _ => ParseError "Invalid earth model: found both sphere and ellipsoid fields"
            | None =>
                case earthRecipF of
-                 Some _ => EarthModelParseError "Invalid earth model: recipF without ellipsoid.equatorialR"
+                 Some _ => ParseError "Invalid earth model: recipF without ellipsoid.equatorialR"
                | None =>
                    (case parseEarthRadius radius of
-                      EarthRadiusParseError err => EarthModelParseError err
-                    | EarthRadiusParseOk r => EarthModelParseOk (Comp.EarthAsSphere {Radius = r})))
+                      ParseError err => ParseError err
+                    | ParseOk r => ParseOk (Comp.EarthAsSphere {Radius = r})))
       | None =>
           case earthEquatorialR of
-            None => EarthModelParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
+            None => ParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
           | Some equatorialR =>
               case earthRecipF of
-                None => EarthModelParseError "Incomplete earth ellipsoid: missing recipF"
-              | Some recipF => EarthModelParseOk (Comp.EarthEllipsoid {EquatorialR = equatorialR, RecipF = recipF})
+                None => ParseError "Incomplete earth ellipsoid: missing recipF"
+              | Some recipF => ParseOk (Comp.EarthEllipsoid {EquatorialR = equatorialR, RecipF = recipF})
 
     val disciplineOpt =
       if disciplineCode = "hg" then Some Comp.HangGliding
@@ -271,26 +218,26 @@ fun parseCompInputJson (json : string) : transaction compInputParseResult =
     val scoreBack : option Comp.scoreBackTime =
       case scoreBackResult of
         None => None
-      | Some (ScoreBackParseOk sb) => Some sb
-      | Some (ScoreBackParseError _) => None
+      | Some (ParseOk sb) => Some sb
+      | Some (ParseError _) => None
   in
     case earthModelResult of
-      EarthModelParseError err =>
+      ParseError err =>
         CompParse.free parsed;
-        return (fromParseCompInput (ParseError err))
-    | EarthModelParseOk earthModel =>
+        return (ParseError err)
+    | ParseOk earthModel =>
         case scoreBackResult of
-          Some (ScoreBackParseError err) =>
+          Some (ParseError err) =>
             CompParse.free parsed;
-            return (fromParseCompInput (ParseError err))
+            return (ParseError err)
         | _ =>
             case disciplineOpt of
               None =>
                 CompParse.free parsed;
-                return (fromParseCompInput (ParseError ("Unsupported discipline value in JSON: " ^ disciplineCode)))
+                return (ParseError ("Unsupported discipline value in JSON: " ^ disciplineCode))
             | Some discipline =>
                 CompParse.free parsed;
-                return (fromParseCompInput (ParseOk (Comp.CompInput
+                return (ParseOk (Comp.CompInput
                   { CivilId = civilId
                   , EarthMath = earthMath
                   , Discipline = discipline
@@ -305,5 +252,5 @@ fun parseCompInputJson (json : string) : transaction compInputParseResult =
                       , GiveFraction = giveFraction
                       }
                   , ScoreBack = scoreBack
-                  })))
+                  }))
   end
