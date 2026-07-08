@@ -1,4 +1,5 @@
 open Bulma
+open FetchAndParse
 
 fun metric (label : string) (value : string) (accent : css_class) : xbody =
     <xml>
@@ -273,11 +274,11 @@ and widgetPilots (compName : string) : transaction page =
     widgetTab compName PilotsTab
 
 and widgetTab (compName : string) (activeTab : compTab) : transaction page =
-    compResult <- FetchAndParse.fetchAndParseCompInput compName;
-    nominalResult <- FetchAndParse.fetchAndParseNominal compName;
-    tasksResult <- FetchAndParse.fetchAndParseTasks compName;
-    taskLengthsResult <- FetchAndParse.fetchAndParseTaskLengths compName;
-    pilotsResult <- FetchAndParse.fetchAndParsePilots compName;
+    compResult <- fetchAndParseCompInput compName;
+    nominalResult <- fetchAndParseNominal compName;
+    tasksResult <- fetchAndParseTasks compName;
+    taskLengthsResult <- fetchAndParseTaskLengths compName;
+    pilotsResult <- fetchAndParsePilots compName;
     idUw <- fresh; (* serves no purpose other than to show how to use #ids in Ur/Web *)
 
     let
