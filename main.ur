@@ -1,2 +1,1 @@
-fun main () =
-    Home.main ()
+fun main () = Home.main ()
