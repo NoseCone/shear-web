@@ -1,39 +1,18 @@
+fun fetchAndParse [t] (path : string) (parser : string -> transaction t) (compName : string) : transaction t =
+  json <- CompFetch.fetch ("http://" ^ compName ^ ".flaretiming.com" ^ path);
+  parser json
+
 fun fetchAndParseCompInput (compName : string) : transaction CompJson.compInputParseResult =
-  let
-    json <- CompFetch.fetch url;
-    CompJson.parseCompInputJson json
-  where
-    val url = "http://" ^ compName ^ ".flaretiming.com/json/comp-input/comps.json"
-  end
+  fetchAndParse "/json/comp-input/comps.json" CompJson.parseCompInputJson compName
 
 fun fetchAndParseNominal (compName : string) : transaction CompJson.nominalParseResult =
-  let
-    json <- CompFetch.fetch url;
-    CompJson.parseNominalJson json
-  where
-    val url = "http://" ^ compName ^ ".flaretiming.com/json/comp-input/nominals.json"
-  end
+  fetchAndParse "/json/comp-input/nominals.json" CompJson.parseNominalJson compName
 
 fun fetchAndParseTasks (compName : string) : transaction CompJson.tasksParseResult =
-  let
-    json <- CompFetch.fetch url;
-    CompJson.parseTasksJson json
-  where
-    val url = "http://" ^ compName ^ ".flaretiming.com/json/comp-input/tasks.json"
-  end
+  fetchAndParse "/json/comp-input/tasks.json" CompJson.parseTasksJson compName
 
 fun fetchAndParseTaskLengths (compName : string) : transaction CompJson.taskLengthsParseResult =
-  let
-    json <- CompFetch.fetch url;
-    CompJson.parseTaskLengthsJson json
-  where
-    val url = "http://" ^ compName ^ ".flaretiming.com/json/task-length/task-lengths.json"
-  end
+  fetchAndParse "/json/task-length/task-lengths.json" CompJson.parseTaskLengthsJson compName
 
 fun fetchAndParsePilots (compName : string) : transaction CompJson.pilotsParseResult =
-  let
-    json <- CompFetch.fetch url;
-    CompJson.parsePilotsJson json
-  where
-    val url = "http://" ^ compName ^ ".flaretiming.com/json/gap-point/pilots-status.json"
-  end
+  fetchAndParse "/json/gap-point/pilots-status.json" CompJson.parsePilotsJson compName
