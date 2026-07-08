@@ -1,5 +1,5 @@
-val fetchAndParseCompInput : string -> transaction CompJson.compInputParseResult
-val fetchAndParseNominal : string -> transaction CompJson.nominalParseResult
-val fetchAndParseTasks : string -> transaction CompJson.tasksParseResult
-val fetchAndParseTaskLengths : string -> transaction CompJson.taskLengthsParseResult
-val fetchAndParsePilots : string -> transaction CompJson.pilotsParseResult
+val fetchAndParseCompInput : string -> transaction (CompJson.parseResult Comp.compInput)
+val fetchAndParseNominal : string -> transaction (CompJson.parseResult Comp.nominal)
+val fetchAndParseTasks : string -> transaction (CompJson.parseResult (list Comp.compTask))
+val fetchAndParseTaskLengths : string -> transaction (CompJson.parseResult (list Comp.taskLength))
+val fetchAndParsePilots : string -> transaction (CompJson.parseResult (list Comp.pilotStatus))

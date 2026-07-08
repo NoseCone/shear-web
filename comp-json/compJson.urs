@@ -1,11 +1,7 @@
-datatype compInputParseResult = CompInputParseError of string | CompInputParseOk of Comp.compInput
-datatype nominalParseResult = NominalParseError of string | NominalParseOk of Comp.nominal
-datatype tasksParseResult = TasksParseError of string | TasksParseOk of list Comp.compTask
-datatype taskLengthsParseResult = TaskLengthsParseError of string | TaskLengthsParseOk of list Comp.taskLength
-datatype pilotsParseResult = PilotsParseError of string | PilotsParseOk of list Comp.pilotStatus
+datatype parseResult t = ParseError of string | ParseOk of t
 
-val parseNominalJson : string -> transaction nominalParseResult
-val parseCompInputJson : string -> transaction compInputParseResult
-val parseTasksJson : string -> transaction tasksParseResult
-val parseTaskLengthsJson : string -> transaction taskLengthsParseResult
-val parsePilotsJson : string -> transaction pilotsParseResult
+val parseNominalJson : string -> transaction (parseResult Comp.nominal)
+val parseCompInputJson : string -> transaction (parseResult Comp.compInput)
+val parseTasksJson : string -> transaction (parseResult (list Comp.compTask))
+val parseTaskLengthsJson : string -> transaction (parseResult (list Comp.taskLength))
+val parsePilotsJson : string -> transaction (parseResult (list Comp.pilotStatus))
