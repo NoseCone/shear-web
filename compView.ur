@@ -248,6 +248,9 @@ fun parseErrorNotice (title : string) (err : string) : xbody =
         </div>
     </xml>
 
+fun maybeParseError (title : string) (err : option string) : xbody =
+    Option.get <xml></xml> (Option.mp (parseErrorNotice title) err)
+
 fun widget (compName : string) : transaction page =
     widgetTab compName TasksTab
 
@@ -391,18 +394,10 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                         {Footer.render ()}
                         <div class="container">
                             <div class="spacer"></div>
-                            {case nominalErr of
-                              None => <xml></xml>
-                            | Some err => parseErrorNotice "Nominals parse failed" err}
-                            {case tasksErr of
-                              None => <xml></xml>
-                            | Some err => parseErrorNotice "Tasks parse failed" err}
-                            {case taskLengthsErr of
-                              None => <xml></xml>
-                            | Some err => parseErrorNotice "Task lengths parse failed" err}
-                            {case pilotsErr of
-                              None => <xml></xml>
-                            | Some err => parseErrorNotice "Pilots parse failed" err}
+                            {maybeParseError "Nominals parse failed" nominalErr}
+                            {maybeParseError "Tasks parse failed" tasksErr}
+                            {maybeParseError "Task lengths parse failed" taskLengthsErr}
+                            {maybeParseError "Pilots parse failed" pilotsErr}
                         </div>
                     </xml>}
             </body>
