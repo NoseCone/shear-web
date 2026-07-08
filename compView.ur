@@ -124,11 +124,7 @@ datatype compTab = SettingsTab | TasksTab | PilotsTab
 fun joinZoneNames (zones : list Comp.rawZone) : string =
     case zones of
       [] => ""
-    | z :: zs =>
-        z.ZoneName ^
-            (case zs of
-                [] => ""
-            | _ => "-" ^ joinZoneNames zs)
+    | z :: zs => z.ZoneName ^ case zs of [] => "" | _ => "-" ^ joinZoneNames zs
 
 fun taskRows (tasks : list Comp.compTask) (lengths : list Comp.taskLength) (i : int) =
     case tasks of
