@@ -185,9 +185,7 @@ fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput
 
     let
         val scoreBackResult : option (parseResult Comp.scoreBackTime) =
-            case scoreBackRaw of
-              None => None
-            | Some raw => Some (parseScoreBackTime raw)
+          Option.mp parseScoreBackTime scoreBackRaw
 
         val earthModelResult : parseResult Comp.earthModel =
             case earthRadius of

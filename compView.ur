@@ -32,10 +32,7 @@ fun summary ((Comp.CompInput c) : Comp.compInput) (nominal : option Comp.nominal
         val tz = case c.UtcOffset of Comp.UtcOffset u => show u.TimeZoneMinutes ^ " mins"
         val Comp.GiveConfig g = c.GiveConfig
 
-        val giveDistance =
-            case g.GiveDistance of
-              None => "None"
-            | Some d => d
+        val giveDistance = Option.get "None" g.GiveDistance
 
         fun nominalField f =
             case nominal of
@@ -372,7 +369,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                                             {case tasksOpt of
                                               None => <xml></xml>
                                             | Some tasks =>
-                                                tasksTable tasks (case taskLengthsOpt of None => [] | Some lengths => lengths)}
+                                                tasksTable tasks (Option.get [] taskLengthsOpt)}
                                         </xml>
                                     | PilotsTab =>
                                         <xml>

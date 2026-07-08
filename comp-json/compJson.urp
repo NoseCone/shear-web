@@ -53,6 +53,7 @@ benignEffectful CompParse.pilotStatusCount
 benignEffectful CompParse.pilotStatus
 
 $/monad
+$/option
 $/string
 comp
 compJson
