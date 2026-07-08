@@ -56,4 +56,4 @@ $/monad
 $/string
 comp
 compJson
-fetch
+fetchAndParse

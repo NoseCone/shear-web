@@ -273,11 +273,11 @@ and widgetPilots (compName : string) : transaction page =
     widgetTab compName PilotsTab
 
 and widgetTab (compName : string) (activeTab : compTab) : transaction page =
-    compResult <- Fetch.fetchAndParseCompInput compName;
-    nominalResult <- Fetch.fetchAndParseNominal compName;
-    tasksResult <- Fetch.fetchAndParseTasks compName;
-    taskLengthsResult <- Fetch.fetchAndParseTaskLengths compName;
-    pilotsResult <- Fetch.fetchAndParsePilots compName;
+    compResult <- FetchAndParse.fetchAndParseCompInput compName;
+    nominalResult <- FetchAndParse.fetchAndParseNominal compName;
+    tasksResult <- FetchAndParse.fetchAndParseTasks compName;
+    taskLengthsResult <- FetchAndParse.fetchAndParseTaskLengths compName;
+    pilotsResult <- FetchAndParse.fetchAndParsePilots compName;
     idUw <- fresh; (* serves no purpose other than to show how to use #ids in Ur/Web *)
 
     let
