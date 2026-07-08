@@ -4,7 +4,7 @@ fun compAnchor (compName : string) (label : string) : xbody =
     <xml><a link={CompView.widget compName}>{[label]}</a></xml>
 
 fun paragliding () =
-   <xml>
+    <xml>
         <h3>Paragliding</h3>
         <p></p>
         <ul>
@@ -19,7 +19,7 @@ fun paragliding () =
                 <p></p>
             </ul>
         </ul>
-   </xml>
+    </xml>
 
 fun archetypes () =
     <xml>
