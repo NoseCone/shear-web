@@ -1,6 +1,7 @@
 allow url http://adam.chlipala.net/style.css
 allow url http://2017-dalby.flaretiming.com/styles.css
-allow url http://localhost:8080/main
+allow url /comp*
+allow url /main*
 allow url http://flaretiming.com
 allow url http://flaretiming.com/posts/2018-12-19-add-a-comp.html
 allow url http://www.impredicative.com/ur/
@@ -83,5 +84,6 @@ compJson
 fetch
 bulma
 footer
-compView
+home
 main
+compView
