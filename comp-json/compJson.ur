@@ -101,9 +101,7 @@ val json_give : Json.json Comp.gives =
         {GiveDistance = "giveDistance"}
 
 fun convertTaskLengths (vals : list kilometres) : list Comp.taskLength =
-    case vals of
-      [] => []
-    | (Kilometres km) :: rest => km :: convertTaskLengths rest
+    List.mp (fn (Kilometres km) => km) vals
 
 fun parsePilotRow (row : list (list string)) : parseResult Comp.pilotStatus =
     case row of
