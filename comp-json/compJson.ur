@@ -2,6 +2,8 @@ open Monad
 
 datatype parseResult t = ParseError of string | ParseOk of t
 
+(* ──────────────────────────── quantity helpers ──────────────────────────── *)
+
 fun parseQuantity (unit : string) (unitName : string) (label : string) (raw : string) : parseResult float =
     case String.ssplit {Haystack = raw, Needle = " " ^ unit} of
       None => ParseError ("Invalid " ^ label ^ " units; expected '<number> " ^ unit ^ "', a quantity of " ^ unitName ^ ": " ^ raw)
@@ -25,216 +27,255 @@ fun parseNominalDistance (raw : string) : parseResult float =
 fun parseNominalTime (raw : string) : parseResult float =
     parseQuantity "h" "hours" "nominalTime" raw
 
-fun parseNominalJson (json : string) : transaction (parseResult Comp.nominal) =
-    parsed <- CompParse.parseNominal json;
+fun parseTaskLength (raw : string) : parseResult float =
+    parseQuantity "km" "kilometres" "taskLength" raw
 
-    distance <- Monad.mp parseNominalDistance (CompParse.nominalDistance parsed);
-    freeDist <- Monad.mp parseNominalDistance (CompParse.nominalFree parsed);
-    time <- Monad.mp parseNominalTime (CompParse.nominalTime parsed);
-    goal <- CompParse.nominalGoal parsed;
-    launch <- CompParse.nominalLaunch parsed;
+(* ──────────────────────── JSON codecs ──────────────────────────────────── *)
+(* Named values for every codec so that list codecs (which require an
+   explicit json_list call rather than typeclass synthesis) can be composed
+   without ambiguity.                                                        *)
 
-    CompParse.freeNominal parsed;
-    return (case (distance, freeDist, time) of
-        (ParseError err, _, _) => ParseError err
-      | (_, ParseError err, _) => ParseError err
-      | (_, _, ParseError err) => ParseError err
-      | (ParseOk distance, ParseOk freeDist, ParseOk hours) =>
-            ParseOk (Comp.Nominal
-                { Distance = distance
-                , Free = freeDist
-                , Time = hours
-                , Goal = goal
-                , Launch = launch
-                }))
+val json_rawZone : Json.json Comp.rawZone =
+    Json.json_record {ZoneName = Json.json_string} {ZoneName = "zoneName"}
 
-fun parseTasksJson (json : string) : transaction (parseResult (list Comp.compTask)) =
-    parsed <- CompParse.parseTasks json;
-    n <- CompParse.tasksCount parsed;
+val json_rawZoneList : Json.json (list Comp.rawZone) =
+    Json.json_list json_rawZone
 
+(* {"raw": [...]} — the "zones" wrapper object; extra keys are ignored *)
+val json_zonesWrapper : Json.json {Raw : list Comp.rawZone} =
+    Json.json_record {Raw = json_rawZoneList} {Raw = "raw"}
+
+val json_stopped : Json.json Comp.stopped =
+    Json.json_record
+        {Announced = Json.json_string, Retroactive = Json.json_string}
+        {Announced = "announced", Retroactive = "retroactive"}
+
+(* Full task — "stopped" and "cancelled" are optional/nullable.
+   json_record_withOptional treats absent *or* null optional fields as None. *)
+val json_compTask : Json.json Comp.compTask =
+    Json.json_record_withOptional
+        {TaskName = Json.json_string, Zones = json_zonesWrapper}
+        {TaskName = "taskName", Zones = "zones"}
+        {Stopped = json_stopped, Cancelled = Json.json_bool}
+        {Stopped = "stopped", Cancelled = "cancelled"}
+
+val json_compTaskList : Json.json (list Comp.compTask) =
+    Json.json_list json_compTask
+
+(* utcOffset: {"timeZoneMinutes": int} *)
+val json_utcOffset : Json.json {TimeZoneMinutes : int} =
+    Json.json_record {TimeZoneMinutes = Json.json_int} {TimeZoneMinutes = "timeZoneMinutes"}
+
+(* earth sub-objects *)
+val json_earthSphere : Json.json {Radius : string} =
+    Json.json_record {Radius = Json.json_string} {Radius = "radius"}
+
+val json_earthEllipsoid : Json.json {EquatorialR : string, RecipF : string} =
+    Json.json_record
+        {EquatorialR = Json.json_string, RecipF = Json.json_string}
+        {EquatorialR = "equatorialR", RecipF = "recipF"}
+
+(* earth: exactly one of "sphere" or "ellipsoid" present; both parsed as
+   optional so we can validate and discriminate afterwards. *)
+val json_earth : Json.json {Sphere : option {Radius : string},
+                             Ellipsoid : option {EquatorialR : string, RecipF : string}} =
+    Json.json_record_withOptional
+        {} {}
+        {Sphere = json_earthSphere, Ellipsoid = json_earthEllipsoid}
+        {Sphere = "sphere", Ellipsoid = "ellipsoid"}
+
+(* give: required giveFraction, optional giveDistance *)
+val json_give : Json.json {GiveDistance : option string, GiveFraction : float} =
+    Json.json_record_withOptional
+        {GiveFraction = Json.json_float}
+        {GiveFraction = "giveFraction"}
+        {GiveDistance = Json.json_string}
+        {GiveDistance = "giveDistance"}
+
+(* nominal: distance/free/time are unit-annotated strings; goal/launch are
+   plain floats. Field names map directly to the camelCase JSON keys. *)
+val json_nominalRaw : Json.json {Distance : string, Free : string, Time : string,
+                                  Goal : float, Launch : float} =
+    Json.json_record
+        { Distance = Json.json_string, Free = Json.json_string, Time = Json.json_string
+        , Goal = Json.json_float, Launch = Json.json_float
+        }
+        {Distance = "distance", Free = "free", Time = "time",
+         Goal = "goal", Launch = "launch"}
+
+(* compInputRaw: all required fields plus optional scoreBack.
+   Ur/Web row types are unordered so field order in the record literal
+   is irrelevant to the type. *)
+val json_compInputRaw
+    : Json.json { CivilId    : string
+                , CompName   : string
+                , Discipline : string
+                , Earth      : {Sphere : option {Radius : string},
+                                Ellipsoid : option {EquatorialR : string, RecipF : string}}
+                , EarthMath  : string
+                , From       : string
+                , Give       : {GiveDistance : option string, GiveFraction : float}
+                , Location   : string
+                , ScoreBack  : option string
+                , To         : string
+                , UtcOffset  : {TimeZoneMinutes : int}
+                } =
+    Json.json_record_withOptional
+        { CivilId    = Json.json_string
+        , CompName   = Json.json_string
+        , Discipline = Json.json_string
+        , Earth      = json_earth
+        , EarthMath  = Json.json_string
+        , From       = Json.json_string
+        , Give       = json_give
+        , Location   = Json.json_string
+        , To         = Json.json_string
+        , UtcOffset  = json_utcOffset
+        }
+        { CivilId    = "civilId"
+        , CompName   = "compName"
+        , Discipline = "discipline"
+        , Earth      = "earth"
+        , EarthMath  = "earthMath"
+        , From       = "from"
+        , Give       = "give"
+        , Location   = "location"
+        , To         = "to"
+        , UtcOffset  = "utcOffset"
+        }
+        {ScoreBack = Json.json_string}
+        {ScoreBack = "scoreBack"}
+
+(* ──────────────────────── conversion helpers ───────────────────────────── *)
+
+fun convertNominal (r : {Distance : string, Free : string, Time : string,
+                          Goal : float, Launch : float})
+                   : parseResult Comp.nominal =
+    case (parseNominalDistance r.Distance, parseNominalDistance r.Free, parseNominalTime r.Time) of
+      (ParseOk d, ParseOk f, ParseOk t) =>
+        ParseOk (Comp.Nominal {Distance = d, Free = f, Time = t, Goal = r.Goal, Launch = r.Launch})
+    | (ParseError e, _, _) => ParseError e
+    | (_, ParseError e, _) => ParseError e
+    | (_, _, ParseError e) => ParseError e
+
+fun convertTaskLengths (strs : list string) : parseResult (list Comp.taskLength) =
+    case strs of
+      [] => ParseOk []
+    | s :: rest =>
+        case parseTaskLength s of
+          ParseError err => ParseError err
+        | ParseOk km =>
+            case convertTaskLengths rest of
+              ParseError err => ParseError err
+            | ParseOk ks => ParseOk (km :: ks)
+
+fun parsePilotRow (row : list (list string)) : parseResult Comp.pilotStatus =
+    case row of
+      idName :: statuses :: [] =>
+        (case idName of
+           pid :: pname :: [] =>
+             ParseOk {PilotId = pid, PilotName = pname, PilotStatus = statuses}
+         | _ => ParseError "Expected exactly [id, name] in pilot identifier pair")
+    | _ => ParseError "Expected exactly [[id, name], [statuses...]] in pilot row"
+
+fun convertPilots (rows : list (list (list string))) : parseResult (list Comp.pilotStatus) =
+    case rows of
+      [] => ParseOk []
+    | row :: rest =>
+        case parsePilotRow row of
+          ParseError err => ParseError err
+        | ParseOk pilot =>
+            case convertPilots rest of
+              ParseError err => ParseError err
+            | ParseOk ps => ParseOk (pilot :: ps)
+
+fun convertCompInput (raw : {CivilId    : string,
+                               CompName   : string,
+                               Discipline : string,
+                               Earth      : {Sphere    : option {Radius : string},
+                                             Ellipsoid : option {EquatorialR : string, RecipF : string}},
+                               EarthMath  : string,
+                               From       : string,
+                               Give       : {GiveDistance : option string, GiveFraction : float},
+                               Location   : string,
+                               ScoreBack  : option string,
+                               To         : string,
+                               UtcOffset  : {TimeZoneMinutes : int}})
+                      : parseResult Comp.compInput =
     let
-        fun zonesLoop ti zi zc : transaction (list Comp.rawZone) =
-            if zi >= zc then
-                return []
-            else
-                zoneName <- CompParse.taskZoneName parsed ti zi;
-                rest <- zonesLoop ti (zi + 1) zc;
-                return ({ZoneName = zoneName} :: rest)
-
-        fun tasksLoop i : transaction (list Comp.compTask) =
-            if i >= n then
-                return []
-            else
-                taskName <- CompParse.taskName parsed i;
-                zc <- CompParse.taskZoneCount parsed i;
-                rawZones <- zonesLoop i 0 zc;
-                stoppedAnnounced <- CompParse.taskStoppedAnnounced parsed i;
-                stoppedRetroactive <- CompParse.taskStoppedRetroactive parsed i;
-                cancelledPresent <- CompParse.taskCancelledPresent parsed i;
-                cancelledValue <- CompParse.taskCancelledValue parsed i;
-
-                rest <- tasksLoop (i + 1);
-
-                let
-                    val stopped =
-                        case stoppedAnnounced of
-                          None => None
-                        | Some announced =>
-                            case stoppedRetroactive of
-                              None => None
-                            | Some retroactive => Some {Announced = announced, Retroactive = retroactive}
-
-                    val cancelled =
-                        if cancelledPresent = 0 then
-                            None
-                        else
-                            Some cancelledValue
-                in
-                    return ({ TaskName = taskName
-                            , Zones = {Raw = rawZones}
-                            , Stopped = stopped
-                            , Cancelled = cancelled
-                            } :: rest)
-                end
-    in
-        tasks <- tasksLoop 0;
-        CompParse.freeTasks parsed;
-        return (ParseOk tasks)
-    end
-
-fun parseTaskLengthsJson (json : string) : transaction (parseResult (list Comp.taskLength)) =
-    parsed <- CompParse.parseTaskLengths json;
-    n <- CompParse.taskLengthsCount parsed;
-
-    let
-        fun lengthsLoop i : transaction (list Comp.taskLength) =
-            if i >= n then
-                return []
-            else
-                d <- CompParse.taskLength parsed i;
-                rest <- lengthsLoop (i + 1);
-                return (d :: rest)
-    in
-        lengths <- lengthsLoop 0;
-        CompParse.freeTaskLengths parsed;
-        return (ParseOk lengths)
-    end
-
-fun parsePilotsJson (json : string) : transaction (parseResult (list Comp.pilotStatus)) =
-    parsed <- CompParse.parsePilots json;
-    n <- CompParse.pilotsCount parsed;
-
-    let
-        fun statusesLoop pi si sc : transaction (list string) =
-            if si >= sc then
-                return []
-            else
-                st <- CompParse.pilotStatus parsed pi si;
-                rest <- statusesLoop pi (si + 1) sc;
-                return (st :: rest)
-
-        fun pilotsLoop i : transaction (list Comp.pilotStatus) =
-            if i >= n then
-                return []
-            else
-                pid <- CompParse.pilotId parsed i;
-                pname <- CompParse.pilotName parsed i;
-                sc <- CompParse.pilotStatusCount parsed i;
-                statuses <- statusesLoop i 0 sc;
-                rest <- pilotsLoop (i + 1);
-                return ({ PilotId = pid
-                        , PilotName = pname
-                        , PilotStatus = statuses
-                        } :: rest)
-    in
-        pilots <- pilotsLoop 0;
-        CompParse.freePilots parsed;
-        return (ParseOk pilots)
-    end
-
-fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput) =
-    parsed <- CompParse.parse json;
-
-    civilId <- CompParse.civilId parsed;
-    earthMath <- CompParse.earthMath parsed;
-    disciplineCode <- CompParse.discipline parsed;
-    location <- CompParse.location parsed;
-    fromDate <- CompParse.fromDate parsed;
-    toDate <- CompParse.toDate parsed;
-    compName <- CompParse.compName parsed;
-    utcOffsetMinutes <- CompParse.utcOffsetMinutes parsed;
-    earthRadius <- CompParse.earthRadius parsed;
-    earthEquatorialR <- CompParse.earthEquatorialR parsed;
-    earthRecipF <- CompParse.earthRecipF parsed;
-    giveDistance <- CompParse.giveDistance parsed;
-    giveFraction <- CompParse.giveFraction parsed;
-    scoreBackRaw <- CompParse.scoreBack parsed;
-
-    let
-        val scoreBackResult : option (parseResult Comp.scoreBackTime) =
-          Option.mp parseScoreBackTime scoreBackRaw
-
         val earthModelResult : parseResult Comp.earthModel =
-            case earthRadius of
-              Some radius =>
-                (case earthEquatorialR of
-                    Some _ => ParseError "Invalid earth model: found both sphere and ellipsoid fields"
-                  | None =>
-                    case earthRecipF of
-                      Some _ => ParseError "Invalid earth model: recipF without ellipsoid.equatorialR"
-                    | None =>
-                        (case parseEarthRadius radius of
-                            ParseError err => ParseError err
-                          | ParseOk r => ParseOk (Comp.EarthAsSphere {Radius = r})))
-            | None =>
-                case earthEquatorialR of
-                  None => ParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
-                | Some equatorialR =>
-                    case earthRecipF of
-                      None => ParseError "Incomplete earth ellipsoid: missing recipF"
-                    | Some recipF => ParseOk (Comp.EarthEllipsoid {EquatorialR = equatorialR, RecipF = recipF})
+            case (raw.Earth.Sphere, raw.Earth.Ellipsoid) of
+              (Some sphere, None) =>
+                (case parseEarthRadius sphere.Radius of
+                    ParseError err => ParseError err
+                  | ParseOk r => ParseOk (Comp.EarthAsSphere {Radius = r}))
+            | (None, Some ellipsoid) =>
+                ParseOk (Comp.EarthEllipsoid { EquatorialR = ellipsoid.EquatorialR
+                                             , RecipF      = ellipsoid.RecipF
+                                             })
+            | (Some _, Some _) =>
+                ParseError "Invalid earth model: found both sphere and ellipsoid fields"
+            | (None, None) =>
+                ParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
 
-        val disciplineOpt =
-            if disciplineCode = "hg" then Some Comp.HangGliding
-            else if disciplineCode = "pg" then Some Comp.Paragliding
+        val disciplineOpt : option Comp.discipline =
+            if raw.Discipline = "hg" then Some Comp.HangGliding
+            else if raw.Discipline = "pg" then Some Comp.Paragliding
             else None
+
+        val scoreBackResult : option (parseResult Comp.scoreBackTime) =
+            Option.mp parseScoreBackTime raw.ScoreBack
 
         val scoreBack : option Comp.scoreBackTime =
             case scoreBackResult of
-              None => None
+              None              => None
             | Some (ParseOk sb) => Some sb
             | Some (ParseError _) => None
     in
         case earthModelResult of
-          ParseError err =>
-            CompParse.free parsed;
-            return (ParseError err)
+          ParseError err => ParseError err
         | ParseOk earthModel =>
             case scoreBackResult of
-              Some (ParseError err) =>
-                CompParse.free parsed;
-                return (ParseError err)
+              Some (ParseError err) => ParseError err
             | _ =>
                 case disciplineOpt of
                   None =>
-                    CompParse.free parsed;
-                    return (ParseError ("Unsupported discipline value in JSON: " ^ disciplineCode))
+                    ParseError ("Unsupported discipline value in JSON: " ^ raw.Discipline)
                 | Some discipline =>
-                    CompParse.free parsed;
-                    return (ParseOk (Comp.CompInput
-                        { CivilId = civilId
-                        , EarthMath = earthMath
+                    ParseOk (Comp.CompInput
+                        { CivilId    = raw.CivilId
+                        , EarthMath  = raw.EarthMath
                         , Discipline = discipline
-                        , Location = location
-                        , From = fromDate
-                        , To = toDate
-                        , CompName = compName
-                        , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = utcOffsetMinutes}
+                        , Location   = raw.Location
+                        , From       = raw.From
+                        , To         = raw.To
+                        , CompName   = raw.CompName
+                        , UtcOffset  = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
                         , EarthModel = earthModel
                         , GiveConfig = Comp.GiveConfig
-                            { GiveDistance = giveDistance
-                            , GiveFraction = giveFraction
+                            { GiveDistance = raw.Give.GiveDistance
+                            , GiveFraction = raw.Give.GiveFraction
                             }
-                        , ScoreBack = scoreBack
-                        }))
+                        , ScoreBack  = scoreBack
+                        })
     end
+
+(* ──────────────────────────── public API ───────────────────────────────── *)
+
+fun parseNominalJson (s : string) : transaction (parseResult Comp.nominal) =
+    return (convertNominal (Json.fromJson json_nominalRaw s))
+
+fun parseCompInputJson (s : string) : transaction (parseResult Comp.compInput) =
+    return (convertCompInput (Json.fromJson json_compInputRaw s))
+
+fun parseTasksJson (s : string) : transaction (parseResult (list Comp.compTask)) =
+    return (ParseOk (Json.fromJson json_compTaskList s))
+
+fun parseTaskLengthsJson (s : string) : transaction (parseResult (list Comp.taskLength)) =
+    return (convertTaskLengths (Json.fromJson (Json.json_list Json.json_string) s))
+
+fun parsePilotsJson (s : string) : transaction (parseResult (list Comp.pilotStatus)) =
+    return (convertPilots
+        (Json.fromJson
+            (Json.json_list (Json.json_list (Json.json_list Json.json_string)))
+            s))
