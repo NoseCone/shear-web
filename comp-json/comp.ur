@@ -1,3 +1,5 @@
+open Quantity
+
 datatype utcOffset =
   UtcOffset of {TimeZoneMinutes : int}
 
@@ -23,9 +25,9 @@ datatype scoreBackTime =
 
 datatype nominal =
   Nominal of
-    { Distance : float
-    , Free : float
-    , Time : float
+    { Distance : kilometres
+    , Free : kilometres
+    , Time : hours
     , Goal : float
     , Launch : float
     }

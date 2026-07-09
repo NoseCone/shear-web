@@ -1,4 +1,5 @@
 open Monad
+open Quantity
 
 datatype parseResult t = ParseError of string | ParseOk of t
 
@@ -37,55 +38,37 @@ fun json_quantity (unitSymbol : string) : Json.json float =
             }
     end
 
-datatype metres = Metres of float
-datatype kilometres = Kilometres of float
-datatype hours = Hours of float
-datatype seconds = Seconds of float
-
 val json_metres : Json.json metres =
-    let
-        val json_float = json_quantity "m"
-    in
-        Json.json_derived Metres (fn (Metres x) => x)
-    end
+    let val json_float = json_quantity "m" in Json.json_derived Metres (fn (Metres x) => x) end
 
 val json_kilometres : Json.json kilometres =
-    let
-        val json_float = json_quantity "km"
-    in
-        Json.json_derived Kilometres (fn (Kilometres x) => x)
-    end
+    let val json_float = json_quantity "km" in Json.json_derived Kilometres (fn (Kilometres x) => x) end
 
 val json_hours : Json.json hours =
-    let
-        val json_float = json_quantity "h"
-    in
-        Json.json_derived Hours (fn (Hours x) => x)
-    end
+    let val json_float = json_quantity "h" in Json.json_derived Hours (fn (Hours x) => x) end
 
 val json_seconds : Json.json seconds =
+    let val json_float = json_quantity "s" in Json.json_derived Seconds (fn (Seconds x) => x) end
+
+val json_nominal : Json.json Comp.nominal =
     let
-        val json_float = json_quantity "s"
+        val json_record : Json.json
+              { Distance : kilometres
+              , Free : kilometres
+              , Time : hours
+              , Goal : float
+              , Launch : float
+              } =
+            Json.json_record
+                { Distance = "distance"
+                , Free = "free"
+                , Goal = "goal"
+                , Launch = "launch"
+                , Time = "time"
+                }
     in
-        Json.json_derived Seconds (fn (Seconds x) => x)
+        Json.json_derived Comp.Nominal (fn (Comp.Nominal x) => x)
     end
-
-fun parseEarthRadius (raw : string) : parseResult float =
-    parseQuantity "m" "metres" "earth radius" raw
-
-fun parseScoreBackTime (raw : string) : parseResult Comp.scoreBackTime =
-    case parseQuantity "s" "seconds" "scoreBack" raw of
-      ParseError err => ParseError err
-    | ParseOk seconds => ParseOk (Comp.ScoreBackTime seconds)
-
-fun parseNominalDistance (raw : string) : parseResult float =
-    parseQuantity "km" "kilometres" "nominalDistance" raw
-
-fun parseNominalTime (raw : string) : parseResult float =
-    parseQuantity "h" "hours" "nominalTime" raw
-
-fun parseTaskLength (raw : string) : parseResult float =
-    parseQuantity "km" "kilometres" "taskLength" raw
 
 val json_rawZone : Json.json Comp.rawZone =
     Json.json_record {ZoneName = "zoneName"}
@@ -118,66 +101,6 @@ val json_give : Json.json Comp.gives =
         {GiveFraction = "giveFraction"}
         {GiveDistance = "giveDistance"}
 
-type nominalRaw =
-    { Distance : kilometres
-    , Free : kilometres
-    , Goal : float
-    , Launch : float
-    , Time : hours
-    }
-
-val json_nominalRaw : Json.json nominalRaw =
-    Json.json_record
-        { Distance = "distance"
-        , Free = "free"
-        , Goal = "goal"
-        , Launch = "launch"
-        , Time = "time"
-        }
-
-type earthModelRaw =
-    { Sphere : option {Radius : metres}
-    , Ellipsoid : option Comp.ellipsoid
-    }
-
-type compInputRaw =
-    { CivilId : string
-    , CompName : string
-    , Discipline : string
-    , Earth : earthModelRaw
-    , EarthMath  : string
-    , From : string
-    , Give : Comp.gives
-    , Location : string
-    , ScoreBack : option seconds
-    , To : string
-    , UtcOffset : {TimeZoneMinutes : int}
-    }
-
-val json_compInputRaw : Json.json compInputRaw =
-    Json.json_record_withOptional
-        { CivilId = "civilId"
-        , CompName = "compName"
-        , Discipline = "discipline"
-        , Earth = "earth"
-        , EarthMath = "earthMath"
-        , From = "from"
-        , Give = "give"
-        , Location = "location"
-        , To = "to"
-        , UtcOffset = "utcOffset"
-        }
-        {ScoreBack = "scoreBack"}
-
-fun convertNominal (r : nominalRaw) : parseResult Comp.nominal =
-    let
-        val Kilometres d = r.Distance
-        val Kilometres f = r.Free
-        val Hours t = r.Time
-    in
-        ParseOk (Comp.Nominal {Distance = d, Free = f, Time = t, Goal = r.Goal, Launch = r.Launch})
-    end
-
 fun convertTaskLengths (vals : list kilometres) : list Comp.taskLength =
     case vals of
       [] => []
@@ -202,59 +125,145 @@ fun convertPilots (rows : list (list (list string))) : parseResult (list Comp.pi
               ParseError err => ParseError err
             | ParseOk ps => ParseOk (pilot :: ps)
 
-fun convertCompInput (raw : compInputRaw) : parseResult Comp.compInput =
+type earthModelRaw =
+    { Sphere : option {Radius : metres}
+    , Ellipsoid : option Comp.ellipsoid
+    }
+
+type compInputRaw =
+    { CivilId : string
+    , CompName : string
+    , Discipline : string
+    , Earth : earthModelRaw
+    , EarthMath  : string
+    , From : string
+    , Give : Comp.gives
+    , Location : string
+    , ScoreBack : option seconds
+    , To : string
+    , UtcOffset : {TimeZoneMinutes : int}
+    }
+
+val json_compInput : Json.json Comp.compInput =
     let
-        val earthModelResult : parseResult Comp.earthModel =
-            case (raw.Earth.Sphere, raw.Earth.Ellipsoid) of
-              (Some sphere, None) =>
-                let
-                    val Metres r = sphere.Radius
-                in
-                    ParseOk (Comp.EarthAsSphere {Radius = r})
-                end
-            | (None, Some ellipsoid) => ParseOk (Comp.EarthEllipsoid ellipsoid)
-            | (Some _, Some _) => ParseError "Invalid earth model: found both sphere and ellipsoid fields"
-            | (None, None) => ParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
+        fun fromRaw (raw : compInputRaw) : parseResult Comp.compInput =
+            let
+                val earthModelResult : parseResult Comp.earthModel =
+                    case (raw.Earth.Sphere, raw.Earth.Ellipsoid) of
+                      (Some sphere, None) =>
+                        let
+                            val Metres r = sphere.Radius
+                        in
+                            ParseOk (Comp.EarthAsSphere {Radius = r})
+                        end
+                    | (None, Some ellipsoid) => ParseOk (Comp.EarthEllipsoid ellipsoid)
+                    | (Some _, Some _) => ParseError "Invalid earth model: found both sphere and ellipsoid fields"
+                    | (None, None) => ParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
 
-        val disciplineOpt : option Comp.discipline =
-            if raw.Discipline = "hg" then Some Comp.HangGliding
-            else if raw.Discipline = "pg" then Some Comp.Paragliding
-            else None
+                val disciplineOpt : option Comp.discipline =
+                    if raw.Discipline = "hg" then Some Comp.HangGliding
+                    else if raw.Discipline = "pg" then Some Comp.Paragliding
+                    else None
 
-        val scoreBack : option Comp.scoreBackTime =
-            Option.mp (fn (Seconds s) => Comp.ScoreBackTime s) raw.ScoreBack
+                val scoreBack : option Comp.scoreBackTime =
+                    Option.mp (fn (Seconds s) => Comp.ScoreBackTime s) raw.ScoreBack
+            in
+                case earthModelResult of
+                  ParseError err => ParseError err
+                | ParseOk earthModel =>
+                    case disciplineOpt of
+                      None => ParseError ("Unsupported discipline value in JSON: " ^ raw.Discipline)
+                    | Some discipline =>
+                        ParseOk
+                            (Comp.CompInput
+                                { CivilId = raw.CivilId
+                                , EarthMath = raw.EarthMath
+                                , Discipline = discipline
+                                , Location = raw.Location
+                                , From = raw.From
+                                , To = raw.To
+                                , CompName = raw.CompName
+                                , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
+                                , EarthModel = earthModel
+                                , GiveConfig =
+                                    Comp.GiveConfig
+                                        { GiveDistance = raw.Give.GiveDistance
+                                        , GiveFraction = raw.Give.GiveFraction
+                                        }
+                                , ScoreBack = scoreBack
+                                })
+            end
+
+        fun toRaw ((Comp.CompInput c) : Comp.compInput) : compInputRaw =
+            let
+                val earth : earthModelRaw =
+                    case c.EarthModel of
+                      Comp.EarthAsSphere e => {Sphere = Some {Radius = Metres e.Radius}, Ellipsoid = None}
+                    | Comp.EarthEllipsoid ellipsoid => {Sphere = None, Ellipsoid = Some ellipsoid}
+
+                val discipline : string =
+                    case c.Discipline of
+                      Comp.HangGliding => "hg"
+                    | Comp.Paragliding => "pg"
+
+                val give : Comp.gives =
+                    case c.GiveConfig of Comp.GiveConfig g => g
+
+                val scoreBack : option seconds =
+                    Option.mp (fn sb => case sb of Comp.ScoreBackTime s => Seconds s) c.ScoreBack
+
+                val utcOffset : {TimeZoneMinutes : int} =
+                    case c.UtcOffset of Comp.UtcOffset u => {TimeZoneMinutes = u.TimeZoneMinutes}
+            in
+                { CivilId = c.CivilId
+                , CompName = c.CompName
+                , Discipline = discipline
+                , Earth = earth
+                , EarthMath = c.EarthMath
+                , From = c.From
+                , Give = give
+                , Location = c.Location
+                , ScoreBack = scoreBack
+                , To = c.To
+                , UtcOffset = utcOffset
+                }
+            end
+
+        val json_compInputRaw : Json.json compInputRaw =
+            Json.json_record_withOptional
+                { CivilId = "civilId"
+                , CompName = "compName"
+                , Discipline = "discipline"
+                , Earth = "earth"
+                , EarthMath = "earthMath"
+                , From = "from"
+                , Give = "give"
+                , Location = "location"
+                , To = "to"
+                , UtcOffset = "utcOffset"
+                }
+                {ScoreBack = "scoreBack"}
+
+        fun parseCompInput (s : string) : Comp.compInput * string =
+            let
+                val (raw, rest) : compInputRaw * string = Json.fromJson' s
+            in
+                case fromRaw raw of
+                  ParseError err => error <xml>{[err]}</xml>
+                | ParseOk c => (c, rest)
+            end
     in
-        case earthModelResult of
-          ParseError err => ParseError err
-        | ParseOk earthModel =>
-            case disciplineOpt of
-              None => ParseError ("Unsupported discipline value in JSON: " ^ raw.Discipline)
-            | Some discipline =>
-                ParseOk
-                    (Comp.CompInput
-                        { CivilId = raw.CivilId
-                        , EarthMath = raw.EarthMath
-                        , Discipline = discipline
-                        , Location = raw.Location
-                        , From = raw.From
-                        , To = raw.To
-                        , CompName = raw.CompName
-                        , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
-                        , EarthModel = earthModel
-                        , GiveConfig =
-                            Comp.GiveConfig
-                                { GiveDistance = raw.Give.GiveDistance
-                                , GiveFraction = raw.Give.GiveFraction
-                                }
-                        , ScoreBack = scoreBack
-                        })
+        Json.mkJson
+            { ToJson = fn c => Json.toJson (toRaw c)
+            , FromJson = parseCompInput
+            }
     end
 
 fun parseNominalJson (json : string) : transaction (parseResult Comp.nominal) =
-    return (convertNominal (Json.fromJson json : nominalRaw))
+    return (ParseOk (Json.fromJson json : Comp.nominal))
 
 fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput) =
-    return (convertCompInput (Json.fromJson json : compInputRaw))
+    return (ParseOk (Json.fromJson json : Comp.compInput))
 
 fun parseTasksJson (json : string) : transaction (parseResult (list Comp.compTask)) =
     return (ParseOk (Json.fromJson json : list Comp.compTask))
