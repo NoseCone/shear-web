@@ -2,41 +2,28 @@ open Monad
 
 datatype parseResult t = ParseError of string | ParseOk of t
 
-fun parseEarthRadius (raw : string) : parseResult float =
-    case String.ssplit {Haystack = raw, Needle = " m"} of
-      None => ParseError ("Invalid earth radius units; expected '<number> m', a quantity of metres: " ^ raw)
+fun parseQuantity (unit : string) (unitName : string) (label : string) (raw : string) : parseResult float =
+    case String.ssplit {Haystack = raw, Needle = " " ^ unit} of
+      None => ParseError ("Invalid " ^ label ^ " units; expected '<number> " ^ unit ^ "', a quantity of " ^ unitName ^ ": " ^ raw)
     | Some (num, rest) =>
-        if rest <> "" then ParseError ("Invalid earth radius units; expected '<number> m', a quantity of metres: " ^ raw)
-        else (case (read num : option float) of
-            None => ParseError ("Invalid earth radius number: " ^ raw)
-          | Some m => ParseOk m)
+        if rest <> "" then ParseError ("Invalid " ^ label ^ " units; expected '<number> " ^ unit ^ "', a quantity of " ^ unitName ^ ": " ^ raw)
+        else case (read num : option float) of
+            None => ParseError ("Invalid " ^ label ^ " number: " ^ raw)
+          | Some x => ParseOk x
+
+fun parseEarthRadius (raw : string) : parseResult float =
+    parseQuantity "m" "metres" "earth radius" raw
 
 fun parseScoreBackTime (raw : string) : parseResult Comp.scoreBackTime =
-    case String.ssplit {Haystack = raw, Needle = " s"} of
-      None => ParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
-    | Some (num, rest) =>
-        if rest <> "" then ParseError ("Invalid scoreBack units; expected '<number> s', a quantity of seconds: " ^ raw)
-        else (case (read num : option float) of
-            None => ParseError ("Invalid scoreBack number: " ^ raw)
-          | Some seconds => ParseOk (Comp.ScoreBackTime seconds))
+    case parseQuantity "s" "seconds" "scoreBack" raw of
+      ParseError err => ParseError err
+    | ParseOk seconds => ParseOk (Comp.ScoreBackTime seconds)
 
 fun parseNominalDistance (raw : string) : parseResult float =
-    case String.ssplit {Haystack = raw, Needle = " km"} of
-      None => ParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
-    | Some (num, rest) =>
-        if rest <> "" then ParseError ("Invalid nominalDistance units; expected '<number> km', a quantity of kilometres: " ^ raw)
-        else (case (read num : option float) of
-            None => ParseError ("Invalid nominalDistance number: " ^ raw)
-          | Some km => ParseOk km)
+    parseQuantity "km" "kilometres" "nominalDistance" raw
 
 fun parseNominalTime (raw : string) : parseResult float =
-    case String.ssplit {Haystack = raw, Needle = " h"} of
-      None => ParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
-    | Some (num, rest) =>
-        if rest <> "" then ParseError ("Invalid nominalTime units; expected '<number> h', a quantity of hours: " ^ raw)
-        else (case (read num : option float) of
-            None => ParseError ("Invalid nominalTime number: " ^ raw)
-          | Some hours => ParseOk hours)
+    parseQuantity "h" "hours" "nominalTime" raw
 
 fun parseNominalJson (json : string) : transaction (parseResult Comp.nominal) =
     parsed <- CompParse.parseNominal json;
