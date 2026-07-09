@@ -81,7 +81,7 @@ fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
 
         val earthValue = case c.EarthModel of
               Comp.EarthAsSphere e => show (round e.Radius) ^ " m" (* Use round to avoid scientific notation *)
-            | Comp.EarthEllipsoid e => "equatorialR " ^ e.EquatorialR ^ " m, recipF " ^ e.RecipF
+            | Comp.EarthEllipsoid e => "equatorialR " ^ e.EquatorialR ^ " m, recipF " ^ show e.RecipF
     in
         <xml>
             <table class="tabular is-bordered">

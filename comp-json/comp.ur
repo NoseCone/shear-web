@@ -8,12 +8,15 @@ datatype discipline =
 datatype earthSphere =
   EarthSphere of string
 
+type ellipsoid = {EquatorialR: string, RecipF : float}
+
 datatype earthModel =
     EarthAsSphere of {Radius : float}
-  | EarthEllipsoid of {EquatorialR: string, RecipF : string}
+  | EarthEllipsoid of ellipsoid
 
-datatype giveConfig =
-  GiveConfig of {GiveDistance : option string, GiveFraction: float}
+type gives = {GiveDistance : option string, GiveFraction: float}
+
+datatype giveConfig = GiveConfig of gives
 
 datatype scoreBackTime =
   ScoreBackTime of float
