@@ -2,8 +2,6 @@ open Monad
 
 datatype parseResult t = ParseError of string | ParseOk of t
 
-(* ──────────────────────────── quantity helpers ──────────────────────────── *)
-
 fun parseQuantity (unit : string) (unitName : string) (label : string) (raw : string) : parseResult float =
     case String.ssplit {Haystack = raw, Needle = " " ^ unit} of
       None => ParseError ("Invalid " ^ label ^ " units; expected '<number> " ^ unit ^ "', a quantity of " ^ unitName ^ ": " ^ raw)
@@ -30,127 +28,89 @@ fun parseNominalTime (raw : string) : parseResult float =
 fun parseTaskLength (raw : string) : parseResult float =
     parseQuantity "km" "kilometres" "taskLength" raw
 
-(* ──────────────────────── JSON codecs ──────────────────────────────────── *)
-(* Named values for every codec so that list codecs (which require an
-   explicit json_list call rather than typeclass synthesis) can be composed
-   without ambiguity.                                                        *)
-
 val json_rawZone : Json.json Comp.rawZone =
-    Json.json_record {ZoneName = Json.json_string} {ZoneName = "zoneName"}
-
-val json_rawZoneList : Json.json (list Comp.rawZone) =
-    Json.json_list json_rawZone
-
-(* {"raw": [...]} — the "zones" wrapper object; extra keys are ignored *)
-val json_zonesWrapper : Json.json {Raw : list Comp.rawZone} =
-    Json.json_record {Raw = json_rawZoneList} {Raw = "raw"}
+    Json.json_record {ZoneName = "zoneName"}
 
 val json_stopped : Json.json Comp.stopped =
-    Json.json_record
-        {Announced = Json.json_string, Retroactive = Json.json_string}
-        {Announced = "announced", Retroactive = "retroactive"}
+    Json.json_record {Announced = "announced", Retroactive = "retroactive"}
 
-(* Full task — "stopped" and "cancelled" are optional/nullable.
-   json_record_withOptional treats absent *or* null optional fields as None. *)
+val json_zonesWrapper : Json.json {Raw : list Comp.rawZone} =
+    Json.json_record {Raw = "raw"}
+
 val json_compTask : Json.json Comp.compTask =
     Json.json_record_withOptional
-        {TaskName = Json.json_string, Zones = json_zonesWrapper}
         {TaskName = "taskName", Zones = "zones"}
-        {Stopped = json_stopped, Cancelled = Json.json_bool}
-        {Stopped = "stopped", Cancelled = "cancelled"}
+        {Stopped  = "stopped",  Cancelled = "cancelled"}
 
-val json_compTaskList : Json.json (list Comp.compTask) =
-    Json.json_list json_compTask
-
-(* utcOffset: {"timeZoneMinutes": int} *)
 val json_utcOffset : Json.json {TimeZoneMinutes : int} =
-    Json.json_record {TimeZoneMinutes = Json.json_int} {TimeZoneMinutes = "timeZoneMinutes"}
+    Json.json_record {TimeZoneMinutes = "timeZoneMinutes"}
 
-(* earth sub-objects *)
 val json_earthSphere : Json.json {Radius : string} =
-    Json.json_record {Radius = Json.json_string} {Radius = "radius"}
+    Json.json_record {Radius = "radius"}
 
-val json_earthEllipsoid : Json.json {EquatorialR : string, RecipF : string} =
-    Json.json_record
-        {EquatorialR = Json.json_string, RecipF = Json.json_string}
-        {EquatorialR = "equatorialR", RecipF = "recipF"}
+val json_earthEllipsoid : Json.json Comp.ellipsoid =
+    Json.json_record {EquatorialR = "equatorialR", RecipF = "recipF"}
 
-(* earth: exactly one of "sphere" or "ellipsoid" present; both parsed as
-   optional so we can validate and discriminate afterwards. *)
-val json_earth : Json.json {Sphere : option {Radius : string},
-                             Ellipsoid : option {EquatorialR : string, RecipF : string}} =
+val json_earth : Json.json { Sphere : option {Radius : string}, Ellipsoid : option Comp.ellipsoid } =
+    Json.json_record_withOptional {} {Sphere = "sphere", Ellipsoid = "ellipsoid"}
+
+val json_give : Json.json Comp.gives =
     Json.json_record_withOptional
-        {} {}
-        {Sphere = json_earthSphere, Ellipsoid = json_earthEllipsoid}
-        {Sphere = "sphere", Ellipsoid = "ellipsoid"}
-
-(* give: required giveFraction, optional giveDistance *)
-val json_give : Json.json {GiveDistance : option string, GiveFraction : float} =
-    Json.json_record_withOptional
-        {GiveFraction = Json.json_float}
         {GiveFraction = "giveFraction"}
-        {GiveDistance = Json.json_string}
         {GiveDistance = "giveDistance"}
 
-(* nominal: distance/free/time are unit-annotated strings; goal/launch are
-   plain floats. Field names map directly to the camelCase JSON keys. *)
-val json_nominalRaw : Json.json {Distance : string, Free : string, Time : string,
-                                  Goal : float, Launch : float} =
-    Json.json_record
-        { Distance = Json.json_string, Free = Json.json_string, Time = Json.json_string
-        , Goal = Json.json_float, Launch = Json.json_float
-        }
-        {Distance = "distance", Free = "free", Time = "time",
-         Goal = "goal", Launch = "launch"}
+type nominalRaw =
+    { Distance : string
+    , Free : string
+    , Goal : float
+    , Launch : float
+    , Time : string
+    }
 
-(* compInputRaw: all required fields plus optional scoreBack.
-   Ur/Web row types are unordered so field order in the record literal
-   is irrelevant to the type. *)
-val json_compInputRaw
-    : Json.json { CivilId    : string
-                , CompName   : string
-                , Discipline : string
-                , Earth      : {Sphere : option {Radius : string},
-                                Ellipsoid : option {EquatorialR : string, RecipF : string}}
-                , EarthMath  : string
-                , From       : string
-                , Give       : {GiveDistance : option string, GiveFraction : float}
-                , Location   : string
-                , ScoreBack  : option string
-                , To         : string
-                , UtcOffset  : {TimeZoneMinutes : int}
-                } =
+val json_nominalRaw : Json.json nominalRaw =
+    Json.json_record
+        { Distance = "distance"
+        , Free = "free"
+        , Goal = "goal"
+        , Launch = "launch"
+        , Time = "time"
+        }
+
+type earthModelRaw =
+    { Sphere : option {Radius : string}
+    , Ellipsoid : option Comp.ellipsoid
+    }
+
+type compInputRaw =
+    { CivilId : string
+    , CompName : string
+    , Discipline : string
+    , Earth : earthModelRaw
+    , EarthMath  : string
+    , From : string
+    , Give : Comp.gives
+    , Location : string
+    , ScoreBack : option string
+    , To : string
+    , UtcOffset : {TimeZoneMinutes : int}
+    }
+
+val json_compInputRaw : Json.json compInputRaw =
     Json.json_record_withOptional
-        { CivilId    = Json.json_string
-        , CompName   = Json.json_string
-        , Discipline = Json.json_string
-        , Earth      = json_earth
-        , EarthMath  = Json.json_string
-        , From       = Json.json_string
-        , Give       = json_give
-        , Location   = Json.json_string
-        , To         = Json.json_string
-        , UtcOffset  = json_utcOffset
-        }
-        { CivilId    = "civilId"
-        , CompName   = "compName"
+        { CivilId = "civilId"
+        , CompName = "compName"
         , Discipline = "discipline"
-        , Earth      = "earth"
-        , EarthMath  = "earthMath"
-        , From       = "from"
-        , Give       = "give"
-        , Location   = "location"
-        , To         = "to"
-        , UtcOffset  = "utcOffset"
+        , Earth = "earth"
+        , EarthMath = "earthMath"
+        , From = "from"
+        , Give = "give"
+        , Location = "location"
+        , To = "to"
+        , UtcOffset = "utcOffset"
         }
-        {ScoreBack = Json.json_string}
         {ScoreBack = "scoreBack"}
 
-(* ──────────────────────── conversion helpers ───────────────────────────── *)
-
-fun convertNominal (r : {Distance : string, Free : string, Time : string,
-                          Goal : float, Launch : float})
-                   : parseResult Comp.nominal =
+fun convertNominal (r : nominalRaw) : parseResult Comp.nominal =
     case (parseNominalDistance r.Distance, parseNominalDistance r.Free, parseNominalTime r.Time) of
       (ParseOk d, ParseOk f, ParseOk t) =>
         ParseOk (Comp.Nominal {Distance = d, Free = f, Time = t, Goal = r.Goal, Launch = r.Launch})
@@ -189,19 +149,7 @@ fun convertPilots (rows : list (list (list string))) : parseResult (list Comp.pi
               ParseError err => ParseError err
             | ParseOk ps => ParseOk (pilot :: ps)
 
-fun convertCompInput (raw : {CivilId    : string,
-                               CompName   : string,
-                               Discipline : string,
-                               Earth      : {Sphere    : option {Radius : string},
-                                             Ellipsoid : option {EquatorialR : string, RecipF : string}},
-                               EarthMath  : string,
-                               From       : string,
-                               Give       : {GiveDistance : option string, GiveFraction : float},
-                               Location   : string,
-                               ScoreBack  : option string,
-                               To         : string,
-                               UtcOffset  : {TimeZoneMinutes : int}})
-                      : parseResult Comp.compInput =
+fun convertCompInput (raw : compInputRaw) : parseResult Comp.compInput =
     let
         val earthModelResult : parseResult Comp.earthModel =
             case (raw.Earth.Sphere, raw.Earth.Ellipsoid) of
@@ -209,10 +157,7 @@ fun convertCompInput (raw : {CivilId    : string,
                 (case parseEarthRadius sphere.Radius of
                     ParseError err => ParseError err
                   | ParseOk r => ParseOk (Comp.EarthAsSphere {Radius = r}))
-            | (None, Some ellipsoid) =>
-                ParseOk (Comp.EarthEllipsoid { EquatorialR = ellipsoid.EquatorialR
-                                             , RecipF      = ellipsoid.RecipF
-                                             })
+            | (None, Some ellipsoid) => ParseOk (Comp.EarthEllipsoid ellipsoid)
             | (Some _, Some _) =>
                 ParseError "Invalid earth model: found both sphere and ellipsoid fields"
             | (None, None) =>
@@ -228,7 +173,7 @@ fun convertCompInput (raw : {CivilId    : string,
 
         val scoreBack : option Comp.scoreBackTime =
             case scoreBackResult of
-              None              => None
+              None => None
             | Some (ParseOk sb) => Some sb
             | Some (ParseError _) => None
     in
@@ -243,14 +188,14 @@ fun convertCompInput (raw : {CivilId    : string,
                     ParseError ("Unsupported discipline value in JSON: " ^ raw.Discipline)
                 | Some discipline =>
                     ParseOk (Comp.CompInput
-                        { CivilId    = raw.CivilId
-                        , EarthMath  = raw.EarthMath
+                        { CivilId = raw.CivilId
+                        , EarthMath = raw.EarthMath
                         , Discipline = discipline
-                        , Location   = raw.Location
-                        , From       = raw.From
-                        , To         = raw.To
-                        , CompName   = raw.CompName
-                        , UtcOffset  = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
+                        , Location = raw.Location
+                        , From = raw.From
+                        , To = raw.To
+                        , CompName = raw.CompName
+                        , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
                         , EarthModel = earthModel
                         , GiveConfig = Comp.GiveConfig
                             { GiveDistance = raw.Give.GiveDistance
@@ -260,22 +205,17 @@ fun convertCompInput (raw : {CivilId    : string,
                         })
     end
 
-(* ──────────────────────────── public API ───────────────────────────────── *)
+fun parseNominalJson (json : string) : transaction (parseResult Comp.nominal) =
+    return (convertNominal (Json.fromJson json : nominalRaw))
 
-fun parseNominalJson (s : string) : transaction (parseResult Comp.nominal) =
-    return (convertNominal (Json.fromJson json_nominalRaw s))
+fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput) =
+    return (convertCompInput (Json.fromJson json : compInputRaw))
 
-fun parseCompInputJson (s : string) : transaction (parseResult Comp.compInput) =
-    return (convertCompInput (Json.fromJson json_compInputRaw s))
+fun parseTasksJson (json : string) : transaction (parseResult (list Comp.compTask)) =
+    return (ParseOk (Json.fromJson json : list Comp.compTask))
 
-fun parseTasksJson (s : string) : transaction (parseResult (list Comp.compTask)) =
-    return (ParseOk (Json.fromJson json_compTaskList s))
+fun parseTaskLengthsJson (json : string) : transaction (parseResult (list Comp.taskLength)) =
+    return (convertTaskLengths (Json.fromJson json : list string))
 
-fun parseTaskLengthsJson (s : string) : transaction (parseResult (list Comp.taskLength)) =
-    return (convertTaskLengths (Json.fromJson (Json.json_list Json.json_string) s))
-
-fun parsePilotsJson (s : string) : transaction (parseResult (list Comp.pilotStatus)) =
-    return (convertPilots
-        (Json.fromJson
-            (Json.json_list (Json.json_list (Json.json_list Json.json_string)))
-            s))
+fun parsePilotsJson (json : string) : transaction (parseResult (list Comp.pilotStatus)) =
+    return (convertPilots (Json.fromJson json : list (list (list string))))
