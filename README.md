@@ -18,7 +18,8 @@ The other NoseCone applications and the full Flare Timing application are static
 sites.
 
 On the server, using Ur/Web's C FFI, `JSON` files are fetched with
-[libcurl][curl] and parsed with [kgabis/parson][parson].
+[libcurl][curl] and parsed with `json.fromJson`[^parson].
+
 
 > [!NOTE]
 > Another approach would be to use a database with the data imported into the
@@ -35,3 +36,5 @@ Australia, we get what we need from these files:
 
 [curl]:https://curl.se/libcurl
 [parson]: https://github.com/kgabis/parson
+
+[^parson]: We had been using C-FFI for JSON parsing too using [kgabis/parson][parson].
