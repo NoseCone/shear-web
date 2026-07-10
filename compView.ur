@@ -203,22 +203,12 @@ fun defaultTaskNames (n : int) (i : int) =
     else
         ("Task " ^ show i) :: defaultTaskNames n (i + 1)
 
-fun countStrings (xs : list string) =
-    case xs of
-      [] => 0
-    | _ :: ys => 1 + countStrings ys
-
-fun countTasks (tasks : list Comp.compTask) =
-    case tasks of
-      [] => 0
-    | _ :: ts => 1 + countTasks ts
-
 fun firstPilotStatusCountError (taskCount : int) (pilots : list Comp.pilotStatus) : option string =
     case pilots of
       [] => None
     | p :: ps =>
       let
-          val statusCount = countStrings p.PilotStatus
+          val statusCount = List.length p.PilotStatus
       in
           if statusCount = taskCount then
               firstPilotStatusCountError taskCount ps
@@ -322,11 +312,11 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                 | Some pilots =>
                     case pilots of
                       [] => []
-                    | p :: _ => defaultTaskNames (countStrings p.PilotStatus) 1
+                    | p :: _ => defaultTaskNames (List.length p.PilotStatus) 1
 
         val pilotStatusCountErr : option string =
             case (tasksOpt, pilotsOpt) of
-              (Some tasks, Some pilots) => firstPilotStatusCountError (countTasks tasks) pilots
+              (Some tasks, Some pilots) => firstPilotStatusCountError (List.length tasks) pilots
             | _ => None
     in
         return <xml>
