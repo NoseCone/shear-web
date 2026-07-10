@@ -208,6 +208,26 @@ fun countStrings (xs : list string) =
       [] => 0
     | _ :: ys => 1 + countStrings ys
 
+fun countTasks (tasks : list Comp.compTask) =
+    case tasks of
+      [] => 0
+    | _ :: ts => 1 + countTasks ts
+
+fun firstPilotStatusCountError (taskCount : int) (pilots : list Comp.pilotStatus) : option string =
+    case pilots of
+      [] => None
+    | p :: ps =>
+      let
+          val statusCount = countStrings p.PilotStatus
+      in
+          if statusCount = taskCount then
+              firstPilotStatusCountError taskCount ps
+          else
+              Some
+                  ("Pilot " ^ p.PilotId ^ " (" ^ p.PilotName ^ ") has " ^ show statusCount
+                    ^ " statuses but there are " ^ show taskCount ^ " tasks")
+      end
+
 fun pilotsTable (taskNames : list string) (pilots : list Comp.pilotStatus) =
     <xml>
         <table class="tabular is-bordered is-striped">
@@ -303,6 +323,11 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                     case pilots of
                       [] => []
                     | p :: _ => defaultTaskNames (countStrings p.PilotStatus) 1
+
+        val pilotStatusCountErr : option string =
+            case (tasksOpt, pilotsOpt) of
+              (Some tasks, Some pilots) => firstPilotStatusCountError (countTasks tasks) pilots
+            | _ => None
     in
         return <xml>
             <head>
@@ -382,6 +407,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                             {maybeParseError "Tasks parse failed" tasksErr}
                             {maybeParseError "Task lengths parse failed" taskLengthsErr}
                             {maybeParseError "Pilots parse failed" pilotsErr}
+                            {maybeParseError "Pilots/tasks mismatch" pilotStatusCountErr}
                         </div>
                     </xml>}
             </body>
