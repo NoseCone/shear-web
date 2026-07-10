@@ -163,39 +163,31 @@ fun tasksTable (tasks : list Comp.compTask) (lengths : list Comp.taskLength) =
     end
 
 fun statusCells (statuses : list string) =
-    case statuses of
-      [] => <xml></xml>
-    | s :: ss =>
+    List.mapX (fn s =>
         <xml>
             {case s of
               "" => <xml><td></td></xml>
             | "DF" => <xml><td></td></xml>
             | _ => <xml><td>{[s]}</td></xml>}
-            {statusCells ss}
-        </xml>
+        </xml>)
+        statuses
 
 fun pilotRows (pilots : list Comp.pilotStatus) =
-    case pilots of
-      [] => <xml></xml>
-    | p :: ps =>
+    List.mapX (fn p =>
         <xml>
             <tr>
                 <td class="td-pid">{[p.PilotId]}</td>
                 <td>{[p.PilotName]}</td>
                 {statusCells p.PilotStatus}
             </tr>
-            {pilotRows ps}
-        </xml>
+        </xml>)
+        pilots
 
 fun taskNameHeaders (taskNames : list string) =
-    case taskNames of
-      [] => <xml></xml>
-    | n :: ns => <xml><th>{[n]}</th>{taskNameHeaders ns}</xml>
+    List.mapX (fn n => <xml><th>{[n]}</th></xml>) taskNames
 
 fun taskNamesFromTasks (tasks : list Comp.compTask) =
-    case tasks of
-      [] => []
-    | t :: ts => t.TaskName :: taskNamesFromTasks ts
+    List.mp (fn t => t.TaskName) tasks
 
 fun defaultTaskNames (n : int) (i : int) =
     if i > n then
@@ -204,19 +196,18 @@ fun defaultTaskNames (n : int) (i : int) =
         ("Task " ^ show i) :: defaultTaskNames n (i + 1)
 
 fun firstPilotStatusCountError (taskCount : int) (pilots : list Comp.pilotStatus) : option string =
-    case pilots of
-      [] => None
-    | p :: ps =>
-      let
-          val statusCount = List.length p.PilotStatus
-      in
-          if statusCount = taskCount then
-              firstPilotStatusCountError taskCount ps
-          else
-              Some
-                  ("Pilot " ^ p.PilotId ^ " (" ^ p.PilotName ^ ") has " ^ show statusCount
-                    ^ " statuses but there are " ^ show taskCount ^ " tasks")
-      end
+    List.search (fn p =>
+        let
+            val statusCount = List.length p.PilotStatus
+        in
+            if statusCount = taskCount then
+                None
+            else
+                Some
+                    ("Pilot " ^ p.PilotId ^ " (" ^ p.PilotName ^ ") has " ^ show statusCount
+                      ^ " statuses but there are " ^ show taskCount ^ " tasks")
+        end)
+        pilots
 
 fun pilotsTable (taskNames : list string) (pilots : list Comp.pilotStatus) =
     <xml>
