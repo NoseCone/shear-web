@@ -18,8 +18,18 @@ The other NoseCone applications and the full Flare Timing application are static
 sites.
 
 On the server, using Ur/Web's C FFI, `JSON` files are fetched with
-[libcurl][curl] and parsed with `json.fromJson`[^parson].
+[libcurl][curl] and parsed with `json.fromJson`[^parson]. This involves parsing
+quantities, strings with units, such as;
 
+```json
+{
+  "free": "5.000 km",
+  "time": "1.500000 h",
+  "launch": 0.96,
+  "distance": "50.0 km",
+  "goal": 0.1
+}
+```
 
 > [!NOTE]
 > Another approach would be to use a database with the data imported into the
