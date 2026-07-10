@@ -15,5 +15,3 @@ clean:
 	rm -f shearWeb.exe
 	rm -f comp-json/compJson.exe
 	rm -f comp-json/compFetch.o
-	rm -f site.css
-	rm -f cssAsset.ur
