@@ -2,18 +2,6 @@ open Monad
 open Quantity
 open QuantityJson
 
-val json_metres : Json.json metres =
-    let val json_float = json_quantity "m" in Json.json_derived Metres (fn (Metres x) => x) end
-
-val json_kilometres : Json.json kilometres =
-    let val json_float = json_quantity "km" in Json.json_derived Kilometres (fn (Kilometres x) => x) end
-
-val json_hours : Json.json hours =
-    let val json_float = json_quantity "h" in Json.json_derived Hours (fn (Hours x) => x) end
-
-val json_seconds : Json.json seconds =
-    let val json_float = json_quantity "s" in Json.json_derived Seconds (fn (Seconds x) => x) end
-
 val json_nominal : Json.json Comp.nominal =
     let
         val json_record : Json.json
