@@ -103,24 +103,32 @@ val json_give : Json.json Comp.gives =
 
 val json_taskLength : Json.json Comp.taskLength = json_quantity "km"
 
-fun parsePilotRow (row : list (list string)) : parseResult Comp.pilotStatus =
-    case row of
-      idName :: statuses :: [] =>
-        (case idName of
-           pid :: pname :: [] => ParseOk {PilotId = pid, PilotName = pname, PilotStatus = statuses}
-         | _ => ParseError "Expected exactly [id, name] in pilot identifier pair")
-    | _ => ParseError "Expected exactly [[id, name], [statuses...]] in pilot row"
+val json_pilotStatus : Json.json Comp.pilotStatus =
+    let
+        fun parsePilotRow (row : list (list string)) : parseResult Comp.pilotStatus =
+            case row of
+              idName :: statuses :: [] => (case idName of
+                  pid :: pname :: [] => ParseOk {PilotId = pid, PilotName = pname, PilotStatus = statuses}
+            | _ => ParseError "Expected exactly [id, name] in pilot identifier pair")
+            | _ => ParseError "Expected exactly [[id, name], [statuses...]] in pilot row"
 
-fun convertPilots (rows : list (list (list string))) : parseResult (list Comp.pilotStatus) =
-    case rows of
-      [] => ParseOk []
-    | row :: rest =>
-        case parsePilotRow row of
-          ParseError err => ParseError err
-        | ParseOk pilot =>
-            case convertPilots rest of
-              ParseError err => ParseError err
-            | ParseOk ps => ParseOk (pilot :: ps)
+        fun fromRow (s : string) : Comp.pilotStatus * string =
+            let
+                val (row, rest) : list (list string) * string = Json.fromJson' s
+            in
+                case parsePilotRow row of
+                  ParseError err => error <xml>{[err]}</xml>
+                | ParseOk pilot => (pilot, rest)
+            end
+
+        fun toRow ({PilotId = pid, PilotName = pname, PilotStatus = statuses} : Comp.pilotStatus) : list (list string) =
+            (pid :: pname :: []) :: statuses :: []
+    in
+        Json.mkJson
+            { ToJson = fn p => Json.toJson (toRow p)
+            , FromJson = fromRow
+            }
+    end
 
 type earthModelRaw =
     { Sphere : option {Radius : metres}
@@ -269,4 +277,4 @@ fun parseTaskLengthsJson (json : string) : transaction (parseResult (list Comp.t
     return (ParseOk (Json.fromJson json : list Comp.taskLength))
 
 fun parsePilotsJson (json : string) : transaction (parseResult (list Comp.pilotStatus)) =
-    return (convertPilots (Json.fromJson json : list (list (list string))))
+    return (ParseOk (Json.fromJson json : list Comp.pilotStatus))
