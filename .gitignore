@@ -2,4 +2,4 @@
 *.html
 build
 *.o
-ref-docs
+docs/reference/

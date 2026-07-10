@@ -1,0 +1,25 @@
+{
+  "folders": [
+    {
+      "name": "shear-web",
+      "path": "."
+    },
+    {
+      "name": "bazqux-urweb",
+      "path": "../bazqux-urweb"
+    },
+    {
+      "name": "upo",
+      "path": "../upo"
+    },
+    {
+      "name": "urweb",
+      "path": "../urweb"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true
+    }
+  }
+}
