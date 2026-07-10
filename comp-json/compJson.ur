@@ -101,8 +101,7 @@ val json_give : Json.json Comp.gives =
         {GiveFraction = "giveFraction"}
         {GiveDistance = "giveDistance"}
 
-fun convertTaskLengths (vals : list kilometres) : list Comp.taskLength =
-    List.mp (fn (Kilometres km) => km) vals
+val json_taskLength : Json.json Comp.taskLength = json_quantity "km"
 
 fun parsePilotRow (row : list (list string)) : parseResult Comp.pilotStatus =
     case row of
@@ -267,7 +266,7 @@ fun parseTasksJson (json : string) : transaction (parseResult (list Comp.compTas
     return (ParseOk (Json.fromJson json : list Comp.compTask))
 
 fun parseTaskLengthsJson (json : string) : transaction (parseResult (list Comp.taskLength)) =
-    return (ParseOk (convertTaskLengths (Json.fromJson json : list kilometres)))
+    return (ParseOk (Json.fromJson json : list Comp.taskLength))
 
 fun parsePilotsJson (json : string) : transaction (parseResult (list Comp.pilotStatus)) =
     return (convertPilots (Json.fromJson json : list (list (list string))))
