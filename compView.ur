@@ -370,8 +370,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                                         <xml>
                                             {case tasksOpt of
                                               None => <xml></xml>
-                                            | Some tasks =>
-                                                tasksTable tasks (Option.get [] taskLengthsOpt)}
+                                            | Some tasks => tasksTable tasks (Option.get [] taskLengthsOpt)}
                                         </xml>
                                     | PilotsTab =>
                                         <xml>
