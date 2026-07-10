@@ -214,18 +214,3 @@ val json_compInput : Json.json Comp.compInput =
             , FromJson = parseCompInput
             }
     end
-
-fun parseNominalJson (json : string) : transaction (parseResult Comp.nominal) =
-    return (ParseOk (Json.fromJson json : Comp.nominal))
-
-fun parseCompInputJson (json : string) : transaction (parseResult Comp.compInput) =
-    return (ParseOk (Json.fromJson json : Comp.compInput))
-
-fun parseTasksJson (json : string) : transaction (parseResult (list Comp.compTask)) =
-    return (ParseOk (Json.fromJson json : list Comp.compTask))
-
-fun parseTaskLengthsJson (json : string) : transaction (parseResult (list Comp.taskLength)) =
-    return (ParseOk (Json.fromJson json : list Comp.taskLength))
-
-fun parsePilotsJson (json : string) : transaction (parseResult (list Comp.pilotStatus)) =
-    return (ParseOk (Json.fromJson json : list Comp.pilotStatus))
