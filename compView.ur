@@ -119,6 +119,20 @@ fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
 
 datatype compTab = SettingsTab | TasksTab | PilotsTab
 
+val eq_compTab : eq compTab =
+    mkEq (fn a b => case (a, b) of
+        (SettingsTab, SettingsTab) => True
+      | (TasksTab, TasksTab) => True
+      | (PilotsTab, PilotsTab) => True
+      | _ => False)
+
+fun tabItem (activeTab : compTab) (tab : compTab) (label : string) (target : transaction page) : xbody =
+    let
+        val className : css_class = if activeTab = tab then CLASS "is-active" else CLASS ""
+    in
+        <xml><li class={className}><a link={target}>{[label]}</a></li></xml>
+    end
+
 fun joinZoneNames (zones : list Comp.rawZone) : string =
     case zones of
       [] => ""
@@ -353,15 +367,9 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                                     {case comp of Comp.CompInput c => breadcrumb c.CompName}
                                     <div class="tabs">
                                         <ul>
-                                            {case activeTab of
-                                              SettingsTab => <xml><li class="is-active"><a link={renderSettings compName}>Settings</a></li></xml>
-                                            | _ => <xml><li><a link={renderSettings compName}>Settings</a></li></xml>}
-                                            {case activeTab of
-                                              TasksTab => <xml><li class="is-active"><a link={render compName}>Tasks</a></li></xml>
-                                            | _ => <xml><li><a link={render compName}>Tasks</a></li></xml>}
-                                            {case activeTab of
-                                              PilotsTab => <xml><li class="is-active"><a link={renderPilots compName}>Pilots</a></li></xml>
-                                            | _ => <xml><li><a link={renderPilots compName}>Pilots</a></li></xml>}
+                                            {tabItem activeTab SettingsTab "Settings" (renderSettings compName)}
+                                            {tabItem activeTab TasksTab "Tasks" (render compName)}
+                                            {tabItem activeTab PilotsTab "Pilots" (renderPilots compName)}
                                         </ul>
                                     </div>
                                     {case activeTab of
