@@ -1,1 +1,1 @@
-val widget : string -> transaction page
+val render : string -> transaction page

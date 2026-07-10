@@ -13,15 +13,15 @@ allow url https://www.openstreetmap.org/copyright
 allow meta charset
 allow meta viewport
 allow mime text/css
-safeGet comp
-safeGet compSettings
-safeGet compPilots
+safeGet tasks
+safeGet settings
+safeGet pilots
 rewrite style Bulma/tabular table
 rewrite style Bulma/titular title
 rewrite style Bulma/* [-]
-rewrite url CompView/widget comp
-rewrite url CompView/widgetSettings compSettings
-rewrite url CompView/widgetPilots compPilots
+rewrite url CompView/render tasks
+rewrite url CompView/renderSettings settings
+rewrite url CompView/renderPilots pilots
 rewrite url Main/*
 library comp-json/compJson
 

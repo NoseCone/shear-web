@@ -1,7 +1,7 @@
 open Bulma
 
 fun compAnchor (compName : string) (label : string) : xbody =
-    <xml><a link={CompView.widget compName}>{[label]}</a></xml>
+    <xml><a link={CompView.render compName}>{[label]}</a></xml>
 
 fun paragliding () =
     <xml>

@@ -237,13 +237,13 @@ fun maybeParseError (title : string) (err : option string) : xbody =
         Option.get <xml></xml> (Option.mp notice err)
     end
 
-fun widget (compName : string) : transaction page =
+fun render (compName : string) : transaction page =
     widgetTab compName TasksTab
 
-and widgetSettings (compName : string) : transaction page =
+and renderSettings (compName : string) : transaction page =
     widgetTab compName SettingsTab
 
-and widgetPilots (compName : string) : transaction page =
+and renderPilots (compName : string) : transaction page =
     widgetTab compName PilotsTab
 
 and widgetTab (compName : string) (activeTab : compTab) : transaction page =
@@ -354,14 +354,14 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                                     <div class="tabs">
                                         <ul>
                                             {case activeTab of
-                                              SettingsTab => <xml><li class="is-active"><a link={widgetSettings compName}>Settings</a></li></xml>
-                                            | _ => <xml><li><a link={widgetSettings compName}>Settings</a></li></xml>}
+                                              SettingsTab => <xml><li class="is-active"><a link={renderSettings compName}>Settings</a></li></xml>
+                                            | _ => <xml><li><a link={renderSettings compName}>Settings</a></li></xml>}
                                             {case activeTab of
-                                              TasksTab => <xml><li class="is-active"><a link={widget compName}>Tasks</a></li></xml>
-                                            | _ => <xml><li><a link={widget compName}>Tasks</a></li></xml>}
+                                              TasksTab => <xml><li class="is-active"><a link={render compName}>Tasks</a></li></xml>
+                                            | _ => <xml><li><a link={render compName}>Tasks</a></li></xml>}
                                             {case activeTab of
-                                              PilotsTab => <xml><li class="is-active"><a link={widgetPilots compName}>Pilots</a></li></xml>
-                                            | _ => <xml><li><a link={widgetPilots compName}>Pilots</a></li></xml>}
+                                              PilotsTab => <xml><li class="is-active"><a link={renderPilots compName}>Pilots</a></li></xml>
+                                            | _ => <xml><li><a link={renderPilots compName}>Pilots</a></li></xml>}
                                         </ul>
                                     </div>
                                     {case activeTab of
