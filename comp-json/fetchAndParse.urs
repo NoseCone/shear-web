@@ -1,5 +1,5 @@
-val fetchAndParseCompInput : string -> transaction (QuantityJson.parseResult Comp.compInput)
 val fetchAndParseNominal : string -> transaction (QuantityJson.parseResult Comp.nominal)
-val fetchAndParseTasks : string -> transaction (QuantityJson.parseResult (list Comp.compTask))
 val fetchAndParseTaskLengths : string -> transaction (QuantityJson.parseResult (list Comp.taskLength))
+val fetchAndParseTasks : string -> transaction (QuantityJson.parseResult (list Comp.compTask))
 val fetchAndParsePilots : string -> transaction (QuantityJson.parseResult (list Comp.pilotStatus))
+val fetchAndParseCompInput : string -> transaction (QuantityJson.parseResult Comp.compInput)
