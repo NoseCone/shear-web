@@ -1,4 +1,5 @@
 open Bulma
+open QuantityJson
 open FetchAndParse
 
 fun metric (label : string) (value : string) (accent : css_class) : xbody =
@@ -256,43 +257,43 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
     let
         val nominalOpt : option Comp.nominal =
             case nominalResult of
-              CompJson.ParseError _ => None
-            | CompJson.ParseOk nominal => Some nominal
+              ParseError _ => None
+            | ParseOk nominal => Some nominal
 
         val nominalErr : option string =
             case nominalResult of
-              CompJson.ParseError err => Some err
-            | CompJson.ParseOk _ => None
+              ParseError err => Some err
+            | ParseOk _ => None
 
         val tasksOpt : option (list Comp.compTask) =
             case tasksResult of
-              CompJson.ParseError _ => None
-            | CompJson.ParseOk tasks => Some tasks
+              ParseError _ => None
+            | ParseOk tasks => Some tasks
 
         val tasksErr : option string =
             case tasksResult of
-              CompJson.ParseError err => Some err
-            | CompJson.ParseOk _ => None
+              ParseError err => Some err
+            | ParseOk _ => None
 
         val taskLengthsOpt : option (list Comp.taskLength) =
             case taskLengthsResult of
-              CompJson.ParseError _ => None
-            | CompJson.ParseOk lengths => Some lengths
+              ParseError _ => None
+            | ParseOk lengths => Some lengths
 
         val taskLengthsErr : option string =
             case taskLengthsResult of
-              CompJson.ParseError err => Some err
-            | CompJson.ParseOk _ => None
+              ParseError err => Some err
+            | ParseOk _ => None
 
         val pilotsOpt : option (list Comp.pilotStatus) =
             case pilotsResult of
-              CompJson.ParseError _ => None
-            | CompJson.ParseOk pilots => Some pilots
+              ParseError _ => None
+            | ParseOk pilots => Some pilots
 
         val pilotsErr : option string =
             case pilotsResult of
-              CompJson.ParseError err => Some err
-            | CompJson.ParseOk _ => None
+              ParseError err => Some err
+            | ParseOk _ => None
 
         val pilotTaskNames : list string =
             case tasksOpt of
@@ -318,7 +319,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
             </head>
             <body>
                 {case compResult of
-                  CompJson.ParseError err =>
+                  ParseError err =>
                     <xml>
                         <div class="container">
                             <div class="spacer"></div>
@@ -329,7 +330,7 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                         </div>
                         {Footer.render ()}
                     </xml>
-                | CompJson.ParseOk comp =>
+                | ParseOk comp =>
                     <xml>
                         <div class="spacer"></div>
                         <div id={idUw} class="container is-size-7">

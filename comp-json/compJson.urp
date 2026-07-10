@@ -11,6 +11,7 @@ $/monad
 $/option
 $/list
 quantity
+quantityJson
 comp
 compJson
 fetchAndParse
