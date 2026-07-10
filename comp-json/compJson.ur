@@ -107,9 +107,8 @@ val json_pilotStatus : Json.json Comp.pilotStatus =
     let
         fun parsePilotRow (row : list (list string)) : parseResult Comp.pilotStatus =
             case row of
-              idName :: statuses :: [] => (case idName of
-                  pid :: pname :: [] => ParseOk {PilotId = pid, PilotName = pname, PilotStatus = statuses}
-            | _ => ParseError "Expected exactly [id, name] in pilot identifier pair")
+              (pid :: pname :: []) :: statuses :: [] => ParseOk {PilotId = pid, PilotName = pname, PilotStatus = statuses}
+            | _ :: _ :: [] => ParseError "Expected exactly [id, name] in pilot identifier pair"
             | _ => ParseError "Expected exactly [[id, name], [statuses...]] in pilot row"
 
         fun fromRow (s : string) : Comp.pilotStatus * string =
