@@ -114,7 +114,7 @@ type compInputRaw =
     { CivilId : string
     , CompName : string
     , Discipline : string
-    , Earth : Comp.earthModel
+    , EarthModel : Comp.earthModel
     , EarthMath  : string
     , From : string
     , Give : Comp.gives
@@ -149,7 +149,7 @@ val json_compInput : Json.json Comp.compInput =
                             , To = raw.To
                             , CompName = raw.CompName
                             , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
-                            , EarthModel = raw.Earth
+                            , EarthModel = raw.EarthModel
                             , GiveConfig =
                                 Comp.GiveConfig
                                     { GiveDistance = raw.Give.GiveDistance
@@ -178,7 +178,7 @@ val json_compInput : Json.json Comp.compInput =
                 { CivilId = c.CivilId
                 , CompName = c.CompName
                 , Discipline = discipline
-                , Earth = c.EarthModel
+                , EarthModel = c.EarthModel
                 , EarthMath = c.EarthMath
                 , From = c.From
                 , Give = give
@@ -194,7 +194,7 @@ val json_compInput : Json.json Comp.compInput =
                 { CivilId = "civilId"
                 , CompName = "compName"
                 , Discipline = "discipline"
-                , Earth = "earth"
+                , EarthModel = "earth"
                 , EarthMath = "earthMath"
                 , From = "from"
                 , Give = "give"
