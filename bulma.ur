@@ -23,7 +23,7 @@ style is_size_7
 
 style box
 style notification
-style footer
+style footing (* clashes with <footer> *)
 
 style columns
 style column

@@ -18,6 +18,7 @@ safeGet settings
 safeGet pilots
 rewrite style Bulma/tabular table
 rewrite style Bulma/titular title
+rewrite style Bulma/footing footer
 rewrite style Bulma/* [-]
 rewrite url CompView/render tasks
 rewrite url CompView/renderSettings settings

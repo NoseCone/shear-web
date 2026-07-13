@@ -1,9 +1,11 @@
+open Bulma
+
 fun render () : xbody =
     <xml>
-        <footer class={Bulma.footer}>
-            <div class={Bulma.container}>
-                <div class={Bulma.content}>
-                    <div class={Bulma.is_size_7}><strong title="app-view-0.29 2020-12-19T14:27">Flare Timing</strong> by
+        <footer class="footing">
+            <div class="container">
+                <div class="content">
+                    <div class="is-size-7"><strong title="app-view-0.29 2020-12-19T14:27">Flare Timing</strong> by
                         <a href="http://www.blockscope.com" target="_blank">Block Scope</a><br/>(<a
                             href="http://www.flaretiming.com/about.html" target="_blank">About</a>, <a
                             href="http://www.flaretiming.com/disclaim.html" target="_blank">Disclaimer</a>,
