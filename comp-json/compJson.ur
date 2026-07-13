@@ -81,16 +81,40 @@ val json_pilotStatus : Json.json Comp.pilotStatus =
             }
     end
 
-type earthModelRaw =
-    { Sphere : option Comp.sphere
-    , Ellipsoid : option Comp.ellipsoid
-    }
+val json_earthModel : Json.json Comp.earthModel =
+    let
+        fun fromRaw (raw : { Sphere : option Comp.sphere, Ellipsoid : option Comp.ellipsoid }) : parseResult Comp.earthModel =
+            case (raw.Sphere, raw.Ellipsoid) of
+              (Some sphere, None) => ParseOk (Comp.EarthSphere sphere)
+            | (None, Some ellipsoid) => ParseOk (Comp.EarthEllipsoid ellipsoid)
+            | (Some _, Some _) => ParseError "Invalid earth model; cannot have both sphere and ellipsoid"
+            | (None, None) => ParseError "Invalid earth model; must have either sphere or ellipsoid"
+
+        fun toRaw (model : Comp.earthModel) : { Sphere : option Comp.sphere, Ellipsoid : option Comp.ellipsoid } =
+            case model of
+              Comp.EarthSphere sphere => {Sphere = Some sphere, Ellipsoid = None}
+            | Comp.EarthEllipsoid ellipsoid => {Sphere = None, Ellipsoid = Some ellipsoid}
+
+        fun parseEarthModel (s : string) : Comp.earthModel * string =
+            let
+                val (raw, rest) : { Sphere : option Comp.sphere, Ellipsoid : option Comp.ellipsoid } * string = Json.fromJson' s
+            in
+                case fromRaw raw of
+                  ParseError err => error <xml>{[err]}</xml>
+                | ParseOk model => (model, rest)
+            end
+    in
+        Json.mkJson
+            { ToJson = fn m => Json.toJson (toRaw m)
+            , FromJson = parseEarthModel
+            }
+    end
 
 type compInputRaw =
     { CivilId : string
     , CompName : string
     , Discipline : string
-    , Earth : earthModelRaw
+    , Earth : Comp.earthModel
     , EarthMath  : string
     , From : string
     , Give : Comp.gives
@@ -104,13 +128,6 @@ val json_compInput : Json.json Comp.compInput =
     let
         fun fromRaw (raw : compInputRaw) : parseResult Comp.compInput =
             let
-                val earthModelResult : parseResult Comp.earthModel =
-                    case (raw.Earth.Sphere, raw.Earth.Ellipsoid) of
-                      (Some sphere, None) => ParseOk (Comp.EarthSphere sphere)
-                    | (None, Some ellipsoid) => ParseOk (Comp.EarthEllipsoid ellipsoid)
-                    | (Some _, Some _) => ParseError "Invalid earth model: found both sphere and ellipsoid fields"
-                    | (None, None) => ParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
-
                 val disciplineOpt : option Comp.discipline =
                     if raw.Discipline = "hg" then Some Comp.HangGliding
                     else if raw.Discipline = "pg" then Some Comp.Paragliding
@@ -119,39 +136,31 @@ val json_compInput : Json.json Comp.compInput =
                 val scoreBack : option Comp.scoreBackTime =
                     Option.mp Comp.ScoreBackTime raw.ScoreBack
             in
-                case earthModelResult of
-                  ParseError err => ParseError err
-                | ParseOk earthModel =>
-                    case disciplineOpt of
-                      None => ParseError ("Unsupported discipline value in JSON: " ^ raw.Discipline)
-                    | Some discipline =>
-                        ParseOk
-                            (Comp.CompInput
-                                { CivilId = raw.CivilId
-                                , EarthMath = raw.EarthMath
-                                , Discipline = discipline
-                                , Location = raw.Location
-                                , From = raw.From
-                                , To = raw.To
-                                , CompName = raw.CompName
-                                , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
-                                , EarthModel = earthModel
-                                , GiveConfig =
-                                    Comp.GiveConfig
-                                        { GiveDistance = raw.Give.GiveDistance
-                                        , GiveFraction = raw.Give.GiveFraction
-                                        }
-                                , ScoreBack = scoreBack
-                                })
+                case disciplineOpt of
+                    None => ParseError ("Unsupported discipline value in JSON: " ^ raw.Discipline)
+                | Some discipline =>
+                    ParseOk
+                        (Comp.CompInput
+                            { CivilId = raw.CivilId
+                            , EarthMath = raw.EarthMath
+                            , Discipline = discipline
+                            , Location = raw.Location
+                            , From = raw.From
+                            , To = raw.To
+                            , CompName = raw.CompName
+                            , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
+                            , EarthModel = raw.Earth
+                            , GiveConfig =
+                                Comp.GiveConfig
+                                    { GiveDistance = raw.Give.GiveDistance
+                                    , GiveFraction = raw.Give.GiveFraction
+                                    }
+                            , ScoreBack = scoreBack
+                            })
             end
 
         fun toRaw ((Comp.CompInput c) : Comp.compInput) : compInputRaw =
             let
-                val earth : earthModelRaw =
-                    case c.EarthModel of
-                      Comp.EarthSphere sphere => {Sphere = Some sphere, Ellipsoid = None}
-                    | Comp.EarthEllipsoid ellipsoid => {Sphere = None, Ellipsoid = Some ellipsoid}
-
                 val discipline : string =
                     case c.Discipline of
                       Comp.HangGliding => "hg"
@@ -169,7 +178,7 @@ val json_compInput : Json.json Comp.compInput =
                 { CivilId = c.CivilId
                 , CompName = c.CompName
                 , Discipline = discipline
-                , Earth = earth
+                , Earth = c.EarthModel
                 , EarthMath = c.EarthMath
                 , From = c.From
                 , Give = give
