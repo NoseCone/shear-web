@@ -142,7 +142,7 @@ type compInputRaw =
     { CivilId : string
     , CompName : string
     , Location : string
-    , UtcOffset : {TimeZoneMinutes : int}
+    , UtcOffset : Comp.utcOffset
     , From : string
     , To : string
     , Discipline : Comp.discipline
@@ -151,6 +151,12 @@ type compInputRaw =
     , Give : Comp.gives
     , ScoreBack : option seconds
     }
+
+val json_tzMinutes : Json.json Comp.tzMinutes =
+    Json.json_record {TimeZoneMinutes = "timeZoneMinutes"}
+
+val json_utcOffset : Json.json Comp.utcOffset =
+    Json.json_derived Comp.UtcOffset (fn (Comp.UtcOffset x) => x)
 
 val json_compInput : Json.json Comp.compInput =
     let
@@ -168,7 +174,7 @@ val json_compInput : Json.json Comp.compInput =
                         , From = raw.From
                         , To = raw.To
                         , CompName = raw.CompName
-                        , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
+                        , UtcOffset = raw.UtcOffset
                         , EarthModel = raw.EarthModel
                         , GiveConfig =
                             Comp.GiveConfig
@@ -186,9 +192,6 @@ val json_compInput : Json.json Comp.compInput =
 
                 val scoreBack : option seconds =
                     Option.mp (fn (Comp.ScoreBackTime s) => s) c.ScoreBack
-
-                val utcOffset : {TimeZoneMinutes : int} =
-                    case c.UtcOffset of Comp.UtcOffset u => {TimeZoneMinutes = u.TimeZoneMinutes}
             in
                 { CivilId = c.CivilId
                 , CompName = c.CompName
@@ -200,7 +203,7 @@ val json_compInput : Json.json Comp.compInput =
                 , Location = c.Location
                 , ScoreBack = scoreBack
                 , To = c.To
-                , UtcOffset = utcOffset
+                , UtcOffset = c.UtcOffset
                 }
             end
 
