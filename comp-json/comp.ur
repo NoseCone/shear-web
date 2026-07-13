@@ -1,16 +1,17 @@
 open Quantity
 
-datatype utcOffset = UtcOffset of {TimeZoneMinutes : int}
-datatype discipline = HangGliding | Paragliding
-
 type sphere = {Radius : metres}
 type ellipsoid = {EquatorialR: metres, RecipF : float}
+type gives = {GiveDistance : option string, GiveFraction: float}
+type tzMinutes = {TimeZoneMinutes : int}
+
+datatype utcOffset = UtcOffset of tzMinutes
+datatype discipline = HangGliding | Paragliding
 
 datatype earthModel =
     EarthSphere of sphere
   | EarthEllipsoid of ellipsoid
 
-type gives = {GiveDistance : option string, GiveFraction: float}
 datatype giveConfig = GiveConfig of gives
 datatype scoreBackTime = ScoreBackTime of seconds
 
