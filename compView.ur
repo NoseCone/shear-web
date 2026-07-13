@@ -363,32 +363,31 @@ and widgetTab (compName : string) (activeTab : compTab) : transaction page =
                                     </div>
                                 </div>
                                 <div class="spacer"></div>
-                                <div class="box">
-                                    {case comp of Comp.CompInput c => breadcrumb c.CompName}
-                                    <div class="tabs">
-                                        <ul>
-                                            {tabItem activeTab SettingsTab "Settings" (renderSettings compName)}
-                                            {tabItem activeTab TasksTab "Tasks" (render compName)}
-                                            {tabItem activeTab PilotsTab "Pilots" (renderPilots compName)}
-                                        </ul>
-                                    </div>
-                                    {case activeTab of
-                                      SettingsTab => <xml>{settingsTable comp}</xml>
-                                    | TasksTab =>
-                                        <xml>
-                                            {case tasksOpt of
-                                              None => <xml></xml>
-                                            | Some tasks => tasksTable tasks (Option.get [] taskLengthsOpt)}
-                                        </xml>
-                                    | PilotsTab =>
-                                        <xml>
-                                            {case pilotsOpt of
-                                              None => <xml></xml>
-                                            | Some pilots => pilotsTable pilotTaskNames pilots}
-                                        </xml>}
+                                {case comp of Comp.CompInput c => breadcrumb c.CompName}
+                                <div class="tabs">
+                                    <ul>
+                                        {tabItem activeTab SettingsTab "Settings" (renderSettings compName)}
+                                        {tabItem activeTab TasksTab "Tasks" (render compName)}
+                                        {tabItem activeTab PilotsTab "Pilots" (renderPilots compName)}
+                                    </ul>
                                 </div>
+                                {case activeTab of
+                                    SettingsTab => <xml>{settingsTable comp}</xml>
+                                | TasksTab =>
+                                    <xml>
+                                        {case tasksOpt of
+                                            None => <xml></xml>
+                                        | Some tasks => tasksTable tasks (Option.get [] taskLengthsOpt)}
+                                    </xml>
+                                | PilotsTab =>
+                                    <xml>
+                                        {case pilotsOpt of
+                                            None => <xml></xml>
+                                        | Some pilots => pilotsTable pilotTaskNames pilots}
+                                    </xml>}
                             </div>
                         </div>
+                        <div class="spacer"></div>
                         {Footer.render ()}
                         <div class="container">
                             <div class="spacer"></div>
