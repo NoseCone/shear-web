@@ -77,11 +77,11 @@ fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
         val giveValue = case c.GiveConfig of Comp.GiveConfig g => show g.GiveFraction
 
         val earthDescription = case c.EarthModel of
-              Comp.EarthAsSphere _ => "Sphere with radius"
+              Comp.EarthSphere _ => "Sphere with radius"
             | Comp.EarthEllipsoid _ => "Ellipsoid"
 
         val earthValue = case c.EarthModel of
-              Comp.EarthAsSphere e => let val Quantity.Metres r = e.Radius in show (round r) ^ " m" end (* Use round to avoid scientific notation *)
+              Comp.EarthSphere e => let val Quantity.Metres r = e.Radius in show (round r) ^ " m" end (* Use round to avoid scientific notation *)
             | Comp.EarthEllipsoid e => "equatorialR " ^ e.EquatorialR ^ ", recipF " ^ show e.RecipF
     in
         <xml>

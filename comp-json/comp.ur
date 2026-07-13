@@ -7,7 +7,7 @@ type sphere = {Radius : metres}
 type ellipsoid = {EquatorialR: string, RecipF : float}
 
 datatype earthModel =
-    EarthAsSphere of sphere
+    EarthSphere of sphere
   | EarthEllipsoid of ellipsoid
 
 type gives = {GiveDistance : option string, GiveFraction: float}
