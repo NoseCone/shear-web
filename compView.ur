@@ -59,7 +59,6 @@ fun summary ((Comp.CompInput c) : Comp.compInput) (nominal : option Comp.nominal
                     {metric "nominal distance" nominalDistance Bulma.is_info}
                     {metric "nominal time" nominalTime Bulma.is_success}
                     {metric "nominal goal" nominalGoal Bulma.is_primary}
-                    {metric "nominal launch" nominalLaunch Bulma.is_primary}
                     {metric "score back time" scoreBack Bulma.is_danger}
                 </div>
             </div>
