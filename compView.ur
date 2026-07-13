@@ -55,8 +55,7 @@ fun summary ((Comp.CompInput c) : Comp.compInput) (nominal : option Comp.nominal
             <div class="example">
                 <div class="field is-grouped is-grouped-multiline">
                     {metric "UTC offset" tz Bulma.is_warning}
-                    {metric "minimum distance" giveDistance Bulma.is_black}
-                    {metric "nominal free" nominalFree Bulma.is_black}
+                    {metric "minimum distance" nominalFree Bulma.is_black}
                     {metric "nominal distance" nominalDistance Bulma.is_info}
                     {metric "nominal time" nominalTime Bulma.is_success}
                     {metric "nominal goal" nominalGoal Bulma.is_primary}
