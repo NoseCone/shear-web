@@ -40,9 +40,9 @@ fun summary ((Comp.CompInput c) : Comp.compInput) (nominal : option Comp.nominal
               None => "Unknown"
             | Some (Comp.Nominal x) => f x
 
-        val nominalDistance = nominalField (fn x => show x.Distance ^ " km")
-        val nominalFree = nominalField (fn x => show x.Free ^ " km")
-        val nominalTime = nominalField (fn x => show x.Time ^ " h")
+        val nominalDistance = nominalField (fn x => show x.Distance)
+        val nominalFree = nominalField (fn x => show x.Free)
+        val nominalTime = nominalField (fn x => show x.Time)
         val nominalGoal = nominalField (fn x => show x.Goal)
         val nominalLaunch = nominalField (fn x => show x.Launch)
 
