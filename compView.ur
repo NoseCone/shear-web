@@ -99,43 +99,52 @@ fun earthModel (e : Comp.earthModel) = case e of
             </xml>
         end
 
-fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
-    let
-        val giveDescription = case c.GiveConfig of Comp.GiveConfig g =>
-                case g.GiveDistance of
-                  None => "give fraction only, no give distance"
-                | Some d => "give distance " ^ d ^ " and give fraction"
-
-        val giveValue = case c.GiveConfig of Comp.GiveConfig g => show g.GiveFraction
-    in
+fun give ((Comp.GiveConfig g) : Comp.giveConfig) = case g.GiveDistance of
+      None =>
         <xml>
-            <table class="tabular is-bordered">
-                <thead>
-                    <tr>
-                        <th colspan={3}></th>
-                        <th>Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <th>* Give</th>
-                        <td colspan={2}>{[giveDescription]}</td>
-                        <td>{[giveValue]}</td>
-                    </tr>
-                    {earthModel c.EarthModel}
-                    <tr>
-                        <th colspan={3}>Earth math</th>
-                        <td>{[c.EarthMath]}</td>
-                    </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan={4}>* Adjusting the turnpoint radius with some give for pilots just short of the control zone</td>
-                    </tr>
-                </tfoot>
-            </table>
+            <tr>
+                <th>* Give</th>
+                <td colspan={2}>give fraction only, no give distance</td>
+                <td>{[g.GiveFraction]}</td>
+            </tr>
         </xml>
-    end
+    | Some d =>
+        <xml>
+            <tr>
+                <th rowspan={2}>* Give</th>
+                <td colspan={2}>fraction</td>
+                <td>{[g.GiveFraction]}</td>
+            </tr>
+            <tr>
+                <td colspan={2}>distance</td>
+                <td>{[d]}</td>
+            </tr>
+        </xml>
+
+fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
+    <xml>
+        <table class="tabular is-bordered">
+            <thead>
+                <tr>
+                    <th colspan={3}></th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {give c.GiveConfig}
+                {earthModel c.EarthModel}
+                <tr>
+                    <th colspan={3}>Earth math</th>
+                    <td>{[c.EarthMath]}</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan={4}>* Adjusting the turnpoint radius with some give for pilots just short of the control zone</td>
+                </tr>
+            </tfoot>
+        </table>
+    </xml>
 
 datatype compTab = SettingsTab | TasksTab | PilotsTab
 
