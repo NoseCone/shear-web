@@ -141,15 +141,15 @@ val json_discipline : Json.json Comp.discipline =
 type compInputRaw =
     { CivilId : string
     , CompName : string
+    , Location : string
+    , UtcOffset : {TimeZoneMinutes : int}
+    , From : string
+    , To : string
     , Discipline : Comp.discipline
     , EarthModel : Comp.earthModel
     , EarthMath  : string
-    , From : string
     , Give : Comp.gives
-    , Location : string
     , ScoreBack : option seconds
-    , To : string
-    , UtcOffset : {TimeZoneMinutes : int}
     }
 
 val json_compInput : Json.json Comp.compInput =

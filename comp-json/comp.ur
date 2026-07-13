@@ -29,14 +29,14 @@ ScoreBack. *)
 datatype compInput =
   CompInput of
     { CivilId : string
-    , EarthMath : string
-    , Discipline : discipline
+    , CompName : string
     , Location : string
+    , UtcOffset : utcOffset
     , From : string
     , To : string
-    , CompName : string
-    , UtcOffset : utcOffset
+    , Discipline : discipline
     , EarthModel : earthModel
+    , EarthMath : string
     , GiveConfig : giveConfig
     , ScoreBack : option scoreBackTime
     }
