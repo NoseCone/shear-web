@@ -148,7 +148,7 @@ type compInputRaw =
     , Discipline : Comp.discipline
     , EarthModel : Comp.earthModel
     , EarthMath  : string
-    , Give : Comp.gives
+    , GiveConfig : Comp.giveConfig
     , ScoreBack : option Comp.scoreBackTime
     }
 
@@ -160,6 +160,9 @@ val json_utcOffset : Json.json Comp.utcOffset =
 
 val json_scoreBackTime : Json.json Comp.scoreBackTime =
     Json.json_derived Comp.ScoreBackTime (fn (Comp.ScoreBackTime x) => x)
+
+val json_giveConfig : Json.json Comp.giveConfig =
+    Json.json_derived Comp.GiveConfig (fn (Comp.GiveConfig x) => x)
 
 val json_compInput : Json.json Comp.compInput =
     let
@@ -175,11 +178,7 @@ val json_compInput : Json.json Comp.compInput =
                     , CompName = raw.CompName
                     , UtcOffset = raw.UtcOffset
                     , EarthModel = raw.EarthModel
-                    , GiveConfig =
-                        Comp.GiveConfig
-                            { GiveDistance = raw.Give.GiveDistance
-                            , GiveFraction = raw.Give.GiveFraction
-                            }
+                    , GiveConfig = raw.GiveConfig
                     , ScoreBack = raw.ScoreBack
                     })
 
@@ -194,7 +193,7 @@ val json_compInput : Json.json Comp.compInput =
                 , EarthModel = c.EarthModel
                 , EarthMath = c.EarthMath
                 , From = c.From
-                , Give = give
+                , GiveConfig = c.GiveConfig
                 , Location = c.Location
                 , ScoreBack = c.ScoreBack
                 , To = c.To
@@ -210,7 +209,7 @@ val json_compInput : Json.json Comp.compInput =
                 , EarthModel = "earth"
                 , EarthMath = "earthMath"
                 , From = "from"
-                , Give = "give"
+                , GiveConfig = "give"
                 , Location = "location"
                 , To = "to"
                 , UtcOffset = "utcOffset"
