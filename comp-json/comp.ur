@@ -11,7 +11,7 @@ datatype earthModel =
 
 type gives = {GiveDistance : option string, GiveFraction: float}
 datatype giveConfig = GiveConfig of gives
-datatype scoreBackTime = ScoreBackTime of float
+datatype scoreBackTime = ScoreBackTime of seconds
 
 datatype nominal =
   Nominal of

@@ -122,7 +122,7 @@ val json_compInput : Json.json Comp.compInput =
                     else None
 
                 val scoreBack : option Comp.scoreBackTime =
-                    Option.mp (fn (Seconds s) => Comp.ScoreBackTime s) raw.ScoreBack
+                    Option.mp Comp.ScoreBackTime raw.ScoreBack
             in
                 case earthModelResult of
                   ParseError err => ParseError err
@@ -166,7 +166,7 @@ val json_compInput : Json.json Comp.compInput =
                     case c.GiveConfig of Comp.GiveConfig g => g
 
                 val scoreBack : option seconds =
-                    Option.mp (fn sb => case sb of Comp.ScoreBackTime s => Seconds s) c.ScoreBack
+                    Option.mp (fn (Comp.ScoreBackTime s) => s) c.ScoreBack
 
                 val utcOffset : {TimeZoneMinutes : int} =
                     case c.UtcOffset of Comp.UtcOffset u => {TimeZoneMinutes = u.TimeZoneMinutes}

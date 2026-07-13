@@ -49,7 +49,7 @@ fun summary ((Comp.CompInput c) : Comp.compInput) (nominal : option Comp.nominal
         val scoreBack =
             case c.ScoreBack of
               None => "None"
-            | Some sb => case sb of Comp.ScoreBackTime s => show (round (s/ 60.)) ^ " mins"
+            | Some (Comp.ScoreBackTime (Quantity.Seconds s)) => show (round (s / 60.)) ^ " mins"
     in
         <xml>
             <div class="example">
