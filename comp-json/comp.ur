@@ -27,8 +27,7 @@ datatype nominal =
 (* For now, we don't care too much for types other than strings, since we're
 just displaying the comp input. As as example of parsing with failure, look at
 ScoreBack. *)
-datatype compInput =
-  CompInput of
+type compSettings =
     { CivilId : string
     , CompName : string
     , Location : string
@@ -41,6 +40,8 @@ datatype compInput =
     , GiveConfig : giveConfig
     , ScoreBack : option scoreBackTime
     }
+
+datatype compInput = CompInput of compSettings
 
 type taskLength = float
 type rawZone = { ZoneName: string }

@@ -138,20 +138,6 @@ val json_discipline : Json.json Comp.discipline =
             }
     end
 
-type compInputRaw =
-    { CivilId : string
-    , CompName : string
-    , Location : string
-    , UtcOffset : Comp.utcOffset
-    , From : string
-    , To : string
-    , Discipline : Comp.discipline
-    , EarthModel : Comp.earthModel
-    , EarthMath  : string
-    , GiveConfig : Comp.giveConfig
-    , ScoreBack : option Comp.scoreBackTime
-    }
-
 val json_tzMinutes : Json.json Comp.tzMinutes =
     Json.json_record {TimeZoneMinutes = "timeZoneMinutes"}
 
@@ -166,42 +152,7 @@ val json_giveConfig : Json.json Comp.giveConfig =
 
 val json_compInput : Json.json Comp.compInput =
     let
-        fun fromRaw (raw : compInputRaw) : parseResult Comp.compInput =
-            ParseOk
-                (Comp.CompInput
-                    { CivilId = raw.CivilId
-                    , EarthMath = raw.EarthMath
-                    , Discipline = raw.Discipline
-                    , Location = raw.Location
-                    , From = raw.From
-                    , To = raw.To
-                    , CompName = raw.CompName
-                    , UtcOffset = raw.UtcOffset
-                    , EarthModel = raw.EarthModel
-                    , GiveConfig = raw.GiveConfig
-                    , ScoreBack = raw.ScoreBack
-                    })
-
-        fun toRaw ((Comp.CompInput c) : Comp.compInput) : compInputRaw =
-            let
-                val give : Comp.gives =
-                    case c.GiveConfig of Comp.GiveConfig g => g
-            in
-                { CivilId = c.CivilId
-                , CompName = c.CompName
-                , Discipline = c.Discipline
-                , EarthModel = c.EarthModel
-                , EarthMath = c.EarthMath
-                , From = c.From
-                , GiveConfig = c.GiveConfig
-                , Location = c.Location
-                , ScoreBack = c.ScoreBack
-                , To = c.To
-                , UtcOffset = c.UtcOffset
-                }
-            end
-
-        val json_compInputRaw : Json.json compInputRaw =
+        val json_compSettings : Json.json Comp.compSettings =
             Json.json_record_withOptional
                 { CivilId = "civilId"
                 , CompName = "compName"
@@ -215,18 +166,6 @@ val json_compInput : Json.json Comp.compInput =
                 , UtcOffset = "utcOffset"
                 }
                 {ScoreBack = "scoreBack"}
-
-        fun parseCompInput (s : string) : Comp.compInput * string =
-            let
-                val (raw, rest) : compInputRaw * string = Json.fromJson' s
-            in
-                case fromRaw raw of
-                  ParseError err => error <xml>{[err]}</xml>
-                | ParseOk c => (c, rest)
-            end
     in
-        Json.mkJson
-            { ToJson = fn c => Json.toJson (toRaw c)
-            , FromJson = parseCompInput
-            }
+        Json.json_derived Comp.CompInput (fn (Comp.CompInput x) => x)
     end
