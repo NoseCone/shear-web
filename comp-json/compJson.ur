@@ -149,7 +149,7 @@ type compInputRaw =
     , EarthModel : Comp.earthModel
     , EarthMath  : string
     , Give : Comp.gives
-    , ScoreBack : option seconds
+    , ScoreBack : option Comp.scoreBackTime
     }
 
 val json_tzMinutes : Json.json Comp.tzMinutes =
@@ -158,40 +158,35 @@ val json_tzMinutes : Json.json Comp.tzMinutes =
 val json_utcOffset : Json.json Comp.utcOffset =
     Json.json_derived Comp.UtcOffset (fn (Comp.UtcOffset x) => x)
 
+val json_scoreBackTime : Json.json Comp.scoreBackTime =
+    Json.json_derived Comp.ScoreBackTime (fn (Comp.ScoreBackTime x) => x)
+
 val json_compInput : Json.json Comp.compInput =
     let
         fun fromRaw (raw : compInputRaw) : parseResult Comp.compInput =
-            let
-                val scoreBack : option Comp.scoreBackTime =
-                    Option.mp Comp.ScoreBackTime raw.ScoreBack
-            in
-                ParseOk
-                    (Comp.CompInput
-                        { CivilId = raw.CivilId
-                        , EarthMath = raw.EarthMath
-                        , Discipline = raw.Discipline
-                        , Location = raw.Location
-                        , From = raw.From
-                        , To = raw.To
-                        , CompName = raw.CompName
-                        , UtcOffset = raw.UtcOffset
-                        , EarthModel = raw.EarthModel
-                        , GiveConfig =
-                            Comp.GiveConfig
-                                { GiveDistance = raw.Give.GiveDistance
-                                , GiveFraction = raw.Give.GiveFraction
-                                }
-                        , ScoreBack = scoreBack
-                        })
-            end
+            ParseOk
+                (Comp.CompInput
+                    { CivilId = raw.CivilId
+                    , EarthMath = raw.EarthMath
+                    , Discipline = raw.Discipline
+                    , Location = raw.Location
+                    , From = raw.From
+                    , To = raw.To
+                    , CompName = raw.CompName
+                    , UtcOffset = raw.UtcOffset
+                    , EarthModel = raw.EarthModel
+                    , GiveConfig =
+                        Comp.GiveConfig
+                            { GiveDistance = raw.Give.GiveDistance
+                            , GiveFraction = raw.Give.GiveFraction
+                            }
+                    , ScoreBack = raw.ScoreBack
+                    })
 
         fun toRaw ((Comp.CompInput c) : Comp.compInput) : compInputRaw =
             let
                 val give : Comp.gives =
                     case c.GiveConfig of Comp.GiveConfig g => g
-
-                val scoreBack : option seconds =
-                    Option.mp (fn (Comp.ScoreBackTime s) => s) c.ScoreBack
             in
                 { CivilId = c.CivilId
                 , CompName = c.CompName
@@ -201,7 +196,7 @@ val json_compInput : Json.json Comp.compInput =
                 , From = c.From
                 , Give = give
                 , Location = c.Location
-                , ScoreBack = scoreBack
+                , ScoreBack = c.ScoreBack
                 , To = c.To
                 , UtcOffset = c.UtcOffset
                 }
