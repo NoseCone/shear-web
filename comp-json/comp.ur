@@ -44,8 +44,8 @@ type compSettings =
 datatype compInput = CompInput of compSettings
 
 type taskLength = float
-type rawZone = { ZoneName: string }
-type stopped = { Announced: string, Retroactive: string }
+type rawZone = {ZoneName: string}
+type stopped = {Announced: string, Retroactive: string}
 
 type compTask =
     { TaskName: string
