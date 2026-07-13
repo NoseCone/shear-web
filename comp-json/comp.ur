@@ -6,7 +6,11 @@ type gives = {GiveDistance : option string, GiveFraction: float}
 type tzMinutes = {TimeZoneMinutes : int}
 
 datatype utcOffset = UtcOffset of tzMinutes
+
 datatype discipline = HangGliding | Paragliding
+
+val show_discipline : show discipline =
+    mkShow (fn d => case d of HangGliding => "hg" | Paragliding => "pg")
 
 datatype earthModel =
     EarthSphere of sphere

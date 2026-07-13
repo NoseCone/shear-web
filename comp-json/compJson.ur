@@ -118,11 +118,6 @@ val json_discipline : Json.json Comp.discipline =
             | "pg" => ParseOk Comp.Paragliding
             | _ => ParseError ("Unsupported discipline value in JSON: " ^ s)
 
-        fun toString (d : Comp.discipline) : string =
-            case d of
-              Comp.HangGliding => "hg"
-            | Comp.Paragliding => "pg"
-
         fun parseDiscipline (s : string) : Comp.discipline * string =
             let
                 val (raw, rest) : string * string = Json.fromJson' s
@@ -133,7 +128,7 @@ val json_discipline : Json.json Comp.discipline =
             end
     in
         Json.mkJson
-            { ToJson = fn d => Json.toJson (toString d)
+            { ToJson = fn d => Json.toJson (show d)
             , FromJson = parseDiscipline
             }
     end
