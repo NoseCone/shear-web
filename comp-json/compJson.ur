@@ -82,7 +82,7 @@ val json_pilotStatus : Json.json Comp.pilotStatus =
     end
 
 type earthModelRaw =
-    { Sphere : option {Radius : metres}
+    { Sphere : option Comp.sphere
     , Ellipsoid : option Comp.ellipsoid
     }
 
@@ -106,12 +106,7 @@ val json_compInput : Json.json Comp.compInput =
             let
                 val earthModelResult : parseResult Comp.earthModel =
                     case (raw.Earth.Sphere, raw.Earth.Ellipsoid) of
-                      (Some sphere, None) =>
-                        let
-                            val Metres r = sphere.Radius
-                        in
-                            ParseOk (Comp.EarthAsSphere {Radius = r})
-                        end
+                      (Some sphere, None) => ParseOk (Comp.EarthAsSphere sphere)
                     | (None, Some ellipsoid) => ParseOk (Comp.EarthEllipsoid ellipsoid)
                     | (Some _, Some _) => ParseError "Invalid earth model: found both sphere and ellipsoid fields"
                     | (None, None) => ParseError "Missing earth model: expected earth.sphere or earth.ellipsoid"
@@ -154,7 +149,7 @@ val json_compInput : Json.json Comp.compInput =
             let
                 val earth : earthModelRaw =
                     case c.EarthModel of
-                      Comp.EarthAsSphere e => {Sphere = Some {Radius = Metres e.Radius}, Ellipsoid = None}
+                      Comp.EarthAsSphere sphere => {Sphere = Some sphere, Ellipsoid = None}
                     | Comp.EarthEllipsoid ellipsoid => {Sphere = None, Ellipsoid = Some ellipsoid}
 
                 val discipline : string =
