@@ -112,19 +112,13 @@ val json_earthModel : Json.json Comp.earthModel =
 
 val json_discipline : Json.json Comp.discipline =
     let
-        fun fromString (s : string) : parseResult Comp.discipline =
-            case s of
-              "hg" => ParseOk Comp.HangGliding
-            | "pg" => ParseOk Comp.Paragliding
-            | _ => ParseError ("Unsupported discipline value in JSON: " ^ s)
-
         fun parseDiscipline (s : string) : Comp.discipline * string =
             let
                 val (raw, rest) : string * string = Json.fromJson' s
             in
-                case fromString raw of
-                  ParseError err => error <xml>{[err]}</xml>
-                | ParseOk d => (d, rest)
+                case read raw of
+                  Some d => (d, rest)
+                | None => error <xml>{["Unsupported discipline value in JSON: " ^ raw]}</xml>
             end
     in
         Json.mkJson

@@ -12,6 +12,14 @@ datatype discipline = HangGliding | Paragliding
 val show_discipline : show discipline =
     mkShow (fn d => case d of HangGliding => "hg" | Paragliding => "pg")
 
+val read_discipline : read discipline =
+    mkRead'
+      (fn s => case s of
+          "hg" => Some HangGliding
+        | "pg" => Some Paragliding
+        | _ => None)
+      "discipline"
+
 datatype earthModel =
     EarthSphere of sphere
   | EarthEllipsoid of ellipsoid
