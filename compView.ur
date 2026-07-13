@@ -17,7 +17,7 @@ fun breadcrumb (compName : string) : xbody =
         <nav class={Bulma.breadcrumb} aria-label="breadcrumbs">
             <ul>
                 <li><a href={bless "/main"}>Shear Web (Ur/Web)</a></li>
-                <li class="is-active">{[compName]}</li>
+                <li class="is-active"><a href="#">{[compName]}</a></li>
             </ul>
         </nav>
     </xml>
