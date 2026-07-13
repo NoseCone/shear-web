@@ -110,10 +110,38 @@ val json_earthModel : Json.json Comp.earthModel =
             }
     end
 
+val json_discipline : Json.json Comp.discipline =
+    let
+        fun fromString (s : string) : parseResult Comp.discipline =
+            case s of
+              "hg" => ParseOk Comp.HangGliding
+            | "pg" => ParseOk Comp.Paragliding
+            | _ => ParseError ("Unsupported discipline value in JSON: " ^ s)
+
+        fun toString (d : Comp.discipline) : string =
+            case d of
+              Comp.HangGliding => "hg"
+            | Comp.Paragliding => "pg"
+
+        fun parseDiscipline (s : string) : Comp.discipline * string =
+            let
+                val (raw, rest) : string * string = Json.fromJson' s
+            in
+                case fromString raw of
+                  ParseError err => error <xml>{[err]}</xml>
+                | ParseOk d => (d, rest)
+            end
+    in
+        Json.mkJson
+            { ToJson = fn d => Json.toJson (toString d)
+            , FromJson = parseDiscipline
+            }
+    end
+
 type compInputRaw =
     { CivilId : string
     , CompName : string
-    , Discipline : string
+    , Discipline : Comp.discipline
     , EarthModel : Comp.earthModel
     , EarthMath  : string
     , From : string
@@ -128,44 +156,31 @@ val json_compInput : Json.json Comp.compInput =
     let
         fun fromRaw (raw : compInputRaw) : parseResult Comp.compInput =
             let
-                val disciplineOpt : option Comp.discipline =
-                    if raw.Discipline = "hg" then Some Comp.HangGliding
-                    else if raw.Discipline = "pg" then Some Comp.Paragliding
-                    else None
-
                 val scoreBack : option Comp.scoreBackTime =
                     Option.mp Comp.ScoreBackTime raw.ScoreBack
             in
-                case disciplineOpt of
-                    None => ParseError ("Unsupported discipline value in JSON: " ^ raw.Discipline)
-                | Some discipline =>
-                    ParseOk
-                        (Comp.CompInput
-                            { CivilId = raw.CivilId
-                            , EarthMath = raw.EarthMath
-                            , Discipline = discipline
-                            , Location = raw.Location
-                            , From = raw.From
-                            , To = raw.To
-                            , CompName = raw.CompName
-                            , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
-                            , EarthModel = raw.EarthModel
-                            , GiveConfig =
-                                Comp.GiveConfig
-                                    { GiveDistance = raw.Give.GiveDistance
-                                    , GiveFraction = raw.Give.GiveFraction
-                                    }
-                            , ScoreBack = scoreBack
-                            })
+                ParseOk
+                    (Comp.CompInput
+                        { CivilId = raw.CivilId
+                        , EarthMath = raw.EarthMath
+                        , Discipline = raw.Discipline
+                        , Location = raw.Location
+                        , From = raw.From
+                        , To = raw.To
+                        , CompName = raw.CompName
+                        , UtcOffset = Comp.UtcOffset {TimeZoneMinutes = raw.UtcOffset.TimeZoneMinutes}
+                        , EarthModel = raw.EarthModel
+                        , GiveConfig =
+                            Comp.GiveConfig
+                                { GiveDistance = raw.Give.GiveDistance
+                                , GiveFraction = raw.Give.GiveFraction
+                                }
+                        , ScoreBack = scoreBack
+                        })
             end
 
         fun toRaw ((Comp.CompInput c) : Comp.compInput) : compInputRaw =
             let
-                val discipline : string =
-                    case c.Discipline of
-                      Comp.HangGliding => "hg"
-                    | Comp.Paragliding => "pg"
-
                 val give : Comp.gives =
                     case c.GiveConfig of Comp.GiveConfig g => g
 
@@ -177,7 +192,7 @@ val json_compInput : Json.json Comp.compInput =
             in
                 { CivilId = c.CivilId
                 , CompName = c.CompName
-                , Discipline = discipline
+                , Discipline = c.Discipline
                 , EarthModel = c.EarthModel
                 , EarthMath = c.EarthMath
                 , From = c.From
