@@ -67,6 +67,38 @@ fun summary ((Comp.CompInput c) : Comp.compInput) (nominal : option Comp.nominal
         </xml>
     end
 
+(* Use rounding to avoid scientific notation *)
+fun earthModel (e : Comp.earthModel) = case e of
+      Comp.EarthSphere e =>
+        let
+            val Quantity.Metres r = e.Radius
+        in
+            <xml>
+                <tr>
+                    <th>Earth model</th>
+                    <td>Sphere with radius</td>
+                    <td colspan={2}>{[show (round r) ^ " m"]}</td>
+                </tr>
+            </xml>
+        end
+    | Comp.EarthEllipsoid e =>
+        let
+            val Quantity.Metres r = e.EquatorialR
+        in
+            <xml>
+                <tr>
+                    <th rowspan={2}>Earth model</th>
+                    <td rowspan={2}>Ellipsoid</td>
+                    <td>semi-major axis</td>
+                    <td>{[show (round r) ^ " m"]}</td>
+                </tr>
+                <tr>
+                    <td>reciprocal of flattening</td>
+                    <td>{[e.RecipF]}</td>
+                </tr>
+            </xml>
+        end
+
 fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
     let
         val giveDescription = case c.GiveConfig of Comp.GiveConfig g =>
@@ -75,17 +107,6 @@ fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
                 | Some d => "give distance " ^ d ^ " and give fraction"
 
         val giveValue = case c.GiveConfig of Comp.GiveConfig g => show g.GiveFraction
-
-        val earthDescription = case c.EarthModel of
-              Comp.EarthSphere _ => "Sphere with radius"
-            | Comp.EarthEllipsoid _ => "Ellipsoid"
-
-        (* Use rounding to avoid scientific notation *)
-        val earthValue = case c.EarthModel of
-              Comp.EarthSphere e =>
-                let val Quantity.Metres r = e.Radius in show (round r) ^ " m" end
-            | Comp.EarthEllipsoid e =>
-                let val Quantity.Metres r = e.EquatorialR in "equatorialR " ^ show (round r) ^ " m, recipF " ^ show e.RecipF end
     in
         <xml>
             <table class="tabular is-bordered">
@@ -101,11 +122,7 @@ fun settingsTable ((Comp.CompInput c) : Comp.compInput) : xbody =
                         <td colspan={2}>{[giveDescription]}</td>
                         <td>{[giveValue]}</td>
                     </tr>
-                    <tr>
-                        <th>Earth model</th>
-                        <td colspan={2}>{[earthDescription]}</td>
-                        <td>{[earthValue]}</td>
-                    </tr>
+                    {earthModel c.EarthModel}
                     <tr>
                         <th colspan={3}>Earth math</th>
                         <td>{[c.EarthMath]}</td>
