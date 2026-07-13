@@ -4,7 +4,7 @@ datatype utcOffset = UtcOffset of {TimeZoneMinutes : int}
 datatype discipline = HangGliding | Paragliding
 
 type sphere = {Radius : metres}
-type ellipsoid = {EquatorialR: string, RecipF : float}
+type ellipsoid = {EquatorialR: metres, RecipF : float}
 
 datatype earthModel =
     EarthSphere of sphere
